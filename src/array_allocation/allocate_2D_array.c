@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
-void allocate_2D_array(double ***array_ptr, int ny, int nx) {
+void allocate_2D_array(double ***array_ptr, int ny, int nx) 
+{
     /*
     Allocates memory for a 2D contiguous array.
 
@@ -13,6 +14,7 @@ void allocate_2D_array(double ***array_ptr, int ny, int nx) {
     nx : int
         Number of columns in the array.
     */
+   
     // Allocate the primary array.
     *array_ptr = malloc(ny * sizeof(**array_ptr));
     if (*array_ptr == NULL) {
