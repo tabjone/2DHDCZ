@@ -3,7 +3,7 @@
 
 void create_and_write_dataset_3D(hid_t file_id, const char* datasetname, hsize_t* dims, double*** data) 
 {
-    """
+    /*
     Creates a HDF5 file and writes a 3D dataset to it.
 
     Parameters
@@ -16,7 +16,7 @@ void create_and_write_dataset_3D(hid_t file_id, const char* datasetname, hsize_t
         The dimensions of the dataset.
     data : double***
         The data to be written to the dataset.
-    """
+    */
     // Create the dataspace for the dataset.
     hid_t dataspace_id, dataset_id;
     herr_t status;
@@ -34,7 +34,7 @@ void create_and_write_dataset_3D(hid_t file_id, const char* datasetname, hsize_t
 
 void create_and_write_dataset_2D(hid_t file_id, const char* datasetname, hsize_t* dims, double** data) 
 {
-    """
+    /*
     Creates a HDF5 file and writes a 2D dataset to it.
 
     Parameters
@@ -47,7 +47,7 @@ void create_and_write_dataset_2D(hid_t file_id, const char* datasetname, hsize_t
         The dimensions of the dataset.
     data : double**
         The data to be written to the dataset.
-    """
+    */
     // Create the dataspace for the dataset.
     hid_t dataspace_id, dataset_id;  
     herr_t status;
@@ -65,7 +65,7 @@ void create_and_write_dataset_2D(hid_t file_id, const char* datasetname, hsize_t
 
 void create_and_write_dataset_1D(hid_t file_id, const char* datasetname, hsize_t* dims, double* data) 
 {
-    """
+    /*
     Creates a HDF5 file and writes a 1D dataset to it.
 
     Parameters
@@ -78,7 +78,7 @@ void create_and_write_dataset_1D(hid_t file_id, const char* datasetname, hsize_t
         The dimensions of the dataset.
     data : double*
         The data to be written to the dataset.
-    """
+    */
     // Create the dataspace for the dataset.
     hid_t dataspace_id, dataset_id;  
     herr_t status;
