@@ -1,5 +1,5 @@
-#ifndef SIMULATION_SPACIAL_DERIVATIVES_SPACIAL_DERIVATIVE_FUNCTIONS_H_
-#define SIMULATION_SPACIAL_DERIVATIVES_SPACIAL_DERIVATIVE_FUNCTIONS_H_
+#ifndef SIMULATION_DERIVATIVES_SPACIAL_DERIVATIVES_SPACIAL_DERIVATIVE_FUNCTIONS_H_
+#define SIMULATION_DERIVATIVES_SPACIAL_DERIVATIVES_SPACIAL_DERIVATIVE_FUNCTIONS_H_
 
 double backward_first_derivative_first_order(double centre, double left, double dx);
 double backward_first_derivative_second_order(double centre, double left, double left2, double dx);
@@ -10,4 +10,4 @@ double central_second_derivative_second_order(double centre, double left, double
 double forward_first_derivative_first_order(double centre, double right, double dx);
 double forward_first_derivative_second_order(double centre, double right, double right2, double dx);
 
-#endif // SIMULATION_SPACIAL_DERIVATIVES_SPACIAL_DERIVATIVE_FUNCTIONS_H_
+#endif // SIMULATION_DERIVATIVES_SPACIAL_DERIVATIVES_SPACIAL_DERIVATIVE_FUNCTIONS_H_
