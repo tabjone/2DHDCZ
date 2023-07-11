@@ -4,7 +4,7 @@
 double backward_first_derivative_first_order(double centre, double left, double dx);
 double backward_first_derivative_second_order(double centre, double left, double left2, double dx);
 
-double central_first_derivative_first_order(double left, double right, double dx);
+double central_first_derivative_second_order(double left, double right, double dx);
 double central_second_derivative_second_order(double centre, double left, double right, double dx);
 
 double forward_first_derivative_first_order(double centre, double right, double dx);
