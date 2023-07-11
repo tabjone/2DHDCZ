@@ -1,0 +1,6 @@
+#ifndef DERIVATIVES_TIME_DERIVATIVES_TIME_DERIVATIVE_FUNCTIONS_H_
+#define DERIVATIVES_TIME_DERIVATIVES_TIME_DERIVATIVE_FUNCTIONS_H_
+
+double forward_first_derivative_first_order_time(double current, double rhs, double dt);
+
+#endif // DERIVATIVES_TIME_DERIVATIVES_TIME_DERIVATIVE_FUNCTIONS_H_
