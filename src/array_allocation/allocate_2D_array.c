@@ -20,9 +20,9 @@ void allocate_2D_array(double ***array_ptr, int ny, int nx)
     if (*array_ptr == NULL) {
         return;  // Failed to allocate memory
     }
-
+    
     // Allocate the actual 2D array.
-    (*array_ptr)[0] = malloc(ny * nx * sizeof(**array_ptr[0]));
+    (*array_ptr)[0] = malloc(ny * nx * sizeof *(*array_ptr[0]));
     if ((*array_ptr)[0] == NULL) {
         free(*array_ptr);  // Failed to allocate memory, so clean up.
         return;
