@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{natbib}
+
+% Uncomment to use Times New Roman font
+% \usepackage{times}
+
+% Margins
+\usepackage[margin=1in]{geometry}
+
+% Header/Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Anelastic approximation draft}
+\rhead{\today}
+\cfoot{Page \thepage}
+
+\begin{document}
+
+\section{Anelastic Approximation}
+\subsection{Pertubation theory}
+Do I need a subsection on this?
+\subsection{Mixing length theory}
+\subsection{Anelastic approximation}
+
+FROM LANTZ:
+
+Original anelastic approximation: \citep{1962JAtS...19..159C} or \citep{1962JAtS...19..173O}. In these papers only diffusionless fluids.\\
+
+Next step: \citep{1969JAtS...26..448G}. "The anelastic approximation can be maintained by relaxing the condition of strict adiabaticity. In his view, the reference state can even be time dependent; the only restriction is that the Mach number must remain small."  "Used Gough's anelastic model to compute convection cell structures in time-dependent, pulsating stars, based on simplifed, few-mode planforms like those in the Boussinesq
+calculations by Gough, Spiegel, \& Toomre (1975). Problem: dangerous to relax the isentropic condition, because anywhere the reference entropy gradient is strongly superadiabatic, a high Mach number Ñow could well be the result. In particular, an upper thermal boundary layer might become supersonically unstable."
+
+"Making the di†usive heat flux proportional to the local entropy gradient is one way to achieve a zero-order isentropic state even in the presence of thermal di†usion. This is the approach taken by Gilman \& Glatzmaier (1981) and Glatzmaier (1984), who saw this type of heat flux as a viable model for the subgrid diffusion of entropy in numerical simulations. From this viewpoint, the anelastic approximation becomes a system of equations not simply for slow convective motions, but for slow and large convective motions superimposed on a sea of smaller scale turbulent motions. The approximation therefore involves two types of filtering : time-domain filtering to remove sound waves and spatial filtering to average over the small-scale turbulence."
+
+"The lowest order isentropic condition is met by setting the polytropic index $m=1.5$, and a first-order convective instability is created by making m just slightly less than this value."
+
+
+\section{Eqs from Yuhong Fan}
+
+\begin{align}
+    \nabla\cdot(\rho\mathbf{v})=0
+\end{align}
+
+\begin{align}
+    \rho_0\left[\frac{\partial\mathbf{v}}{\partial t}+(\mathbf{v}\cdot\nabla)\mathbf{v}\right]=-\nabla p_1 + \rho_1\mathbf{g} + \frac{1}{4\pi} (\nabla\times\mathbf{B})\times\mathbf{B}+\nabla\cdot\mathbf{\Pi},
+\end{align}
+
+\begin{align}
+    \rho_0 T_0 \left[\frac{\partial s_1}{\partial t} + (\mathbf{v}\cdot \nabla)(s_0+s_1) \right]
+    = \nabla\cdot(K\rho_0T_0\nabla s_1) +\frac{1}{4\pi}\eta |\nabla\times\mathbf{B}|^2 + (\mathbf{\Pi}\cdot\nabla)\cdot\mathbf{v},
+\end{align}
+
+\begin{align}
+    \nabla\cdot\mathbf{B}=0,
+\end{align}
+
+\begin{align}
+    \frac{\partial\mathbf{B}}{\partial t} = \nabla\times(\mathbf{v}\times\mathbf{v})-\nabla\times(\eta\nabla\times\mathbf{B}),
+\end{align}
+
+\begin{align}
+    \frac{\rho_1}{\rho_0} = \frac{p_1}{p_0} - \frac{T_1}{T_0},
+\end{align}
+
+\begin{align}
+    \frac{s_1}{c_p} = \frac{T_1}{T_0} - \frac{\gamma-1}{\gamma}\frac{p_1}{p_0}.
+\end{align}
+
+$\mu,K,\eta$ is the dynamic viscosity, and thermal and magnetic diffusivity.
+
+
+"Because of the divergence free condition of $\rho_0\mathbf{v}$ given in equation (11), one can take the divergence of the momentum equation, where the divergence of the $\rho_0(\partial\mathbf{v}/\partial t$ term vanishes, to obtain an elliptic equation for $p_1$ of the form: $\nabla^2 p_1=....$. One way to numerically maintain equation (11) is to solve this elliptic equation for $p_1$ at every time step before substituting it into the momentum equation for advancing the velocity (e.g. Fan 2008). Another well-known method to ensure equation (11) in anelastic MHD codes that use the spectral method is to express $\rho_0\mathbf{v}$ in terms of the curls of vector potentials and numerically advance the equations for the vector potentials (e.g. Glatzmaier 1984; Fan et al. 1999; Featherstone and Hindman 2016)."
+
+
+\bibliographystyle{apalike}
+\bibliography{refs_anelastic}
+
+\end{document}
