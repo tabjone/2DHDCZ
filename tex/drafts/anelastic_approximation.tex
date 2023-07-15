@@ -56,7 +56,7 @@ calculations by Gough, Spiegel, \& Toomre (1975). Problem: dangerous to relax th
 \end{align}
 
 \begin{align}
-    \frac{\partial\mathbf{B}}{\partial t} = \nabla\times(\mathbf{v}\times\mathbf{v})-\nabla\times(\eta\nabla\times\mathbf{B}),
+    \frac{\partial\mathbf{B}}{\partial t} = \nabla\times(\mathbf{v}\times\mathbf{B})-\nabla\times(\eta\nabla\times\mathbf{B}),
 \end{align}
 
 \begin{align}
@@ -71,6 +71,90 @@ $\mu,K,\eta$ is the dynamic viscosity, and thermal and magnetic diffusivity.
 
 
 "Because of the divergence free condition of $\rho_0\mathbf{v}$ given in equation (11), one can take the divergence of the momentum equation, where the divergence of the $\rho_0(\partial\mathbf{v}/\partial t$ term vanishes, to obtain an elliptic equation for $p_1$ of the form: $\nabla^2 p_1=....$. One way to numerically maintain equation (11) is to solve this elliptic equation for $p_1$ at every time step before substituting it into the momentum equation for advancing the velocity (e.g. Fan 2008). Another well-known method to ensure equation (11) in anelastic MHD codes that use the spectral method is to express $\rho_0\mathbf{v}$ in terms of the curls of vector potentials and numerically advance the equations for the vector potentials (e.g. Glatzmaier 1984; Fan et al. 1999; Featherstone and Hindman 2016)."
+
+\subsection{First step: Solve for d/dt parts}
+Eq 2:
+\begin{align}
+    \frac{\partial\mathbf{v}}{\partial t}=\frac{1}{\rho_0}\left[-\nabla p_1 + \rho_1\mathbf{g} + \frac{1}{4\pi} (\nabla\times\mathbf{B})\times\mathbf{B}+\nabla\cdot\mathbf{\Pi}\right]-(\mathbf{v}\cdot\nabla)\mathbf{v}
+\end{align}
+
+Eq 3:
+
+\begin{align}
+    \frac{\partial s_1}{\partial t} 
+    = \frac{1}{\rho_0T_0}\left[\nabla\cdot(K\rho_0T_0\nabla s_1) +\frac{1}{4\pi}\eta |\nabla\times\mathbf{B}|^2 + (\mathbf{\Pi}\cdot\nabla)\cdot\mathbf{v}\right]-(\mathbf{v}\cdot \nabla)(s_0+s_1)
+\end{align}
+
+Eq 5: Stays the same.
+
+\subsection{Second step: Split directions}
+
+Eq 8: First we calculate some substeps
+\begin{align*}
+    [(\mathbf{v}\cdot\nabla)\mathbf{v}]_i = \left(v_x\partial_x v_i + v_y\partial_y v_i + v_z\partial_z v_i \right), i=x,y,z.
+\end{align*}
+
+$(\nabla\times\mathbf{B})\times\mathbf{B}$ gives these components in the different directions
+
+\begin{align*}
+    x&:\ (\partial_z B_x-\partial_x B_z )B_z - (\partial_x B_y - \partial_y B_x )B_y \\
+    y&:\ (\partial_x B_y - \partial_y B_x )B_x -(\partial_y B_z - \partial_z B_y )B_z\\
+    z&:\ (\partial_y B_z - \partial_z B_y )B_y - (\partial_z B_x - \partial_x B_z )B_x
+\end{align*}
+
+Gir da
+
+\begin{align}
+    x&:\ \partial_t v_x =  \frac{1}{\rho_0}\left[-(\nabla p_1)_x + \frac{1}{4\pi} \left( (\partial_z B_x-\partial_x B_z )B_z - (\partial_x B_y - \partial_y B_x )B_y \right)+(\nabla\cdot\mathbf{\Pi})_x\right]-\left(v_x\partial_x v_x + v_y\partial_y v_x + v_z\partial_z v_x \right) \\
+    y&:\ \partial_t v_x = \frac{1}{\rho_0}\left[-(\nabla p_1)_y  + \frac{1}{4\pi}\left( (\partial_x B_y - \partial_y B_x )B_x -(\partial_y B_z - \partial_z B_y )B_z \right)  +(\nabla\cdot\mathbf{\Pi})_y\right]- \left(v_x\partial_x v_y + v_y\partial_y v_y + v_z\partial_z v_y \right) \\
+    z&:\ \partial_t v_z = \frac{1}{\rho_0}\left[-(\nabla p_1)_z - \rho_1 g + \frac{1}{4\pi}\left( (\partial_y B_z - \partial_z B_y )B_y - (\partial_z B_x - \partial_x B_z )B_x \right) +(\nabla\cdot\mathbf{\Pi})_z\right]-\left(v_x\partial_x v_z + v_y\partial_y v_z + v_z\partial_z v_z \right)
+\end{align}
+
+Now for eq 9, first substeps
+
+\begin{align*}
+    \nabla\cdot(K\rho_0T_0\nabla s_1) = \sum\limits_{i=x,y,z}\partial_i(K\rho_0T_0\partial_i s_1)
+\end{align*}
+
+\begin{align*}
+    |\nabla\times\mathbf{B}|^2 = (\partial_y B_z-\partial_zB_y)^2+(\partial_zB_x-\partial_xB_z)^2+(\partial_xB_y-\partial_yB_x)^2
+\end{align*}
+
+\begin{align}
+    \partial_t s_1 =& \frac{1}{\rho_0T_0}\left[\sum\limits_{i=x,y,z}\partial_i(K\rho_0T_0\partial_i s_1) +\frac{1}{4\pi}\eta \left( (\partial_y B_z-\partial_zB_y)^2+(\partial_zB_x-\partial_xB_z)^2+(\partial_xB_y-\partial_yB_x)^2 \right) + (\mathbf{\Pi}\cdot\nabla)\cdot\mathbf{v}\right]\nonumber\\
+    &-\sum\limits_{i=x,y,z}v_i\partial_i(s_0+s_1)
+\end{align}
+
+Eq 5 substeps. $\nabla\times(\mathbf{v}\times\mathbf{B})$ gives the three components
+\begin{align*}
+    x&:\ \partial_y(v_xB_y-v_yB_x) - \partial_z(v_zB_x-v_xB_z) \\
+    y&:\  \partial_z(v_yB_z-v_zB_y)-\partial_x(v_xB_y-v_yB_x) \\
+    z&:\ \partial_x(v_zB_x-v_xB_z) - \partial_y(v_yB_z-v_zB_y)
+\end{align*}
+
+Now $\nabla\times(\eta\nabla\times\mathbf{B})$
+\begin{align*}
+    x&:\ \partial_y\eta(\partial_xB_y-\partial_yB_x)-\partial_z\eta(\partial_zB_x-\partial_xB_z) \\
+    y&:\ \partial_z\eta(\partial_yB_z-\partial_zB_y)-\partial_x\eta(\partial_xB_y-\partial_yB_x) \\
+    z&:\ \partial_x\eta(\partial_zB_x-\partial_xB_z)-\partial_y\eta(\partial_yB_z-\partial_zB_y)
+\end{align*}
+
+This gives three equations for the B-field
+\begin{align}
+\partial_t B_x &= \partial_y(v_xB_y-v_yB_x) - \partial_z(v_zB_x-v_xB_z) - \left[ \partial_y\eta(\partial_xB_y-\partial_yB_x)-\partial_z\eta(\partial_zB_x-\partial_xB_z) \right]\\
+\partial_t B_y &= \partial_z(v_yB_z-v_zB_y)-\partial_x(v_xB_y-v_yB_x) - \left[ \partial_z\eta(\partial_yB_z-\partial_zB_y)-\partial_x\eta(\partial_xB_y-\partial_yB_x) \right]\\
+\partial_t B_z &= \partial_x(v_zB_x-v_xB_z) - \partial_y(v_yB_z-v_zB_y) - \left[ \partial_x\eta(\partial_zB_x-\partial_xB_z)-\partial_y\eta(\partial_yB_z-\partial_zB_y) \right]
+\end{align}
+
+\subsection{Third step: Solving numerically, method}
+1. Find $p_1$ trough one of the two given methods.\\
+2. Solve all d/dt eqs.\\
+2. Put $s_1$ and $p_1$ into eq 7 to find $T_1$.\\
+3. Put everything into eq. 6 to find $\rho_1$.
+
+\subsection{Fourth step: Discretization, RK, Up/down, central}
+Up/Down derivatives marked with ud subscript. Central marked with c. Discretize in time for first order and rk.
+
 
 
 \bibliographystyle{apalike}
