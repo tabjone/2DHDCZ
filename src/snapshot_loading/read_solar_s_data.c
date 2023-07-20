@@ -1,7 +1,8 @@
 #include "hdf5.h"
 
 
-void read_solar_s_data(const char* filename, double* r_over_R, double* c_s, double* rho, double* p, double* Gamma_1, double* T, hsize_t size) {
+void read_solar_s_data(const char* filename, double* r_over_R, double* c_s, double* rho, double* p, double* Gamma_1, double* T, hsize_t size) 
+{
     /*
     Read the solar s data from a hdf5 file and store it in the arrays passed as arguments.
 
@@ -21,8 +22,6 @@ void read_solar_s_data(const char* filename, double* r_over_R, double* c_s, doub
         The array to store the Gamma_1 data in.
     T : double*
         The array to store the T data in (temperature). In units of K.
-
-
     */
 
     hid_t file_id;
