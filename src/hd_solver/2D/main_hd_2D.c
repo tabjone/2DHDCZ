@@ -10,7 +10,7 @@ int main_hd_2D(int argc, char *argv[])
     // Fixed background thermodynamic variables
     double *r_over_R, *s0, *c_s, *p0, *T0, *rho0, *Gamma_1;
 
-    int nz = 10; // Number of grid points in z-direction
+    int nz = 100; // Number of grid points in z-direction
 
     // Allocating memory
     allocate_1D_array(&r_over_R, nz);
@@ -57,7 +57,7 @@ int main_hd_2D(int argc, char *argv[])
 
     // Loop over the rest of the points using central difference
     for (int i = 1; i < nz-1; ++i) {
-        H[i] = - R_sun * (r_over_R[i+1] - r_over_R[i-1]) / (log(p0[i+1]) - log(p0[i-1]));
+        H[i] = - R_sun * (r_over_R[i+1] - r_over_R[i-1]) / (2*(log(p0[i+1]) - log(p0[i-1])));
     }
 
     // Then we calculate the superadiabacicity parameter
@@ -69,7 +69,7 @@ int main_hd_2D(int argc, char *argv[])
 
     // Loop over the rest of the points using central difference
     for (int i = 1; i < nz-1; ++i) {
-        superadiabacicity_parameter[i] = - del_ad + (log(T0[i+1]) - log(T0[i-1])) / (log(p0[i+1]) - log(p0[i-1]));
+        superadiabacicity_parameter[i] = - del_ad + (log(T0[i+1]) - log(T0[i-1])) / (2*(log(p0[i+1]) - log(p0[i-1])));
     }
 
     // Then we calculate the RHS of eq. (72) in Lantz & Fan (1999)
@@ -91,7 +91,7 @@ int main_hd_2D(int argc, char *argv[])
     r_star = p0[nz-1] / rho0[nz-1] / T0[nz-1];
     s0[nz-1] = r_star / (1 - 1/Gamma_1[nz-1]);
 
-    // Loop over the rest of the points using simple integration method
+    // Loop over the rest of the points using Euler-Forward
     double dz;
     for (int i = 1; i < nz-1; ++i) {
         dz = R_sun * (r_over_R[i] - r_over_R[i-1]);
