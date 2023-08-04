@@ -35,7 +35,7 @@ void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *
         The size of the solar_s data arrays.
     */
 
-    // Handle edge cases
+    // Handle edge cases, remember that r_over_R_solar_s is sorted in decending order
     if (*r_over_R_i >= r_over_R_solar_s[0])
     {
         *c_s_i = c_s_solar_s[0];
@@ -57,7 +57,7 @@ void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *
 
     // Search for the target interval
     int i = 0;
-    while (r_over_R_solar_s[i] < *r_over_R_i) 
+    while (r_over_R_solar_s[i] > *r_over_R_i) 
     {
         i++;
     } 
