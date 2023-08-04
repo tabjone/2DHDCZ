@@ -2,5 +2,6 @@
 #define functions_H__
 
 #include "./shared_files/shared_files.h"
+#include "./hd_solver/hd_functions.h"
 
 #endif // functions_H__

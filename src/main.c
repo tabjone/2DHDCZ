@@ -6,6 +6,15 @@
 
 int main(int argc, char *argv[])
 {
+
+    bool test = true;
+
+    if (test)
+    {
+        main_hd_2D(argc, argv);
+    }
+
+    /*
     int size = 10;
     double *r_over_R, *c_s, *rho, *p, *Gamma_1, *T;
     allocate_1D_array(&r_over_R, size);
@@ -33,7 +42,7 @@ int main(int argc, char *argv[])
     deallocate_1D_array(p);
     deallocate_1D_array(Gamma_1);
     deallocate_1D_array(T);
-
+    */
 
     /*
     int solar_s_data_size = 2482;
