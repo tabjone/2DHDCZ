@@ -1,0 +1,117 @@
+\documentclass{article}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{natbib}
+
+% Uncomment to use Times New Roman font
+% \usepackage{times}
+
+% Margins
+\usepackage[margin=1in]{geometry}
+
+% Header/Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Anelastic approximation draft}
+\rhead{\today}
+\cfoot{Page \thepage}
+
+\begin{document}
+
+\section{Anelastic approximation}
+
+IGNORE THAT EQUATIONS DO NOT HAVE LINKS OR PARENTHESES AROUND. BAD TEMPLATE.
+
+The anelastic approximation is motivated by Mixing-Length Theory (MLT), which is a model where we look at how energy is transported over a characteristic mixing length before being dissapated. This model gives us the dominant balance for the lowest order equations and the relative sizes of pertubations to the first order \citep{1999ApJS..121..247L}. The MLT model has been verified against fully-compressible simulations which appear to support it's validity \citep{1989ApJ...336.1022C}, but needs modification around the bottom and top of a convective layer \citep{1996ApJ...466..372C}. This is where the anelastic approximation comes in, which is a an extention of MLT which includes stratification. 
+
+In the anelastic approximation we separate the thermodynamical quantities upon a background reference state and an overlaying pertubation. The background state can then be set up with a non-trivial depth stratification without full compressibility, filtering out fast-moving sound waves \citep{1999ApJS..121..247L}. This has the effect of lowering the required time-resolution due to not having to consider the acoustic time scale. Instead we only have to consider the much lower dynamic time scale, which is determined by the flow velocity and Alfvén speed. 
+
+The background state can be time dependent \citep{1976ApJ...207..545T} or time independent. The problem with a time dependent background state is that the entropy gradient can be strongly superadiabatic in an upper thermal boundary layer, resulting a high Mach flow number, making this layer supersonically unstable \citep{1975JFM....68..695G}. It is therefore prefered that the entropy background is constant in time.
+
+% TODO: CHECK THIS
+(HERE: ADIABATIC PARAMETERS. PLASMA BETA. WHERE DOES THE ANELASTIC APPRXIMATION HOLD. EQUATION OF STATE (IDEAL GAS LAW WITH FIRST ORDER PERTUBATION?))
+
+We will now show a simple example of how to use pertubation theory on the hydrodynamical equations. Assume that we are in one dimension with a constant flow and that the continuity equation has no sinks or sources. This gives us that the flux of the mass density $\rho$ is $\rho u$, where $u$ is the fluid velocity, and we get that the continuity equation becomes
+
+\begin{equation*}
+    \frac{\partial\rho}{\partial t} = -u\partial_x\rho.
+\end{equation*}
+
+By applying a first order pertubation in the density, i.e. $\rho(x,t)=\rho_0 + \epsilon\rho_1(x,t)$, where $\rho_0$ is the unpertubed (background), $\epsilon$ is a small pertubation parameter and $\epsilon\rho_1$ is a small pertubation, we get the continuity equation on the form
+
+\begin{equation*}
+    \frac{\partial(\rho_0+\epsilon\rho_1)}{\partial t} = -u\partial_x(\rho_0+\epsilon\rho_1).
+\end{equation*}
+
+We set the background parameters as constant in time and therefore get that the zero-order term becomes
+\begin{equation*}
+    -u\partial_x\rho_0 = 0,
+\end{equation*}
+which, with a non-zero velocity this implies that
+\begin{equation*}
+    \partial_x\rho_0 = 0.
+\end{equation*}
+
+And for the first-order term we get
+\begin{equation*}
+    \frac{\partial(\epsilon\rho_1)}{\partial t} = -u\partial_x(\epsilon\rho_1).
+\end{equation*}
+
+The essence of pertubation theory is to analyse the first-order equation to see how a small pertubation in density will impact the system. The derivation of the full set of anelastic MHD equations can be found in \citep{1999ApJS..121..247L} and a simpler form of the equation in \citep{2021LRSP...18....5F}, which we will follow. Here we call the pertubed thermodynamic quantities for temperature $T_1$, density $\rho_1$, entropy $s_1$ and pressure $p_1$. And the background state temperature $T_0(z)$, density $\rho_0(z)$, entropy $s_0(z)$ and pressure $p_0(z)$, where $z$ is in the positive upward direction. We call the pertubed fluid velocity $\mathbf{v}$ and have no velocity in the background state. Then by assuming no viscous stress and no magnetic field we get that the full set of equations are
+
+\textit{Continuity equation}
+\begin{equation}\label{eq:continuity_full}
+    \nabla\cdot(\rho_0\mathbf{v})=0.
+\end{equation}
+
+\textit{Momentum equation}
+\begin{equation}\label{eq:momentum_full}
+    \rho_0\left[\frac{\partial\mathbf{v}}{\partial t}+(\mathbf{v}\cdot\nabla)\mathbf{v}\right]=-\nabla p_1 + \rho_1\mathbf{g}.
+\end{equation}
+
+\textit{Entropy equation}
+\begin{equation}\label{eq:entropy_full}
+    \rho_0 T_0 \left[\frac{\partial s_1}{\partial t} + (\mathbf{v}\cdot \nabla)(s_0+s_1) \right]
+    = \nabla\cdot(K\rho_0T_0\nabla s_1),
+\end{equation}
+where $K$ is the thermal diffusivity.
+
+% TODO: CHECK THIS
+(REMEMBER: EXPLAIN WHY WE HAVE THIS EQUATION OF STATE)
+
+\textit{Equation of state}
+\begin{equation}
+    \frac{\rho_1}{\rho_0} = \frac{p_1}{p_0} - \frac{T_1}{T_0}.
+\end{equation}
+
+\textit{First law of thermodynamics}
+\begin{equation}
+    \frac{s_1}{c_p} = \frac{T_1}{T_0} - \frac{\gamma-1}{\gamma}\frac{p_1}{p_0},
+\end{equation}
+where $c_p$ is the spesific heat under constant pressure and $\gamma$ is the adiabatic index. We will start by solving the equations with respect to the time derivatives. This gives us that the \textit{momentum equation} \ref{eq:momentum_full} becomes
+
+\begin{equation}\label{eq:momentum_wrt_t}
+    \frac{\partial\mathbf{v}}{\partial t} = -\frac{1}{\rho_0}\nabla p_1 + \frac{\rho_1}{\rho_0}\mathbf{g}.
+\end{equation}
+And the \textit{entropy equation} \ref{eq:entropy_full} becomes
+\begin{equation}\label{eq:entropy_wrt_t}
+    \frac{\partial s_1}{\partial t} = \frac{1}{\rho_0 T_0} \nabla\cdot(K\rho_0 T_0 \nabla s_1) - (\mathbf{v}\cdot\nabla)(s_0+s_1)
+\end{equation}
+
+We can now split these equations into different directions of two dimension (xz), where the x-direction is horizontal and z-direction is positive upward, and we let gravity act in the negative z-direction. We call $\mathbf{\hat{i}}$ the unit vector in the x-direction and $\mathbf{\hat{k}}$ the unit vector in the z-direction. Then the \textit{momentum equation} \ref{eq:momentum_wrt_t} gives us
+\begin{align*}
+    \mathbf{\hat{i}}&:\ \partial_t v_x = -\frac{1}{\rho_0}\partial_x p_1 - (v_x\partial_x + v_z\partial_z)v_x, \\
+    \mathbf{\hat{k}}&:\ \partial_t v_z = -\frac{1}{\rho_0}\partial_z p_1 - (v_x\partial_x + v_z\partial_z)v_z - \frac{\rho_1}{\rho_0}g(z).
+\end{align*}
+Doing the same with the \textit{entropy equation} \ref{eq:entropy_wrt_t} gives us
+\begin{equation*}
+    \partial_t s_1 = \frac{1}{\rho_0 T_0}\left[ \partial_x (K\rho_0T_0\partial_xs_1) + \partial_z (K\rho_0T_0\partial_z s_1)\right] - (v_x\partial_x+v_z\partial_z)(s_0+s_1).
+\end{equation*}
+
+
+
+
+\bibliographystyle{apalike}
+\bibliography{anelastic_approximation.bib}
+
+\end{document}
