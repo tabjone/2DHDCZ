@@ -1,8 +1,15 @@
+TODO notes in anelastic approximation
+Create folder for interpolation
+Create folder for exterpolation
+Create calculate_background_entropy in shared solar_s folder
+Remove entropy calculations from main_2D_hd
+
+
 <b>Code stuff to remember</b>
 
 Keep track of Mach number and make sure this is low. Also that the superadiabaticity parameter $\Delta\nabla$ is low (this is also related to the Mach number by eq (9) in Lantz).
 
-Create folder for solar s handling. Need interpolation.
+Keep track of "Alfvén Mach number" $M_A=v_{ar}/c_{sr}$. This needs to be comparable to the Mach number for the approximation to be valid. I.e magnetic energy should not greatly exceed kinetic energy (Lantz)
 
 Change "current" in time derivatives to something else. Also this probably has to be changed entirely to account for RK methods.
 
@@ -67,7 +74,4 @@ src
     thesis
 
         drafts
-
-            tex
-            
-            pdf
+            ... Keep everything on spesific topic in same folder
