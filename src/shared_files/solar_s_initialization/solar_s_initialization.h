@@ -9,6 +9,4 @@ void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *
 
 void read_and_interpolate_solar_s_data(double *r_over_R, double *c_s, double *rho, double *p, double *Gamma_1, double *T, int size);
 
-double interpolate_1D(double x0, double x1, double y0, double y1, double x);
-
 #endif // SOLAR_S_INITIALIZATION_SOLAR_S_INITIALIZATION_H_

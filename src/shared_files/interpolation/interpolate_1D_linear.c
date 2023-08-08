@@ -1,4 +1,4 @@
-double interpolate_1D(double x0, double x1, double y0, double y1, double x) 
+double interpolate_1D_linear(double x0, double x1, double y0, double y1, double x) 
 {
     /*
     Finds the value of y at x using linear interpolation on the interval [x0, x1] with corresponding values [y0, y1].

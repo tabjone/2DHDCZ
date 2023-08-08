@@ -1,4 +1,5 @@
 #include "solar_s_initialization.h"
+#include "../shared_files.h"
 
 void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *rho_solar_s, double *p_solar_s, double *Gamma_1_solar_s, double *T_solar_s, double *r_over_R_i, double *c_s_i, double *rho_i, double *p_i, double *Gamma_1_i, double *T_i, int solar_s_size)
 {
@@ -70,9 +71,9 @@ void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *
     double x0 = r_over_R_solar_s[i-1];
     double x1 = r_over_R_solar_s[i];
 
-    *c_s_i = interpolate_1D(x0, x1, c_s_solar_s[i-1], c_s_solar_s[i], *r_over_R_i);
-    *rho_i = interpolate_1D(x0, x1, rho_solar_s[i-1], rho_solar_s[i], *r_over_R_i);
-    *p_i = interpolate_1D(x0, x1, p_solar_s[i-1], p_solar_s[i], *r_over_R_i);
-    *Gamma_1_i = interpolate_1D(x0, x1, Gamma_1_solar_s[i-1], Gamma_1_solar_s[i], *r_over_R_i);
-    *T_i = interpolate_1D(x0, x1, T_solar_s[i-1], T_solar_s[i], *r_over_R_i);
+    *c_s_i = interpolate_1D_linear(x0, x1, c_s_solar_s[i-1], c_s_solar_s[i], *r_over_R_i);
+    *rho_i = interpolate_1D_linear(x0, x1, rho_solar_s[i-1], rho_solar_s[i], *r_over_R_i);
+    *p_i = interpolate_1D_linear(x0, x1, p_solar_s[i-1], p_solar_s[i], *r_over_R_i);
+    *Gamma_1_i = interpolate_1D_linear(x0, x1, Gamma_1_solar_s[i-1], Gamma_1_solar_s[i], *r_over_R_i);
+    *T_i = interpolate_1D_linear(x0, x1, T_solar_s[i-1], T_solar_s[i], *r_over_R_i);
 }
