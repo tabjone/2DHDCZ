@@ -4,8 +4,8 @@
 
 int main_hd_2D(int argc, char *argv[])
 {
-    // Adiabatic temperature gradient
-    double del_ad = 0.4f;
+    // Adiabatic temperature gradient, convective instablity when del_ad > del, should be when del_ad > 2/5
+    double del_ad = 0.4;
 
     // Fixed background thermodynamic variables
     double *r_over_R, *s0, *c_s, *p0, *T0, *rho0, *Gamma_1;
@@ -52,24 +52,25 @@ int main_hd_2D(int argc, char *argv[])
     allocate_1D_array(&H, nz);
 
     // Handle the end points using forward and backward difference
-    H[0] = - R_sun * (r_over_R[1] - r_over_R[0]) / (log(p0[1]) - log(p0[0]));
-    H[nz-1] = - R_sun * (r_over_R[nz-1] - r_over_R[nz-2]) / (log(p0[nz-1]) - log(p0[nz-2]));
+    H[0] = - R_sun * (r_over_R[1] - r_over_R[0]) * p0[0]/ (p0[1] - p0[0]);
+    H[nz-1] = - R_sun * (r_over_R[nz-1] - r_over_R[nz-2]) * p0[nz-1]/ (p0[nz-1] - p0[nz-2]);
 
     // Loop over the rest of the points using central difference
     for (int i = 1; i < nz-1; ++i) {
-        H[i] = - R_sun * (r_over_R[i+1] - r_over_R[i-1]) / (2*(log(p0[i+1]) - log(p0[i-1])));
+        H[i] = - R_sun * (r_over_R[i+1] - r_over_R[i-1]) * p0[i]/ (p0[i+1] - p0[i-1]);
     }
 
     // Then we calculate the superadiabacicity parameter
     allocate_1D_array(&superadiabacicity_parameter, nz);
 
+    // dlnP = dP/P, dlnT = dT/T
     // Handle the end points using forward and backward difference
-    superadiabacicity_parameter[0] = - del_ad + (log(T0[1]) - log(T0[0])) / (log(p0[1]) - log(p0[0]));
-    superadiabacicity_parameter[nz-1] = - del_ad + (log(T0[nz-1]) - log(T0[nz-2])) / (log(p0[nz-1]) - log(p0[nz-2]));
-
+    superadiabacicity_parameter[0] = - del_ad + p0[0]/T0[0] * (T0[1] - T0[0]) / (p0[1] - p0[0]);
+    superadiabacicity_parameter[nz-1] = - del_ad + p0[nz-1]/T0[nz-1] * (T0[nz-1] - T0[nz-2]) / (p0[nz-1] - p0[nz-2]);
+    
     // Loop over the rest of the points using central difference
     for (int i = 1; i < nz-1; ++i) {
-        superadiabacicity_parameter[i] = - del_ad + (log(T0[i+1]) - log(T0[i-1])) / (2*(log(p0[i+1]) - log(p0[i-1])));
+        superadiabacicity_parameter[i] = - del_ad + p0[i]/T0[i] * (T0[i+1] - T0[i-1]) / (p0[i+1] - p0[i-1]);
     }
 
     // Then we calculate the RHS of eq. (72) in Lantz & Fan (1999)
