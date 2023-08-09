@@ -1,15 +1,13 @@
 #include "hdf5.h"
 #include "../../../shared_files/shared_files.h"
 
-double rhs_dvx_dt_2D_hd(double **rho1, double **p1, double **vx, double **vz, double *rho0, double *g, int i, int j, double dx, double dz)
+double rhs_dvx_dt_2D_hd(double **p1, double **vx, double **vz, double *rho0, int i, int j, double dx, double dz)
 {
     /*
     Calculates the right hand side of the equation dvx/dt = ... for the 2D HD solver.
 
     Parameters
     ----------
-    rho1 : double**
-        Pointer to 2D density pertubation array
     p1 : double**
         Pointer to 2D pressure pertubation array
     vx : double**
