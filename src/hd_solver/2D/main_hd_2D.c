@@ -1,9 +1,14 @@
 #include "hdf5.h"
 #include "../../shared_files/shared_files.h"
+#include "./hd_2D_functions.h"
 #include <math.h>
 
 int main_hd_2D(int argc, char *argv[])
 {
+    // Testing time-step
+    one_time_step_2D_hd(10, 10);
+
+
     // Adiabatic temperature gradient, convective instablity when del_ad > del, should be when del_ad > 2/5
     double del_ad = 0.4;
 
@@ -122,6 +127,18 @@ int main_hd_2D(int argc, char *argv[])
     deallocate_1D_array(superadiabacicity_parameter);
     deallocate_1D_array(RHS_background_entropy);
 
+
+    double time_to_run = 10.0;
+    double dt = 0.1;
+    double t = 0.0;
+
+    while (t < time_to_run)
+    {
+        
+
+        // Fixed dt for now
+        t += dt;
+    }
 
     // Save background thermodynamic variables to file
     // ....
