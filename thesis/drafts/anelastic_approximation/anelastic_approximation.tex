@@ -57,7 +57,7 @@ And for the first-order term we get
     \frac{\partial(\epsilon\rho_1)}{\partial t} = -u\partial_x(\epsilon\rho_1).
 \end{equation*}
 
-The essence of pertubation theory is to analyse the first-order equation to see how a small pertubation in density will impact the system. The derivation of the full set of anelastic MHD equations can be found in \citep{1999ApJS..121..247L} and a simpler form of the equation in \citep{2021LRSP...18....5F}, which we will follow. Here we call the pertubed thermodynamic quantities for temperature $T_1$, density $\rho_1$, entropy $s_1$ and pressure $p_1$. And the background state temperature $T_0(z)$, density $\rho_0(z)$, entropy $s_0(z)$ and pressure $p_0(z)$, where $z$ is in the positive upward direction. We call the pertubed fluid velocity $\mathbf{v}$ and have no velocity in the background state. Then by assuming no viscous stress and no magnetic field we get that the full set of equations are
+The essence of pertubation theory is to analyse the first-order equation to see how a small pertubation in density will impact the system. The derivation of the full set of anelastic MHD equations can be found in \citep{1999ApJS..121..247L} and a simpler form of the equations in \citep{2021LRSP...18....5F}, which we will follow. Here we call the pertubed thermodynamic quantities for temperature $T_1$, density $\rho_1$, entropy $s_1$ and pressure $p_1$. And the background state temperature $T_0(z)$, density $\rho_0(z)$, entropy $s_0(z)$ and pressure $p_0(z)$, where $z$ is in the positive upward direction. We call the pertubed fluid velocity $\mathbf{v}$ and have no velocity in the background state. Then by assuming no viscous stress and no magnetic field we get that the full set of equations are
 
 \textit{Continuity equation}
 \begin{equation}\label{eq:continuity_full}
@@ -99,17 +99,26 @@ And the \textit{entropy equation} \ref{eq:entropy_full} becomes
 \end{equation}
 
 We can now split these equations into different directions of two dimension (xz), where the x-direction is horizontal and z-direction is positive upward, and we let gravity act in the negative z-direction. We call $\mathbf{\hat{i}}$ the unit vector in the x-direction and $\mathbf{\hat{k}}$ the unit vector in the z-direction. Then the \textit{momentum equation} \ref{eq:momentum_wrt_t} gives us
-\begin{align*}
+\begin{align}
     \mathbf{\hat{i}}&:\ \partial_t v_x = -\frac{1}{\rho_0}\partial_x p_1 - (v_x\partial_x + v_z\partial_z)v_x, \\
     \mathbf{\hat{k}}&:\ \partial_t v_z = -\frac{1}{\rho_0}\partial_z p_1 - (v_x\partial_x + v_z\partial_z)v_z - \frac{\rho_1}{\rho_0}g(z).
-\end{align*}
+\end{align}
 Doing the same with the \textit{entropy equation} \ref{eq:entropy_wrt_t} gives us
-\begin{equation*}
+\begin{equation}
     \partial_t s_1 = \frac{1}{\rho_0 T_0}\left[ \partial_x (K\rho_0T_0\partial_xs_1) + \partial_z (K\rho_0T_0\partial_z s_1)\right] - (v_x\partial_x+v_z\partial_z)(s_0+s_1).
-\end{equation*}
+\end{equation}
 
 
 
+
+%\subsection{Third step: Solving numerically, method}
+%1. Find $p_1$ trough one of the two given methods. Ok. Nå skjønner jeg hva du mener. De to måtene er 1) å løse elliptic equation og 2) å å uttrykke ρv som en curl av et vektorpotensiale (som er vanlig i spektrale koder). Vi kommer til å bruke metode 1.\\
+%2. Solve all d/dt eqs.\\
+%2. Put $s_1$ and $p_1$ into eq 7 to find $T_1$.\\
+%3. Put everything into eq. 6 to find $\rho_1$.
+
+%\subsection{Fourth step: Discretization, RK, Up/down, central}
+%Up/Down derivatives marked with ud subscript. Central marked with c. Discretize in time for first order and rk. Dette er enklere å ta in person. Jeg forstår tanken din, men det kortet svaret er nei. Enten kan man bruke høyere ordens ensidede deriverte (som i ast3310), eller så kan vi ekstrapolere verdier utenfor grensen. Jeg heller mot å foretrekke det første, men jeg skal dobbeltsjekke.
 
 \bibliographystyle{apalike}
 \bibliography{anelastic_approximation.bib}
