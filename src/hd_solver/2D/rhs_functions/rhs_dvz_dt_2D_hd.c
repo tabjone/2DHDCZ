@@ -1,4 +1,5 @@
-#include "../../../shared_files/shared_functions.h"
+#include "hdf5.h"
+#include "../../../shared_files/shared_files.h"
 
 double rhs_dvz_dt_2D_hd(double **rho1, double **p1, double **vx, double **vz, double *rho0, double *g, int i, int j, double dx, double dz)
 {
@@ -37,7 +38,7 @@ double rhs_dvz_dt_2D_hd(double **rho1, double **p1, double **vx, double **vz, do
     double first_term, second_term, third_term;
 
     // Force due to gas pressure potential, dp1/dz
-    first_term = - 1/rho0[i] * central_derivative_second_order(p1[i-1][j], p1[i+1][j], dz);
+    first_term = - 1/rho0[i] * central_first_derivative_second_order(p1[i-1][j], p1[i+1][j], dz);
 
     // Force due to advection (I think), vx*dvz/dx + vz*dvz/dz
     // Forward derivative for negative velocities, backward derivative for positive velocities
