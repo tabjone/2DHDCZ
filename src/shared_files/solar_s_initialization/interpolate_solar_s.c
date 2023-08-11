@@ -61,11 +61,7 @@ void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *
     while (r_over_R_solar_s[i] > *r_over_R_i) 
     {
         i++;
-    } 
-    /*
-    Adding 1 to i here will make sure we take the values around the target point, but might create trouble if the target point is the last point in the solar_s data. So we should have a function that checks if the i+1 value is out of bounds and if so, just use the i value.
-    */
-    i = i + 1;
+    }
 
     // Perform the interpolation
     double x0 = r_over_R_solar_s[i-1];
