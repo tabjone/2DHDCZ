@@ -1,7 +1,8 @@
 #include "hdf5.h"
 #include "../../../shared_files/shared_files.h"
+#include "../boundaries/boundary_functions_2D_hd.h"
 
-double rhs_dvz_dt_2D_hd(double **rho1, double **p1, double **vx, double **vz, double *rho0, double *g, int i, int j, double dx, double dz)
+double rhs_dvz_dt_2D_hd(double **rho1, double **p1, double **vx, double **vz, double *rho0, double *g, int i, int j, double dx, double dz, int nx)
 {
     /*
     Calculates the right hand side of the equation dvz/dt = ... for the 2D HD solver.

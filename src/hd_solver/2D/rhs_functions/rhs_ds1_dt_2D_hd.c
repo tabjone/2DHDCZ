@@ -1,7 +1,8 @@
 #include "hdf5.h"
 #include "../../../shared_files/shared_files.h"
+#include "../boundaries/boundary_functions_2D_hd.h"
 
-double rhs_ds1_dt_2D_hd(double **s1, double *grad_s0, double **vx, double **vz, double *T0, double *rho0, int i, int j, double dx, double dz)
+double rhs_ds1_dt_2D_hd(double **s1, double *grad_s0, double **vx, double **vz, double *T0, double *rho0, int i, int j, double dx, double dz, int nx)
 {
     /*
     Calculates the right hand side of the equation ds1/dt = ... for the 2D HD solver.
