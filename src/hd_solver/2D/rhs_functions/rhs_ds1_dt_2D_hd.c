@@ -1,7 +1,7 @@
 #include "hdf5.h"
 #include "../../../shared_files/shared_files.h"
 
-double rhs_ds1_dt_2D_hd(double **s1, double *s0, double **vx, double **vz, double *T0, double *rho0, int i, int j, double dx, double dz)
+double rhs_ds1_dt_2D_hd(double **s1, double *grad_s0, double **vx, double **vz, double *T0, double *rho0, int i, int j, double dx, double dz)
 {
     /*
     Calculates the right hand side of the equation ds1/dt = ... for the 2D HD solver.
@@ -37,7 +37,7 @@ double rhs_ds1_dt_2D_hd(double **s1, double *s0, double **vx, double **vz, doubl
 
     double bracket_term;
     double central_ds1_dz, central_T0_dz;
-    double upwind_ds1_dx, upwind_ds1_dz, upwind_ds0_dz;
+    double upwind_ds1_dx, upwind_ds1_dz;
 
     // Central derivatives in the bracket terms
     central_ds1_dz = central_first_derivative_second_order(s1[i-1][j], s1[i+1][j], dz);
@@ -57,12 +57,10 @@ double rhs_ds1_dt_2D_hd(double **s1, double *s0, double **vx, double **vz, doubl
     if (vz[i][j] >= 0)
     {
         upwind_ds1_dz = backward_first_derivative_first_order(s1[i][j], s1[i-1][j], dz);
-        upwind_ds0_dz = backward_first_derivative_first_order(s0[i], s0[i-1], dz);
     }
     else
     {
         upwind_ds1_dz = forward_first_derivative_first_order(s1[i][j], s1[i+1][j], dz);
-        upwind_ds0_dz = forward_first_derivative_first_order(s0[i], s0[i+1], dz);
     }
 
     bracket_term = T0[i]*central_second_derivative_second_order(s1[i][j], s1[i][j-1], s1[i][j+1], dx)
@@ -71,6 +69,6 @@ double rhs_ds1_dt_2D_hd(double **s1, double *s0, double **vx, double **vz, doubl
 
 
     return 1.866e6/(rho0[i] * T0[i]) * bracket_term - vx[i][j] * upwind_ds1_dx - vz[i][j] * upwind_ds1_dz
-           - vz[i][j] * upwind_ds0_dz;
+           - vz[i][j] * grad_s0[i];
 
 }
