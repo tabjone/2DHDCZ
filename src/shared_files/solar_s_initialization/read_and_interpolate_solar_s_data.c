@@ -20,7 +20,7 @@ void read_and_interpolate_solar_s_data(double *r_over_R, double *c_s, double *rh
     read_solar_s_data("../additional_files/solar_s.h5", r_over_R_solar_s, c_s_solar_s, rho_solar_s, p_solar_s, Gamma_1_solar_s, T_solar_s, solar_s_size);
 
     calculate_pressure_scale_height(r_over_R_solar_s, p_solar_s, H_solar_s, solar_s_size);
-    calculate_superadiabatic_parameter(p_solar_s, T_solar_s, superad_param_solar_s, del_ad, solar_s_size);
+    calculate_superadiabcicity_parameter(p_solar_s, T_solar_s, superad_param_solar_s, del_ad, solar_s_size);
     calculate_entropy_gradient(p_solar_s, rho_solar_s, T_solar_s, Gamma_1_solar_s, H_solar_s, superad_param_solar_s, grad_s_solar_s, solar_s_size);
 
     // Interpolate the solar_s data to the grid
