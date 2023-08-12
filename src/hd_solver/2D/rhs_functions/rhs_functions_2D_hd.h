@@ -1,6 +1,8 @@
 #ifndef RHS_FUNCTIONS_2D_HD_H
 #define RHS_FUNCTIONS_2D_HD_H
 
+#include "../boundaries/boundary_functions_2D_hd.h"
+
 double rhs_dvx_dt_2D_hd(double **p1, double **vx, double **vz, double *rho0, int i, int j, double dx, double dz);
 
 double rhs_dvz_dt_2D_hd(double **rho1, double **p1, double **vx, double **vz, double *rho0, double *g, int i, int j, double dx, double dz);

@@ -33,19 +33,23 @@ double rhs_dvx_dt_2D_hd(double **p1, double **vx, double **vz, double *rho0, int
     
     double first_term, second_term;
 
+    // Periodic boundary conditions
+    int j_minus = periodic_boundary(j-1, nx);
+    int j_plus = periodic_boundary(j+1, nx);
+
     // Force due to gas pressure potential, dp1/dx
-    first_term = - 1/rho0[i] * central_first_derivative_second_order(p1[i][j-1], p1[i][j+1], dx);
+    first_term = - 1/rho0[i] * central_first_derivative_second_order(p1[i][j_minus], p1[i][j_plus], dx);
     
     // Force due to advection (I think), vx*dvx/dx + vz*dvx/dz
     // Forward derivative for negative velocities, backward derivative for positive velocities
     second_term = 0.0;
     if (vx[i][j] >= 0.0)
     {
-        second_term -= vx[i][j]*backward_first_derivative_first_order(vx[i][j], vx[i][j-1], dx);
+        second_term -= vx[i][j]*backward_first_derivative_first_order(vx[i][j], vx[i][j_minus], dx);
     }
     else
     {
-        second_term -= vx[i][j]*forward_first_derivative_first_order(vx[i][j], vx[i][j+1], dx);
+        second_term -= vx[i][j]*forward_first_derivative_first_order(vx[i][j], vx[i][j_plus], dx);
     }
 
     if (vz[i][j] >= 0)
