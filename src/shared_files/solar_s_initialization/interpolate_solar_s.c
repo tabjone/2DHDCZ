@@ -1,7 +1,7 @@
 #include "solar_s_initialization.h"
 #include "../shared_files.h"
 
-void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *rho_solar_s, double *p_solar_s, double *Gamma_1_solar_s, double *T_solar_s, double *H_solar_s, double *superad_param_solar_s, double *grad_s0_solar_s, double *r_over_R_i, double *c_s_i, double *rho_i, double *p_i, double *Gamma_1_i, double *T_i, double *H_i, double *superad_param_i, double *grad_s0_i, int solar_s_size)
+void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *rho_solar_s, double *p_solar_s, double *Gamma_1_solar_s, double *T_solar_s, double *H_solar_s, double *superad_param_solar_s, double *grad_s0_solar_s, double *g_solar_s, double *r_over_R_i, double *c_s_i, double *rho_i, double *p_i, double *Gamma_1_i, double *T_i, double *H_i, double *superad_param_i, double *grad_s0_i, double *g_i, int solar_s_size)
 {
     /*
     Interpolates the solar_s data to the grid at a point i.
@@ -59,6 +59,7 @@ void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *
         *H_i = H_solar_s[0];
         *superad_param_i = superad_param_solar_s[0];
         *grad_s0_i = grad_s0_solar_s[0];
+        *g_i = g_solar_s[0];
         return;
     }
     else if (*r_over_R_i <= r_over_R_solar_s[solar_s_size - 1])
@@ -71,6 +72,7 @@ void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *
         *H_i = H_solar_s[solar_s_size - 1];
         *superad_param_i = superad_param_solar_s[solar_s_size - 1];
         *grad_s0_i = grad_s0_solar_s[solar_s_size - 1];
+        *g_i = g_solar_s[solar_s_size - 1];
         return;
     }
 
@@ -93,4 +95,5 @@ void interpolate_solar_s(double *r_over_R_solar_s, double *c_s_solar_s, double *
     *H_i = interpolate_1D_linear(x0, x1, H_solar_s[i-1], H_solar_s[i], *r_over_R_i);
     *superad_param_i = interpolate_1D_linear(x0, x1, superad_param_solar_s[i-1], superad_param_solar_s[i], *r_over_R_i);
     *grad_s0_i = interpolate_1D_linear(x0, x1, grad_s0_solar_s[i-1], grad_s0_solar_s[i], *r_over_R_i);
+    *g_i = interpolate_1D_linear(x0, x1, g_solar_s[i-1], g_solar_s[i], *r_over_R_i);
 }
