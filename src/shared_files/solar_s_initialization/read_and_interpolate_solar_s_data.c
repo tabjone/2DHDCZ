@@ -3,6 +3,35 @@
 
 void read_and_interpolate_solar_s_data(double *r_over_R, double *c_s, double *rho, double *p, double *Gamma_1, double *T, double *H, double *superad_param, double *grad_s, double del_ad, int size)
 {
+    /*
+    Reads the solar_s.h5 file and interpolates the data to the desired grid.
+
+    Parameters
+    ----------
+    r_over_R : double array
+        Pointer to radius array of background state
+    c_s : double array
+        Pointer to sound speed array of background state
+    rho : double array
+        Pointer to density array of background state
+    p : double array
+        Pointer to pressure array of background state
+    Gamma_1 : double array
+        Pointer to the adiabatic index array of background state
+    T : double array
+        Pointer to temperature array of background state
+    H : double array
+        Pointer to pressure scale height array of background state
+    superad_param : double array
+        Pointer to the superadiabaticity parameter array of background state
+    grad_s : double array
+        Pointer to the entropy gradient array of background state
+    del_ad : double
+        Adiabatic temperature gradient
+    size : int
+        Size of the background state arrays
+    */
+
     int solar_s_size = 2482;
     double *r_over_R_solar_s, *c_s_solar_s, *rho_solar_s, *p_solar_s, *Gamma_1_solar_s, *T_solar_s;
     double *H_solar_s, *superad_param_solar_s, *grad_s_solar_s;
