@@ -40,7 +40,9 @@ double rhs_dvz_dt_2D_hd(double **rho1, double **p1, double **vx, double **vz, do
 
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);
-    int j_plus = periodic_boundary(j+1, nx); 
+    int j_minus2 = periodic_boundary(j-2, nx);
+    int j_plus = periodic_boundary(j+1, nx);
+    int j_plus2 = periodic_boundary(j+2, nx);
 
     // Force due to gas pressure potential, dp1/dz
     first_term = - 1/rho0[i] * central_first_derivative_second_order(p1[i-1][j], p1[i+1][j], dz);
@@ -50,20 +52,20 @@ double rhs_dvz_dt_2D_hd(double **rho1, double **p1, double **vx, double **vz, do
     second_term = 0.0;
     if (vx[i][j] >= 0.0)
     {
-        second_term -= vx[i][j]*backward_first_derivative_first_order(vz[i][j], vz[i][j_minus], dx);
+        second_term -= vx[i][j]*backward_first_derivative_second_order(vz[i][j], vz[i][j_minus], vz[i][j_minus2], dx);
     }
     else
     {
-        second_term -= vx[i][j]*forward_first_derivative_first_order(vz[i][j], vz[i][j_plus], dx);
+        second_term -= vx[i][j]*forward_first_derivative_second_order(vz[i][j], vz[i][j_plus], vz[i][j_plus2], dx);
     }
 
     if (vz[i][j] >= 0)
     {
-        second_term -= vz[i][j]*backward_first_derivative_first_order(vz[i][j], vz[i-1][j], dz);
+        second_term -= vz[i][j]*backward_first_derivative_second_order(vz[i][j], vz[i-1][j], vz[i-2][j], dz);
     }
     else
     {
-        second_term -= vz[i][j]*forward_first_derivative_first_order(vz[i][j], vz[i+1][j], dz);
+        second_term -= vz[i][j]*forward_first_derivative_second_order(vz[i][j], vz[i+1][j], vz[i+2][j], dz);
     }
 
     // Force due to gravity

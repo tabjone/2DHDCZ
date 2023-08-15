@@ -42,7 +42,9 @@ double rhs_ds1_dt_2D_hd(double **s1, double *grad_s0, double **vx, double **vz, 
 
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);
+    int j_minus2 = periodic_boundary(j-2, nx);
     int j_plus = periodic_boundary(j+1, nx); 
+    int j_plus2 = periodic_boundary(j+2, nx);
 
     // Central derivatives in the bracket terms
     central_ds1_dz = central_first_derivative_second_order(s1[i-1][j], s1[i+1][j], dz);
@@ -52,20 +54,20 @@ double rhs_ds1_dt_2D_hd(double **s1, double *grad_s0, double **vx, double **vz, 
     // Forward derivative for negative velocities, backward derivative for positive velocities
     if (vx[i][j] >= 0)
     {
-        upwind_ds1_dx = backward_first_derivative_first_order(s1[i][j], s1[i][j_minus], dx);
+        upwind_ds1_dx = backward_first_derivative_second_order(s1[i][j], s1[i][j_minus], s1[i][j_minus2], dx);
     }
     else
     {
-        upwind_ds1_dx = forward_first_derivative_first_order(s1[i][j], s1[i][j_plus], dx);
+        upwind_ds1_dx = forward_first_derivative_second_order(s1[i][j], s1[i][j_plus], s1[i][j_plus2], dx);
     }
 
     if (vz[i][j] >= 0)
     {
-        upwind_ds1_dz = backward_first_derivative_first_order(s1[i][j], s1[i-1][j], dz);
+        upwind_ds1_dz = backward_first_derivative_second_order(s1[i][j], s1[i-1][j], s1[i-2][j], dz);
     }
     else
     {
-        upwind_ds1_dz = forward_first_derivative_first_order(s1[i][j], s1[i+1][j], dz);
+        upwind_ds1_dz = forward_first_derivative_second_order(s1[i][j], s1[i+1][j], s1[i+2][j], dz);
     }
 
     bracket_term = T0[i]*central_second_derivative_second_order(s1[i][j], s1[i][j_minus], s1[i][j_plus], dx)
