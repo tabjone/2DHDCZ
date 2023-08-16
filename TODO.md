@@ -1,9 +1,18 @@
-TODO notes in anelastic approximation
-Create folder for interpolation
-Create folder for exterpolation
-Create calculate_background_entropy in shared solar_s folder
-Remove entropy calculations from main_2D_hd
+TODO CODE:
 
+Check that g(z) is the same in C-program as in python. Also see if the way this is calculated is correct. Og regn heller ut M(r) og bruk denne til å regne ut g(r)
+
+Unit test derivative functions.
+
+Husk å endre delta z i rhs funksjoner. Den er jo ikke konstant.
+
+TODO PDFS:
+
+Redo pertubation theory to end in continuity equation from anelastic approximation. Write part on equation of state ect. Discretize equations. Upwind/downwind ect.
+
+
+
+TODO notes in anelastic approximation
 
 <b>Code stuff to remember</b>
 
@@ -14,64 +23,3 @@ Keep track of "Alfvén Mach number" $M_A=v_{ar}/c_{sr}$. This needs to be compar
 Change "current" in time derivatives to something else. Also this probably has to be changed entirely to account for RK methods.
 
 Fix potential out of bounds problem in interpolate_solar_s.c
-
-Structure from main repo:
-
-src
-
-    main.c
-
-    functions.h
-
-    hd_solver
-
-        ...
-
-    mhd_solver
-
-        ...
-
-    shared_files
-
-        array_memory_management
-
-            array_allocation/...
-
-            array_deallocation/...
-
-        derivatives
-
-            spacial_derivatives
-
-            time_derivatives (TBD)
-
-        snapshot_io_operations
-
-            snapshot_saving/...
-
-            snapshot_loading/...
-
-        solar_s_initialization
-
-            ... loading from solar_s, interpolating to spesific z-values
-
-    public
-
-        ... HTML,JS, Server (If time allows)
-
-    data
-
-        ... Folder with run_name/snap_names.h5
-
-    additional_files
-
-        ... Ex. .py File for creating .h5 from solar s downloaded data
-
-    visualisation
-
-        ... Python files for visualising/saving movies, (If time, link to visualise tab on webpage)
-
-    thesis
-
-        drafts
-            ... Keep everything on spesific topic in same folder
