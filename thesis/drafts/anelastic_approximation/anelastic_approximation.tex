@@ -37,7 +37,7 @@ We will now show a simple example of how to use pertubation theory on the hydrod
     \frac{\partial\rho}{\partial t} = -u\partial_x\rho.
 \end{equation*}
 
-By applying a first order pertubation in the density, i.e. $\rho(x,t)=\rho_0 + \epsilon\rho_1(x,t)$, where $\rho_0$ is the unpertubed (background), $\epsilon$ is a small pertubation parameter and $\epsilon\rho_1$ is a small pertubation, we get the continuity equation on the form
+By applying a first order pertubation in the density, i.e. $\rho(x,t)=\rho_0 + \epsilon\rho_1(x,t)$, where $\rho_0$ is the unpertubed (background) density, $\epsilon$ is a small pertubation parameter and $\epsilon\rho_1$ is a small pertubation, we get the continuity equation on the form
 
 \begin{equation*}
     \frac{\partial(\rho_0+\epsilon\rho_1)}{\partial t} = -u\partial_x(\rho_0+\epsilon\rho_1).
@@ -91,8 +91,10 @@ where $K$ is the thermal diffusivity.
 where $c_p$ is the spesific heat under constant pressure and $\gamma$ is the adiabatic index. We will start by solving the equations with respect to the time derivatives. This gives us that the \textit{momentum equation} \ref{eq:momentum_full} becomes
 
 \begin{equation}\label{eq:momentum_wrt_t}
-    \frac{\partial\mathbf{v}}{\partial t} = -\frac{1}{\rho_0}\nabla p_1 + \frac{\rho_1}{\rho_0}\mathbf{g}.
+    \frac{\partial\mathbf{v}}{\partial t} = -\frac{1}{\rho_0}\nabla p_1 - (\mathbf{v}\cdot\nabla)\mathbf{v} + \frac{\rho_1}{\rho_0}\mathbf{g},
 \end{equation}
+where $\mathbf{g}(z)$ is the graviational acceleration.
+
 And the \textit{entropy equation} \ref{eq:entropy_full} becomes
 \begin{equation}\label{eq:entropy_wrt_t}
     \frac{\partial s_1}{\partial t} = \frac{1}{\rho_0 T_0} \nabla\cdot(K\rho_0 T_0 \nabla s_1) - (\mathbf{v}\cdot\nabla)(s_0+s_1)
@@ -100,14 +102,82 @@ And the \textit{entropy equation} \ref{eq:entropy_full} becomes
 
 We can now split these equations into different directions of two dimension (xz), where the x-direction is horizontal and z-direction is positive upward, and we let gravity act in the negative z-direction. We call $\mathbf{\hat{i}}$ the unit vector in the x-direction and $\mathbf{\hat{k}}$ the unit vector in the z-direction. Then the \textit{momentum equation} \ref{eq:momentum_wrt_t} gives us
 \begin{align}
-    \mathbf{\hat{i}}&:\ \partial_t v_x = -\frac{1}{\rho_0}\partial_x p_1 - (v_x\partial_x + v_z\partial_z)v_x, \\
-    \mathbf{\hat{k}}&:\ \partial_t v_z = -\frac{1}{\rho_0}\partial_z p_1 - (v_x\partial_x + v_z\partial_z)v_z - \frac{\rho_1}{\rho_0}g(z).
+    \mathbf{\hat{i}}&:\ \partial_t v_x = -\frac{1}{\rho_0}\partial_x p_1 - (v_x\partial_x + v_z\partial_z)v_x, \label{eq:momentum_wrt_i}\\
+    \mathbf{\hat{k}}&:\ \partial_t v_z = -\frac{1}{\rho_0}\partial_z p_1 - (v_x\partial_x + v_z\partial_z)v_z - \frac{\rho_1}{\rho_0}g(z). \label{eq:momentum_wrt_k}
 \end{align}
 Doing the same with the \textit{entropy equation} \ref{eq:entropy_wrt_t} gives us
-\begin{equation}
+\begin{equation*}
     \partial_t s_1 = \frac{1}{\rho_0 T_0}\left[ \partial_x (K\rho_0T_0\partial_xs_1) + \partial_z (K\rho_0T_0\partial_z s_1)\right] - (v_x\partial_x+v_z\partial_z)(s_0+s_1).
+\end{equation*}
+
+Firstly we use that $K\rho_0=1.866\times10^6$, which is an approximation due to the fact that $c_p \nabla T_1$ and $T_0 \nabla s_1$ are fairly close as is used in \citep{1999ApJS..121..247L}. Secondly we have that $s_0$ and $T_0$ are variablees of $z$ only and can therefore re-write the equation as
+
+\begin{equation}
+    \partial_t s_1 = \frac{1.866\times10^6}{\rho_0 T_0}\left[ T_0\partial^2_x s_1 + T_0\partial_z^2s_1 +\partial_z s_1 \partial_z T_0 \right] - (v_x\partial_x+v_z\partial_z)s_1 - v_z\partial_z s_0.
 \end{equation}
 
+\section{Discretization}
+We start by discretizing space and time as
+\begin{align}
+    z_i &= z_0 + i\Delta z,\ i\in[0,N_z], \\ 
+    x_j &= x_0 + j\Delta x,\ j\in[0,N_x],\\ 
+    t_n &= t_0 + n\Delta t,\ n\in[0,N_t],
+\end{align}
+where $N_z$ is the number of grid points in the z-direction, $N_x$ is the number of grid points in the x-direction and $N_t$ is the number of time instants. For discretizing the background and pertubation variables we call $f$ a permutated variable and $f_0$ a background variable. The background variables will be constant in time and in the x-direction, and so will be discretized as
+\begin{equation}
+    f_{0,i}\equiv f_0(z_i).
+\end{equation}
+The permutations will be discretized as
+\begin{equation}
+    f_{i,j}^{n}\equiv f(z_i, x_i, t_n).
+\end{equation}
+
+For the derivatives we will use a forward-time (FT) scheme, meaning that
+\begin{equation}
+    \partial_t f(z,x,t) \rightarrow \frac{f_{i,j}^{n+1}-f_{i,j}^n}{\Delta t}.
+\end{equation}
+We will show the method of discretizing the x-direction derivatives here, but this will be identical for the z-direction. For the spacial derivatives we will mainly use the second order centered space scheme (CS)
+\begin{equation}
+    \partial_x f(z,x,t) \rightarrow \frac{f_{i+1,j}^n-f_{i-1,j}^n}{2\Delta x}.
+\end{equation}
+The exception to this is for equations on the form
+\begin{equation}
+    \partial_t f - u\partial_x f=0,
+\end{equation}
+where $u(z,x,t)$ is some flow and $f(z,x,t)$ is some function, as these require a forward/backward space scheme (FS/BS) for numerical stability. This will be handled using a forward/backward space scheme (FS/BS), in our case the second order downwind/upwind. Where we use downwind for $v_x \geq 0$ and upwind for $v_x<0$. The scheme is as follows
+\begin{equation}
+    \partial_x f(z,x,t) \rightarrow \left[\frac{\partial f}{\partial x} \right]_{i,j}^n= 
+    \begin{cases} 
+        \frac{3f_{i,j}^n-4f_{i,j-1}^n+f_{i,j-2}^n}{2\Delta x} & \text{if } v_x \geq 0 \\
+        \frac{-3f_{i,j}^n+4f_{i,j+1}^n-f_{i,j+2}^n}{2\Delta x} & \text{if } v_x < 0 
+    \end{cases}
+\end{equation}
+
+We can then re-write our equations using these schemes. Firstly we re-write the momentum equations \ref{eq:momentum_wrt_i}, \ref{eq:momentum_wrt_k} as
+
+\begin{align}
+    \mathbf{\hat{i}}&:\ \frac{v_{x,(i,j)}^{n+1}-v_{x,(i,j)}^{n}}{\Delta t} = -\frac{1}{\rho_{0,(i)}}\frac{p_{1,(i,j+1)}^n - p_{1,(i,j-1)}^n}{2\Delta x} - v_{x,(i,j)}^n \left[\frac{\partial v_{x}}{\partial x}\right]_{i,j}^n - v_{z,(i,j)}^n \left[\frac{\partial v_{x}}{\partial z}\right]_{i,j}^n, \\
+    \mathbf{\hat{k}}&:\ \frac{v_{z,(i,j)}^{n+1}-v_{z,(i,j)}^{n}}{\Delta t} = -\frac{1}{\rho_{0,(i)}}\frac{p_{1,(i,j+1)}^n - p_{1,(i,j-1)}^n}{2\Delta z} - v_{x,(i,j)}^n \left[\frac{\partial v_{z}}{\partial x}\right]_{i,j}^n - v_{z,(i,j)}^n \left[\frac{\partial v_{z}}{\partial z}\right]_{i,j}^n - \frac{\rho_{1,(i,j)}^n}{\rho_{0,(i)}}g(z_i).
+\end{align}
+
+
+......... entropy......
+
+
+\secion{Von Neumann stability analysis}
+Downwind is the $i+1, i+2$ thing. Upwind is the $i-1$ thing.
+
+
+Burgers equation with FTCS (second order space):
+
+Burgers equation with FTFS (second order space):
+\begin{equation}
+    \frac{u_{i,j}^{n+1}-u_{i,j}^n}{\Delta t} = -a \frac{}{}
+\end{equation}
+
+
+
+\section{Numerical solver}
 
 
 

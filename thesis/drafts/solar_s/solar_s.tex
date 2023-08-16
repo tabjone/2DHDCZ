@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{natbib}
+
+% Uncomment to use Times New Roman font
+% \usepackage{times}
+
+% Margins
+\usepackage[margin=1in]{geometry}
+
+% Header/Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Anelastic approximation draft}
+\rhead{\today}
+\cfoot{Page \thepage}
+
+\begin{document}
+
+\section{Solar S}
+
+The gravitational acceleration of an object is given by Newtons law of gravitation as
+
+\begin{equation}
+    g(r)=\frac{GM(r)}{r^2},
+\end{equation}
+where $M(r)$ is the enclosed mass, $G=G = 6.6743\cdot10^8\ [\text{cm}^3/\text{gs}^2]$ is the gravitational constant and $r$ is the distance from the centre of mass. We rename this as $r\rightarrow r R_*$, where $R_*$ is the radius of the sun since the solar S data is in $r/R_*$. Then the gravitational law is
+
+\begin{equation}
+    g(r)=\frac{GM(r)}{R_*^2r^2}.
+\end{equation}
+
+The enclosed mass is
+\begin{equation}
+    M(r) = \int_0^r dm = \int_0^r =4\pi R_*^3 \int_0^r \rho(r')dV=\int_0^r \rho(r')r'^2 dr'
+\end{equation}
+
+We discretize this and use the trapezoidal method of integration and get
+\begin{equation}
+    M(r_{i+1}) = 4\pi R_*^3 \frac{1}{2}(\rho_{0,(i+1)}r_{i+1}^2-\rho_{0,(i)}r_{i}^2)(r_{i+1}-r_i).
+\end{equation}
+
+Inserting this in the equation for gravitational acceleration gives
+
+\begin{equation}
+    g(r_{i+1})=\frac{4\pi R_* G}{r_{i+1}^2}\frac{1}{2}(\rho_{i+1} r_{i+1}^2-\rho_i r_i^2)(r_{i+1}-r_{i})
+\end{equation}
+
+\end{document}

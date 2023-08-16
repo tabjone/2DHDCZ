@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Run Simulation</title>
+    <script>
+    function run() {
+        var filename = document.getElementById('filename').value;
+        var time = document.getElementById('time').value;
+
+        fetch('http://localhost:8080/run', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'filename=' + encodeURIComponent(filename) + '&time=' + encodeURIComponent(time),
+        })
+        .then(response => response.text())
+        .then(data => document.getElementById('output').textContent = data)
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+    </script>
+</head>
+<body>
+    <label for="filename">File:</label><br>
+    <input type="text" id="filename" name="filename"><br>
+    <label for="time">Time:</label><br>
+    <input type="text" id="time" name="time"><br>
+    <button onclick="run()">Run</button>
+    <pre id="output"></pre>
+</body>
+</html>
