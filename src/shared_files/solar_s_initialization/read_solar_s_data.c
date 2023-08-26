@@ -1,6 +1,5 @@
 #include "hdf5.h"
 
-
 void read_solar_s_data(const char* filename, double* r_over_R, double* c_s, double* rho, double* p, double* Gamma_1, double* T, hsize_t size)
 {
     /*
