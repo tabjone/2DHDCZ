@@ -1,7 +1,7 @@
 #include "hdf5.h"
 
 
-void read_solar_s_data(const char* filename, double* r_over_R, double* c_s, double* rho, double* p, double* Gamma_1, double* T, hsize_t size) 
+void read_solar_s_data(const char* filename, double* r_over_R, double* c_s, double* rho, double* p, double* Gamma_1, double* T, hsize_t size)
 {
     /*
     Read the solar s data from a hdf5 file and store it in the arrays passed as arguments.
