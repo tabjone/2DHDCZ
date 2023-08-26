@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-void read_and_interpolate_solar_s_data(struct BackgroundVariables *bg)
+void solar_s_background_initialization(struct BackgroundVariables *bg)
 {
     float p = 0.1; // number for determining the step size
 
