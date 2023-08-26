@@ -1,10 +1,10 @@
-#ifndef hd_2D_functions_H__
-#define hd_2D_functions_H__
+#ifndef FUNCTIONS_H__
+#define FUNCTIONS_H__
 
 #include "./rhs_functions/rhs_functions_2D_hd.h"
 #include "./boundaries/boundary_functions_2D_hd.h"
+#include "./structs/structs.h"
 
-int main_hd_2D(int argc, char *argv[]);
-void one_time_step_2D_hd(double **s1, double **p1, double **rho1, double **T1, double **vx, double **vz, double *grad_s0, double *p0, double *rho0, double *T0, double *g, int nz, int nx, double dx, double dz);
+void one_time_step(struct BackgroundVariables *background_variables, struct ForegroundVariables *foreground_variables, int nz, int nx);
 
-#endif // hd_2D_functions_H__
+#endif // FUNCTIONS_H__

@@ -1,7 +1,13 @@
 #include "hdf5.h"
 #include "../../shared_files/shared_files.h"
-#include "./hd_2D_functions.h"
-#include <math.h>
+#include "./functions.h"
+#include "../../shared_files/solar_s_initialization/solar_s_initialization.h"
+//#include <math.h>
+#include "./structs/structs.h"
+
+
+// For printing
+#include <stdio.h>
 
 int main_hd_2D(int argc, char *argv[])
 {
@@ -9,14 +15,47 @@ int main_hd_2D(int argc, char *argv[])
     double del_ad = 0.4;
 
     // Fixed background thermodynamic variables
-    double *r_over_R, *c_s, *p0, *T0, *rho0, *Gamma_1, *H, *superad_param, *grad_s0, *g;
+    //double *r_over_R, *c_s, *p0, *T0, *rho0, *Gamma_1, *H, *superad_param, *grad_s0, *g;
 
     // Foreground thermodynamic variables
-    double **s1, **rho1, **p1, **T1, **vx, **vz;
+    //double **s1, **rho1, **p1, **T1, **vx, **vz;
 
     int nz = 200; // Number of grid points in z-direction
     int nx = 100; // Number of grid points in x-direction
 
+    //printf("Hello world!\n");
+
+    struct BackgroundVariables background_variables;
+    struct ForegroundVariables foreground_variables;
+
+    solar_s_background_initialization(&background_variables);
+
+    // Saving data to file
+    hid_t file_id;
+    herr_t status;
+    hsize_t dims[1];
+    dims[0] = background_variables.nz;
+    file_id = H5Fcreate("../data/solar_s_background_3.h5", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    create_and_write_dataset_1D(file_id, "r", dims, background_variables.r);
+    create_and_write_dataset_1D(file_id, "T0", dims, background_variables.T0);
+    create_and_write_dataset_1D(file_id, "rho0", dims, background_variables.rho0);
+    create_and_write_dataset_1D(file_id, "p0", dims, background_variables.p0);
+    create_and_write_dataset_1D(file_id, "g", dims, background_variables.g);
+    status = H5Fclose(file_id);
+
+    deallocate_background_struct(&background_variables);
+
+    /*
+    allocate_background_struct(nz, &background_variables);
+    allocate_foreground_struct(nz, nx, &foreground_variables);
+
+    one_time_step(&background_variables, &foreground_variables, nz, nx);
+
+    deallocate_background_struct(&background_variables);
+    deallocate_foreground_struct(&foreground_variables);
+    */
+
+    /*
     // Allocating memory for 1D arrays
     allocate_1D_array(&r_over_R, nz);
     allocate_1D_array(&T0, nz);
@@ -107,6 +146,6 @@ int main_hd_2D(int argc, char *argv[])
     deallocate_2D_array(T1);
     deallocate_2D_array(vx);
     deallocate_2D_array(vz);
-
+    */
     return 0;
 }
