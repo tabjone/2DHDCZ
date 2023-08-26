@@ -194,6 +194,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     }
 
     allocate_background_struct(i+j, bg);
+    bg->nz = i+j;
     
     for (int jj = j; jj > 0; jj--)
     {
@@ -201,24 +202,17 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         bg->p0[j-jj] = p_down[jj];
         bg->T0[j-jj] = T_down[jj];
         bg->rho0[j-jj] = rho_down[jj];
+        bg->g[j-jj] = -G * m_down[jj] / pow(r_down[jj],2);
     }
 
-    printf("i: %d\n", i);
     for (int ii = j; ii < i+j; ii++)
     {
         bg->r[ii] = r_up[ii-j];
         bg->p0[ii] = p_up[ii-j];
         bg->T0[ii] = T_up[ii-j];
         bg->rho0[ii] = rho_up[ii-j];
+        bg->g[ii] = -G * m_up[ii-j] / pow(r_up[ii-j],2);
     }
-
-    bg->nz = i+j;
-
-    
-
-
-
-
 
     free(r_up);
     free(p_up);
