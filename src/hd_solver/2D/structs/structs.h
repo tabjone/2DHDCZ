@@ -3,7 +3,7 @@
 
 struct BackgroundVariables
 {
-    double *r_over_R;
+    double *r;
     double *c_s;
     double *p0;
     double *T0;
@@ -13,6 +13,7 @@ struct BackgroundVariables
     double *superad_param;
     double *grad_s0;
     double *g;
+    int nz;
 };
 
 struct ForegroundVariables
@@ -23,6 +24,8 @@ struct ForegroundVariables
     double **s1;
     double **vx;
     double **vz;
+    int nz;
+    int nx;
 };
 
 void allocate_background_struct(int nz, struct BackgroundVariables *background_variables);
