@@ -66,6 +66,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     double *m_up = malloc(sizeof(double)*N);
     double *T_up = malloc(sizeof(double)*N);
     double *rho_up = malloc(sizeof(double)*N);
+    double *s_up = malloc(sizeof(double)*N);
 
     // Creating arrays for downward integration from bottom of CZ
     double *r_down = malloc(sizeof(double)*N);
@@ -73,6 +74,10 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     double *m_down = malloc(sizeof(double)*N);
     double *T_down = malloc(sizeof(double)*N);
     double *rho_down = malloc(sizeof(double)*N);
+    double *s_down = malloc(sizeof(double)*N);
+
+    // Setting the specific heat capacity at constant pressure
+    double c_p = p0_i /((rho0_i * T0_i)*(1.0-1.0/GAMMA));
 
     // Setting the first element of the arrays to the values at the start of CZ
     r_up[0] = r_i;
@@ -80,16 +85,18 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     m_up[0] = m_i;
     T_up[0] = T0_i;
     rho_up[0] = rho0_i;
+    s_up[0] = c_p;
 
     r_down[0] = r_i;
     p_down[0] = p0_i;
     m_down[0] = m_i;
     T_down[0] = T0_i;
     rho_down[0] = rho0_i;
+    s_down[0] = c_p;
 
     // Integration variables
-    double dr1, dr2, dr3;
-    double dm_dr, dp_dr, dT_dr;
+    double dr1, dr2, dr3, dr4;
+    double dm_dr, dp_dr, dT_dr, ds_dr;
     double nabla_star;
 
     double k;
@@ -112,6 +119,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         dm_dr = 4 * M_PI * pow(r_up[i],2) *rho_up[i];
         dp_dr = - G * m_up[i] /pow(r_up[i],2) * rho_up[i];
         dT_dr = nabla_star * T_up[i]/p_up[i] * dp_dr;
+        ds_dr = c_p/p_up[i] * dp_dr * (nabla_star-NABLA_AD);
 
         if (i % N == 0 && i != 0)
         {
@@ -120,24 +128,29 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
             m_up = realloc(m_up, sizeof(double)*(i*N));
             T_up = realloc(T_up, sizeof(double)*(i*N));
             rho_up = realloc(rho_up, sizeof(double)*(i*N));
+            s_up = realloc(s_up, sizeof(double)*(i*N));
         }
 
         dr1 = fabs(p * m_up[i]/dm_dr);
         dr2 = fabs(p * p_up[i]/dp_dr);
         dr3 = fabs(p * T_up[i]/dT_dr);
+        dr4 = fabs(p * s_up[i]/ds_dr);
 
-        if (dr1 < dr2 && dr1 < dr3) {
+        if (dr1 < dr2 && dr1 < dr3 && dr1 < dr4) {
             dr = dr1;
-        } else if (dr2 < dr1 && dr2 < dr3) {
+        } else if (dr2 < dr1 && dr2 < dr3 && dr2 < dr4) {
             dr = dr2;
-        } else {
+        } else if (dr3 < dr1 && dr3 < dr2 && dr3 < dr4) {
             dr = dr3;
+        } else {
+            dr = dr4;
         }
 
         r_up[i+1] = r_up[i] + dr;
         m_up[i+1] = m_up[i] + dm_dr * dr;
         p_up[i+1] = p_up[i] + dp_dr * dr;
         T_up[i+1] = T_up[i] + dT_dr * dr;
+        s_up[i+1] = s_up[i] + ds_dr * dr;
         rho_up[i+1] = M_U * MU / K_B * p_up[i+1]/T_up[i+1]; //ideal gas law
          
         i++;
@@ -162,6 +175,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         dm_dr = 4 * M_PI * pow(r_down[j],2) *rho_down[j];
         dp_dr = - G * m_down[j] /pow(r_down[j],2) * rho_down[j];
         dT_dr = nabla_star * T_down[j]/p_down[j] * dp_dr;
+        ds_dr = c_p/p_down[j] * dp_dr * (nabla_star- NABLA_AD);
 
         if (j % N == 0 && j != 0)
         {
@@ -170,37 +184,44 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
             m_down = realloc(m_down, sizeof(double)*(j*N));
             T_down = realloc(T_down, sizeof(double)*(j*N));
             rho_down = realloc(rho_down, sizeof(double)*(j*N));
+            s_down = realloc(s_down, sizeof(double)*(j*N));
         }
 
         dr1 = fabs(p * m_down[j]/dm_dr);
         dr2 = fabs(p * p_down[j]/dp_dr);
         dr3 = fabs(p * T_down[j]/dT_dr);
+        dr4 = fabs(p * s_down[j]/ds_dr);
 
-        if (dr1 < dr2 && dr1 < dr3) {
+        if (dr1 < dr2 && dr1 < dr3 && dr1 < dr4) {
             dr = -dr1;
-        } else if (dr2 < dr1 && dr2 < dr3) {
+        } else if (dr2 < dr1 && dr2 < dr3 && dr2 < dr4) {
             dr = -dr2;
-        } else {
+        } else if (dr3 < dr1 && dr3 < dr2 && dr3 < dr4) {
             dr = -dr3;
+        } else {
+            dr = -dr4;
         }
 
         r_down[j+1] = r_down[j] + dr;
         m_down[j+1] = m_down[j] + dm_dr * dr;
         p_down[j+1] = p_down[j] + dp_dr * dr;
         T_down[j+1] = T_down[j] + dT_dr * dr;
+        s_down[j+1] = s_down[j] + ds_dr * dr;
         rho_down[j+1] = M_U * MU / K_B * p_down[j+1]/T_down[j+1]; //ideal gas law
          
         j++;
     }
 
+    //allocating memory for background struct
     allocate_background_struct(i+j, bg);
     bg->nz = i+j;
-    
+
     for (int jj = j; jj > 0; jj--)
     {
         bg->r[j-jj] = r_down[jj];
         bg->p0[j-jj] = p_down[jj];
         bg->T0[j-jj] = T_down[jj];
+        bg->s0[j-jj] = s_down[jj];
         bg->rho0[j-jj] = rho_down[jj];
         bg->g[j-jj] = -G * m_down[jj] / pow(r_down[jj],2);
     }
@@ -210,6 +231,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         bg->r[ii] = r_up[ii-j];
         bg->p0[ii] = p_up[ii-j];
         bg->T0[ii] = T_up[ii-j];
+        bg->s0[ii] = s_up[ii-j];
         bg->rho0[ii] = rho_up[ii-j];
         bg->g[ii] = -G * m_up[ii-j] / pow(r_up[ii-j],2);
     }
@@ -218,12 +240,14 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     free(p_up);
     free(m_up);
     free(T_up);
+    free(s_up);
     free(rho_up);
 
     free(r_down);
     free(p_down);
     free(m_down);
     free(T_down);
+    free(s_down);
     free(rho_down);
 
     
@@ -250,11 +274,4 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     //calculate_superadiabcicity_parameter(p_solar_s, T_solar_s, superad_param_solar_s, del_ad, solar_s_size);
     //calculate_entropy_gradient(p_solar_s, rho_solar_s, T_solar_s, Gamma_1_solar_s, H_solar_s, superad_param_solar_s, grad_s_solar_s, solar_s_size);
     //calculate_gravitational_acceleration(r_over_R_solar_s, rho_solar_s, g_solar_s, solar_s_size);
-
-
-
-   //deallocate_1D_array(H_solar_s);
-    //deallocate_1D_array(superad_param_solar_s);
-    //deallocate_1D_array(grad_s_solar_s);
-    //deallocate_1D_array(g_solar_s);
 }
