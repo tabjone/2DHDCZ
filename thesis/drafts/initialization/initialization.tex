@@ -1,0 +1,114 @@
+\documentclass{article}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{natbib}
+
+% Uncomment to use Times New Roman font
+% \usepackage{times}
+
+% Margins
+\usepackage[margin=1in]{geometry}
+
+% Header/Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Anelastic approximation draft}
+\rhead{\today}
+\cfoot{Page \thepage}
+
+\begin{document}
+
+\section{Initialization of background fields}
+To initialize the background fields we will start by picking some reference values from the standard solar model, solar S \citep{1996Sci...272.1286C}. These are chosen to be at the bottom of the convection zone, at a radius  $r_r=0.7R_{\odot}$. These are downloaded from \href{https://users-phys.au.dk/~jcd/solar_models/cptrho.l5bi.d.15c}{https://users-phys.au.dk/~jcd/solar_models/cptrho.l5bi.d.15c} at 31.08.2023. First we calculate the mass at $r_r$ by
+\begin{equation}
+    m(r_r)=\int_0^{r_r} dm = 4\pi \int_0^{r_r} \rho(r')r'^2 dr',
+\end{equation}
+using cumulative trapezoidal integration. We extract the temperature $T(r_r)$, density $\rho(r_r)$ and pressure $p(r_r)$, and calculate the entropy $s(r_r)=c_p$, where the spesific heat at constant pressure
+
+\begin{equation*}
+    c_p = r_*/(1-1/\gamma),
+\end{equation*}
+
+$r_*=p/(\rho T)$ is the ideal gas constant normalized by the average mass per particle, and $\gamma$ is the adiabatic parameter. We can then use these reference values to integrate outward and inward, assuming the background is hydrostatic and composed of an ideal gas. The first-order entropy gradient 
+
+\begin{equation*}
+    \frac{ds}{dr} = -\frac{c_p}{H} \Delta\nabla,
+\end{equation*}
+where $\Delta\nabla$ is the superadiabaticity parameter and
+
+\begin{equation*}
+    H = - \frac{dz}{d\ln p} = - p\frac{dz}{dp}
+\end{equation*}
+is the pressure scale height \citep{1999ApJS..121..247L}. This gives us that the governing equations for the background fields are
+\begin{align}
+    \frac{\partial m}{\partial r} &= 4\pi r^2\rho(r), \label{eq:dm_dr}\\
+    \frac{\partial p}{\partial r} &= -\frac{G m(r)}{r^2}\rho(r), \label{eq:dp_dr}\\
+    \frac{\partial T}{\partial r} &= \nabla_{*} \frac{T}{p}\frac{\partial p}{\partial r}, \label{eq:dT_dr}\\
+    \frac{ds}{dr} &=\frac{c_p}{p}\frac{dp}{dr}\Delta\nabla, \label{eq:ds_dr}
+\end{align}
+
+where $G$ is the universal gravitational constant. These equations, in order, are the mass of a shell with thickness $dr$, the hydrostatic equilibrium condition, the ????????? and the first-order entropy gradient.
+
+For convective instability we require that the superadiabaticity parameter 
+\begin{equation*}
+    \Delta\nabla = \left(\frac{\partial\ln T}{\partial\ln p} \right)_{*} - \left(\frac{\partial\ln T}{\partial\ln p} \right)_{ad} = \nabla_{*} -\nabla_{ad} > 0,
+\end{equation*}
+
+where $\nabla_{*}$ is the adiabatic temperature gradient of the star and $\nabla_{ad}=0.4$ is the adiabatic temperature gradient for an ideal gas. We therefore set 
+
+\begin{equation*}
+    \nabla_{*} -\nabla_{ad} = k > 0,
+\end{equation*}
+where $k$ is constant, above $r=0.7 R_{\odot}$ and
+
+\begin{equation*}
+    \nabla_{*} = \nabla_{ad},
+\end{equation*}
+
+for $r<0.7 R_{\odot}$. Using this we can integrate \label{eq:dm_dr}, \label{eq:dp_dr}, \label{eq:dT_dr} and \label{eq:ds_dr} up to a point $r_e$ and down to a point $r_b$, where we also calculate the gravitational acceleration by newtons law of gravity
+
+\begin{equation}
+    g(r) = - \frac{Gm(r)}{r^2}
+\end{equation}
+for updating the momentum in each timestep. 
+
+For stability we will use a variable steplength when integrating the background fields. For all the variables $V$ we have that
+\begin{align*}
+    dV &= fdr,\\
+    V_{i+1} &= V_i + dV,
+\end{align*}
+where $f$ is some function updating the variable. We can then require that
+\begin{equation*}
+    \frac{|dV|}{V} < p,
+\end{equation*}
+
+where $p<1$ is constant. Then
+\begin{equation*}
+    dr = \frac{pV}{f}.
+\end{equation*}
+
+To update the density we will use assume ideal gas and get the equation of state
+\begin{equation*}
+    pV = Nk_B T,
+\end{equation*}
+where $V$ is the volume of the gas, $N$ is the total number of particles and $k_B$ is the boltzmanns constant. The total number of particles can be written as
+\begin{equation*}
+    N=\frac{m}{\mu m_u},
+\end{equation*}
+where $\mu$ is the average atomic weight and $m_u$ is the atomic mass unit. Using this and $V=m/\rho$ we get the \textbf{equation of state}
+\begin{equation}\label{eq:eos}
+    \rho = \frac{p}{T}\frac{m_u \mu}{k_B}.
+\end{equation}
+We set the average atomic weight to $0.6$ to.....
+
+
+......
+......
+......
+
+
+
+\bibliographystyle{apalike}
+\bibliography{initialization.bib}
+
+\end{document}
