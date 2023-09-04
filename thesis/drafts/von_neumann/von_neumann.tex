@@ -1,6 +1,9 @@
 \documentclass{article}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage{natbib}
+\usepackage{tabularx}
+\usepackage{graphicx} % Required for including images
+
 
 % Uncomment to use Times New Roman font
 % \usepackage{times}
@@ -25,7 +28,7 @@ We will analyse the advection equation to determine the required step-sizes for 
 \begin{equation}
     \frac{\partial u(t,x)}{\partial t} = -a \frac{\partial u(t,x)}{\partial x},
 \end{equation}
-where $u(t,x)$ is the analytical solution to the equation and $a$ is a constant. This is discretized over a grid such that $y(t_n,x_j)=y_{n,j}$, where $t_n = n\Delta t$ and $x_j = j\Delta x$ for $n,j\in\mathbb{N}$, is our numerical solution. Then the advection equation becomes
+where $u(t,x)$ is the exact solution and $a$ is constant. This is discretized over a grid such that $y(t_n,x_j)=y_{n,j}$, where $t_n = n\Delta t$ and $x_j = j\Delta x$ for $n,j\in\mathbb{N}$, is our numerical solution. Then the advection equation becomes
 
 \begin{equation}
     \left[\frac{\partial y}{\partial t}\right]_{n,j} = -a \left[\frac{\partial y}{\partial x}\right]_{n,j}.
@@ -47,7 +50,7 @@ We expand the round-off error as a fourier series
     \epsilon(t_n,x_j) = \sum_m E_m(t_n) e^{i k_m j\Delta x},
 \end{equation}
 
-where $k_m$ is the wavenumber and $E_(t_n)$ is the time-dependent amplitude of the error. When inserting this into our differential equation we get a linear difference equation, meaning that each of the terms behave like the entire series so we can consider the growth of only one term.
+where $k_m$ is the wavenumber and $E_(t_n)$ is the time-dependent amplitude of the error. When inserting this into our differential equation we get a linear difference equation, meaning that each of the terms behave like the entire series so we can consider the growth of only one term
 
 \begin{equation}
     \epsilon_m(t_n,x_j) = E_m(t_n) e^{i k_m j\Delta x}.
@@ -98,15 +101,53 @@ This gives us the amplification factor
     g = \frac{E_{n+1}}{E_n} = \left( 1 + \mu + \frac{1}{2}\mu^2  \right).
 \end{equation}
 
-We require $|g|\leq 1$, meaning that the time-dependent error does not grow in time. If this is any bigger than $1$ the error will grow exponentially, meaning our numerical solution will not be stable.
+We require $|g|\leq 1$, meaning that the time-dependent error does not grow in time. If this is any bigger than $1$ the error will grow exponentially, giving an unstable numerical solution. Following the same steps for some other schemes we get the following equations for spacial schemes:
 
-.... Table for all schemes used ....
+\begin{align*}
+    \text{First order upwind} &: \mu=-C\left(1-e^{-i\beta}\right),\\
+    \text{Second order upwind} &: \mu=-\frac{C}{2}\left(3-4e^{-i\beta}+e^{-2i\beta}\right),\\
+    \text{Second order central} &: \mu = -\frac{C}{2}\left(e^{i\beta} - e^{-i\beta}\right),\\
+    \text{Fourth order central} &: \mu = - \frac{C}{12}\left(-e^{2i\beta}+8e^{i\beta}-8e^{-i\beta}+e^{-2i\beta}\right).
+\end{align*}
 
+And for the temporal schemes:
 
-.... Images of analysis from jupyter file ....
+\begin{align*}
+    \text{First order RK} &: g = 1+\mu,\\
+    \text{Second order RK} &: g = 1+\mu + \frac{1}{2}\mu^2,\\
+    \text{Third order RK} &: g = 1+\mu + \frac{1}{2}\mu^2+\frac{1}{6}\mu^3,\\
+    \text{Fourth order RK} &: g = 1+\mu + \frac{1}{2}\mu^2+\frac{1}{6}\mu^3+\frac{1}{24}\mu^4.
+\end{align*}
 
+In figures \ref{fig:vn_rk1}, \ref{fig:vn_rk2}, \ref{fig:vn_rk3} and \ref{fig:vn_rk4} we see the amplification factor for different $C$ and $\beta$. Using the periodicity of the error we can set $k=1$ and pick $\Delta x$ and $\Delta t$ depending on the magnitude of $a$.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{./vn_rk1.pdf} % Adjust the width as necessary
+    \caption{Amplification factor magnitude for the first-order Runge Kutta scheme.}
+    \label{fig:vn_rk1} % For referencing the figure elsewhere in your document
+\end{figure}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{./vn_rk2.pdf} % Adjust the width as necessary
+    \caption{Amplification factor magnitude for the second-order Runge Kutta scheme.}
+    \label{fig:vn_rk2} % For referencing the figure elsewhere in your document
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{./vn_rk3.pdf} % Adjust the width as necessary
+    \caption{Amplification factor magnitude for the third-order Runge Kutta scheme.}
+    \label{fig:vn_rk3} % For referencing the figure elsewhere in your document
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{./vn_rk4.pdf} % Adjust the width as necessary
+    \caption{Amplification factor magnitude for the fourth-order Runge Kutta scheme.}
+    \label{fig:vn_rk4} % For referencing the figure elsewhere in your document
+\end{figure}
 
 
 
