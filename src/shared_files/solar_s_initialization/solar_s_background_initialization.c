@@ -2,7 +2,7 @@
 #include "../array_memory_management/array_memory_management.h"
 #include "../..//global_parameters.h"
 #include "../../global_constants.h"
-#include "../../hd_solver/2D/structs/structs.h"
+#include "../structs/structs.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -13,17 +13,15 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
 
     // Creating arrays for solar_s data
     int solar_s_size = 2482;
-    double *r_over_R_solar_s, *c_s_solar_s, *rho_solar_s, *p_solar_s, *Gamma_1_solar_s, *T_solar_s;
+    double *r_over_R_solar_s, *rho_solar_s, *p_solar_s, *T_solar_s;
 
     allocate_1D_array(&r_over_R_solar_s, solar_s_size);
-    allocate_1D_array(&c_s_solar_s, solar_s_size);
     allocate_1D_array(&rho_solar_s, solar_s_size);
     allocate_1D_array(&p_solar_s, solar_s_size);
-    allocate_1D_array(&Gamma_1_solar_s, solar_s_size);
     allocate_1D_array(&T_solar_s, solar_s_size);
 
     // Reading solar_s data
-    read_solar_s_data("../additional_files/solar_s.h5", r_over_R_solar_s, c_s_solar_s, rho_solar_s, p_solar_s, Gamma_1_solar_s, T_solar_s, solar_s_size);
+    read_solar_s_data("../additional_files/solar_s.h5", r_over_R_solar_s, rho_solar_s, p_solar_s, T_solar_s, solar_s_size);
 
     // Setting CZ start at 0.7 solar radii and finding the closest radius to that in the solar_s data
     int cz_start_index = 0;
@@ -50,10 +48,8 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
 
     // Deallocating solar_s arrays
     deallocate_1D_array(r_over_R_solar_s);
-    deallocate_1D_array(c_s_solar_s);
     deallocate_1D_array(rho_solar_s);
     deallocate_1D_array(p_solar_s);
-    deallocate_1D_array(Gamma_1_solar_s);
     deallocate_1D_array(T_solar_s);
 
     // Now starting integration
@@ -67,6 +63,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     double *T_up = malloc(sizeof(double)*N);
     double *rho_up = malloc(sizeof(double)*N);
     double *s_up = malloc(sizeof(double)*N);
+    double *grad_s0_up = malloc(sizeof(double)*N);
 
     // Creating arrays for downward integration from bottom of CZ
     double *r_down = malloc(sizeof(double)*N);
@@ -75,6 +72,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     double *T_down = malloc(sizeof(double)*N);
     double *rho_down = malloc(sizeof(double)*N);
     double *s_down = malloc(sizeof(double)*N);
+    double *grad_s0_down = malloc(sizeof(double)*N);
 
     // Setting the specific heat capacity at constant pressure
     double c_p = p0_i /((rho0_i * T0_i)*(1.0-1.0/GAMMA));
@@ -119,7 +117,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         dm_dr = 4 * M_PI * pow(r_up[i],2) *rho_up[i];
         dp_dr = - G * m_up[i] /pow(r_up[i],2) * rho_up[i];
         dT_dr = nabla_star * T_up[i]/p_up[i] * dp_dr;
-        ds_dr = c_p/p_up[i] * dp_dr * (nabla_star-NABLA_AD);
+        ds_dr = (nabla_star-NABLA_AD) / (rho_up[i] * T_up[i]) * dp_dr;
 
         if (i % N == 0 && i != 0)
         {
@@ -129,6 +127,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
             T_up = realloc(T_up, sizeof(double)*(i*N));
             rho_up = realloc(rho_up, sizeof(double)*(i*N));
             s_up = realloc(s_up, sizeof(double)*(i*N));
+            grad_s0_up = realloc(grad_s0_up, sizeof(double)*(i*N));
         }
 
         dr1 = fabs(p * m_up[i]/dm_dr);
@@ -145,6 +144,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         } else {
             dr = dr4;
         }
+        grad_s0_up[i] = ds_dr;
 
         r_up[i+1] = r_up[i] + dr;
         m_up[i+1] = m_up[i] + dm_dr * dr;
@@ -155,6 +155,10 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
          
         i++;
     }
+
+    // Calculating last point of entropy gradient
+    dp_dr = - G * m_up[i] /pow(r_up[i],2) * rho_up[i];
+    grad_s0_up[i] = (nabla_star-NABLA_AD) / (rho_up[i] * T_up[i]) * dp_dr;
 
     // Downward integration
     N = 100;
@@ -175,7 +179,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         dm_dr = 4 * M_PI * pow(r_down[j],2) *rho_down[j];
         dp_dr = - G * m_down[j] /pow(r_down[j],2) * rho_down[j];
         dT_dr = nabla_star * T_down[j]/p_down[j] * dp_dr;
-        ds_dr = c_p/p_down[j] * dp_dr * (nabla_star- NABLA_AD);
+        ds_dr = (nabla_star-NABLA_AD) / (rho_down[j] * T_down[j]) * dp_dr;
 
         if (j % N == 0 && j != 0)
         {
@@ -185,6 +189,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
             T_down = realloc(T_down, sizeof(double)*(j*N));
             rho_down = realloc(rho_down, sizeof(double)*(j*N));
             s_down = realloc(s_down, sizeof(double)*(j*N));
+            grad_s0_down = realloc(grad_s0_down, sizeof(double)*(j*N));
         }
 
         dr1 = fabs(p * m_down[j]/dm_dr);
@@ -201,6 +206,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         } else {
             dr = -dr4;
         }
+        grad_s0_down[j] = ds_dr;
 
         r_down[j+1] = r_down[j] + dr;
         m_down[j+1] = m_down[j] + dm_dr * dr;
@@ -212,6 +218,10 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         j++;
     }
 
+    // Calculating last point of entropy gradient
+    dp_dr = - G * m_down[j] /pow(r_down[j],2) * rho_down[j];
+    grad_s0_down[j] = (nabla_star-NABLA_AD) / (rho_down[j] * T_down[j]) * dp_dr;
+
     //allocating memory for background struct
     allocate_background_struct(i+j, bg);
     bg->nz = i+j;
@@ -221,7 +231,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         bg->r[j-jj] = r_down[jj];
         bg->p0[j-jj] = p_down[jj];
         bg->T0[j-jj] = T_down[jj];
-        bg->s0[j-jj] = s_down[jj];
+        bg->grad_s0[j-jj] = grad_s0_down[jj];
         bg->rho0[j-jj] = rho_down[jj];
         bg->g[j-jj] = -G * m_down[jj] / pow(r_down[jj],2);
     }
@@ -231,7 +241,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
         bg->r[ii] = r_up[ii-j];
         bg->p0[ii] = p_up[ii-j];
         bg->T0[ii] = T_up[ii-j];
-        bg->s0[ii] = s_up[ii-j];
+        bg->grad_s0[ii] = grad_s0_up[ii-j];
         bg->rho0[ii] = rho_up[ii-j];
         bg->g[ii] = -G * m_up[ii-j] / pow(r_up[ii-j],2);
     }
@@ -242,6 +252,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     free(T_up);
     free(s_up);
     free(rho_up);
+    free(grad_s0_up);
 
     free(r_down);
     free(p_down);
@@ -249,29 +260,5 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     free(T_down);
     free(s_down);
     free(rho_down);
-
-    
-
-
-    //while (r[i])
-
-
-    //printf("sum: %f\n", m_i/M_SUN);
-
-    //printf("%d\n" ,solar_s_size-cz_start_index);
-    //dobule m_i = 4.0 * PI * rho0_i * pow(r_cz, 3.0) / 3.0;
-
-
-    //printf("r_cz: %f\n", r_cz);
-
-    //printf("cz_start_index: %d\n", cz_start_index);
-    //Then we print the radius
-    //printf("r_over_R_solar_s[cz_start_index]: %f\n", r_over_R_solar_s[cz_start_index]);
-
-    //printf("Hello world!\n");
-
-    //calculate_pressure_scale_height(r_over_R_solar_s, p_solar_s, H_solar_s, solar_s_size);
-    //calculate_superadiabcicity_parameter(p_solar_s, T_solar_s, superad_param_solar_s, del_ad, solar_s_size);
-    //calculate_entropy_gradient(p_solar_s, rho_solar_s, T_solar_s, Gamma_1_solar_s, H_solar_s, superad_param_solar_s, grad_s_solar_s, solar_s_size);
-    //calculate_gravitational_acceleration(r_over_R_solar_s, rho_solar_s, g_solar_s, solar_s_size);
+    free(grad_s0_down);
 }
