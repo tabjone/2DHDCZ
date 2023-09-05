@@ -1,12 +1,12 @@
 //#include "hdf5.h"
 //#include "../../shared_files/shared_files.h"
 //#include "./hd_2D_functions.h"
-#include "./structs/structs.h"
+#include "../../shared_files/structs/structs.h"
 #include "./rhs_functions/rhs_functions_2D_hd.h"
 
 #include <stdio.h>
 
-void one_time_step(struct BackgroundVariables *background_variables, struct ForegroundVariables *foreground_variables, int nz, int nx)
+void one_time_step(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int nz, int nx)
 {
     // Just initializing this to some junk to test
     for (int i = 0; i < nz; i++)

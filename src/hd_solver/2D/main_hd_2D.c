@@ -2,8 +2,9 @@
 #include "../../shared_files/shared_files.h"
 #include "./functions.h"
 #include "../../shared_files/solar_s_initialization/solar_s_initialization.h"
+#include "../../shared_files/structs/structs.h"
 //#include <math.h>
-#include "./structs/structs.h"
+//#include "./structs/structs.h"
 
 
 // For printing
@@ -26,7 +27,7 @@ int main_hd_2D(int argc, char *argv[])
     //printf("Hello world!\n");
 
     struct BackgroundVariables background_variables;
-    struct ForegroundVariables foreground_variables;
+    struct ForegroundVariables2D foreground_variables;
 
     solar_s_background_initialization(&background_variables);
 
@@ -41,6 +42,7 @@ int main_hd_2D(int argc, char *argv[])
     create_and_write_dataset_1D(file_id, "rho0", dims, background_variables.rho0);
     create_and_write_dataset_1D(file_id, "p0", dims, background_variables.p0);
     create_and_write_dataset_1D(file_id, "g", dims, background_variables.g);
+    create_and_write_dataset_1D(file_id, "grad_s0", dims, background_variables.grad_s0);
     status = H5Fclose(file_id);
 
     deallocate_background_struct(&background_variables);
