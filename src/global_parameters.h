@@ -8,6 +8,7 @@
 #define R_START 0.6 // In units of solar radii
 #define R_END 0.97 // In units of solar radii
 #define DEL_AD 0.4 // Adiabatic temperature gradient
+#define GAMMA 5.0/3 // Superadiabatic parameter
 
 #define K 0.001
 #define NABLA_AD 0.4
