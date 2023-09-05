@@ -2,6 +2,8 @@
 #define GLOBAL_PARAMETERS_H__
 
 #define DIMENSIONS 2
+#define MHD 0
+
 #define UPWIND_ORDER 2
 #define CENTRAL_ORDER 2
 
