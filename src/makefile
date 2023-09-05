@@ -19,9 +19,9 @@ EXTRAPOLATION =
 SHARED_FILES = ${MEMORY_FILES} ${SNAPSHOT_FILES} ${DERIVATIVES} ${SOLAR_S_INITIALIZATION} ${INTERPOLATION} ${EXTRAPOLATION}
 
 2D_HD_SOLVER_DIR = ./hd_solver/2D/
-HD_SOLVER_FILES = ${2D_HD_SOLVER_DIR}*.c ${2D_HD_SOLVER_DIR}rhs_functions/*.c ${2D_HD_SOLVER_DIR}boundaries/*.c ${2D_HD_SOLVER_DIR}structs/*.c
+HD_SOLVER_FILES = ${2D_HD_SOLVER_DIR}*.c ${2D_HD_SOLVER_DIR}rhs_functions/*.c ${2D_HD_SOLVER_DIR}boundaries/*.c
 
-FILES = main.c ${HD_SOLVER_FILES}
+FILES = main.c ${HD_SOLVER_FILES} ./shared_files/structs/*.c
 
 compile:
 	${CC} ${CFLAGS} ${hdf5} -o main.o ${FILES} ${SHARED_FILES} ${LIBS}
