@@ -1,9 +1,9 @@
 #include "../../../shared_files/derivatives/spacial_derivatives/spacial_derivative_functions.h"
 #include "../boundaries/boundary_functions_2D_hd.h"
 #include "../../../global_parameters.h"
-#include "../structs/structs.h"
+#include "../../../shared_files/structs/structs.h"
 
-double rhs_dvz_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables *foreground_variables, int i, int j, double dx, double dz, int nx)
+double rhs_dvz_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j, double dx, double dz, int nx)
 {
     double **rho1 = foreground_variables->rho1;
     double **p1 = foreground_variables->p1;
