@@ -1,7 +1,9 @@
 #ifndef RHS_FUNCTIONS_H__
 #define RHS_FUNCTIONS_H__
 
-#include "../../../shared_files/structs/structs.h"
+#include "shared_files.h"
+#include "global_parameters.h"
+#include "../boundaries/boundaries.h"
 
 double rhs_dvx_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j);
 

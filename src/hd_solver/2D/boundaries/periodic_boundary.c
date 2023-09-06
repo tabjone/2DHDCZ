@@ -1,3 +1,5 @@
+#include "boundaries.h"
+
 int periodic_boundary(int i, int limit) 
 {
     /*

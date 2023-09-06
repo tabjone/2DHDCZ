@@ -1,12 +1,10 @@
-#include "../../../shared_files/structs/structs.h"
 #include "./initialization.h"
-#include "../../../shared_files/extrapolation/extrapolation.h"
 
-void initialize_foreground_struct_zeros(struct ForegroundVariables2D *foreground_variables)
+void initialize_foreground_struct_zeros(struct ForegroundVariables2D *fg)
 {
-    int nz = foreground_variables->nz;
-    int nz_ghost = foreground_variables->nz_ghost;
-    int nx = foreground_variables->nx;
+    int nz = fg->nz;
+    int nz_ghost = fg->nz_ghost;
+    int nx = fg->nx;
 
     int i, j;
 
@@ -14,14 +12,14 @@ void initialize_foreground_struct_zeros(struct ForegroundVariables2D *foreground
     {
         for (j = 0; j < nx; j++)
         {
-            foreground_variables->p1[i][j] = 0.0;
-            foreground_variables->rho1[i][j] = 0.0;
-            foreground_variables->T1[i][j] = 0.0;
-            foreground_variables->s1[i][j] = 0.0;
-            foreground_variables->vx[i][j] = 0.0;
-            foreground_variables->vz[i][j] = 0.0;
+            fg->p1[i][j] = 0.0;
+            fg->rho1[i][j] = 0.0;
+            fg->T1[i][j] = 0.0;
+            fg->s1[i][j] = 0.0;
+            fg->vx[i][j] = 0.0;
+            fg->vz[i][j] = 0.0;
         }
     }
 
-    extrapolate_2D(foreground_variables);
+    extrapolate_2D(fg);
 }

@@ -3,14 +3,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "../../shared_files/shared_files.h"
-#include "./functions.h"
-#include "../../shared_files/solar_s_initialization/solar_s_initialization.h"
-#include "../../shared_files/structs/structs.h"
-#include "./initialization/initialization.h"
-#include "../../global_parameters.h"
-#include "../../global_constants.h"
+#include "functions.h"
+
 
 int main_hd_2D(int argc, char *argv[])
 {
@@ -18,10 +14,14 @@ int main_hd_2D(int argc, char *argv[])
     int nz = (R_END - R_START)/dz - 1; // Number of grid points in z-direction 
 
     struct BackgroundVariables background_variables;
-    struct ForegroundVariables2D foreground_variables;
+
+    struct ForegroundVariables2D *foreground_variables, *foreground_variables_previous, *tmp_ptr;
+    foreground_variables = (struct ForegroundVariables2D *)malloc(sizeof(struct ForegroundVariables2D));
+    foreground_variables_previous = (struct ForegroundVariables2D *)malloc(sizeof(struct ForegroundVariables2D));
 
     allocate_background_struct(nz, &background_variables);
-    allocate_foreground_struct_2D(nz, nx, &foreground_variables);
+    allocate_foreground_struct_2D(nz, nx, foreground_variables);
+    allocate_foreground_struct_2D(nz, nx, foreground_variables_previous);
 
     solar_s_background_initialization(&background_variables);
 
@@ -29,13 +29,18 @@ int main_hd_2D(int argc, char *argv[])
     int k = 0;
 
     // Construct the full path for the snapshot file inside the new directory
-    snprintf(file_path, sizeof(file_path), "../data/%s/snap%d.h5", RUN_NAME, k);
+    snprintf(file_path, sizeof(file_path), "data/%s/snap%d.h5", RUN_NAME, k);
 
     // Saving data to file
-    hid_t file_id;
+    hid_t file_id = 0;
+
+    if (file_id < 0) {
+        perror("Failed to create HDF5 file");
+    }
+    
     herr_t status;
     hsize_t dims[1];
-    dims[0] = background_variables.nz;
+    dims[0] = background_variables.nz_full;
     file_id = H5Fcreate(file_path, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     create_and_write_dataset_1D(file_id, "r", dims, background_variables.r);
     create_and_write_dataset_1D(file_id, "T0", dims, background_variables.T0);
@@ -44,115 +49,24 @@ int main_hd_2D(int argc, char *argv[])
     create_and_write_dataset_1D(file_id, "g", dims, background_variables.g);
     create_and_write_dataset_1D(file_id, "grad_s0", dims, background_variables.grad_s0);
     status = H5Fclose(file_id);
+    if (status < 0) fprintf(stderr, "Failed to close file\n");
+    
+    initialize_foreground_struct_zeros(foreground_variables_previous);
+    // Copy foreground_variables to foreground_temp
+    deep_copy_foreground_2D(foreground_variables, foreground_variables_previous);
 
-    initialize_foreground_struct_zeros(&foreground_variables);
 
-
+    //compute foreground_variables using foreground_variables_previous
+    one_time_step(&background_variables, foreground_variables_previous, foreground_variables);
+    // pointer swap
+    tmp_ptr = foreground_variables_previous;
+    foreground_variables_previous = foreground_variables;
+    foreground_variables = tmp_ptr;
 
     deallocate_background_struct(&background_variables);
-    deallocate_foreground_struct_2D(&foreground_variables);
-
-    /*
-    allocate_background_struct(nz, &background_variables);
-    allocate_foreground_struct(nz, nx, &foreground_variables);
-
-    one_time_step(&background_variables, &foreground_variables, nz, nx);
-
-    deallocate_background_struct(&background_variables);
-    deallocate_foreground_struct(&foreground_variables);
-    */
-
-    /*
-    // Allocating memory for 1D arrays
-    allocate_1D_array(&r_over_R, nz);
-    allocate_1D_array(&T0, nz);
-    allocate_1D_array(&rho0, nz);
-    allocate_1D_array(&p0, nz);
-    allocate_1D_array(&c_s, nz);
-    allocate_1D_array(&Gamma_1, nz);
-    allocate_1D_array(&H, nz);
-    allocate_1D_array(&superad_param, nz);
-    allocate_1D_array(&grad_s0, nz);
-    allocate_1D_array(&g, nz);
-
-    // Allocating memory for 2D arrays
-    allocate_2D_array(&s1, nz, nx);
-    allocate_2D_array(&rho1, nz, nx);
-    allocate_2D_array(&p1, nz, nx);
-    allocate_2D_array(&T1, nz, nx);
-    allocate_2D_array(&vx, nz, nx);
-    allocate_2D_array(&vz, nz, nx);
-
-
-    // Creating the radius array and calculating gravity
-    double r_over_R_start = 0.10;
-    double r_over_R_end = 0.95;
-
-    for (int i=0; i<nz; i++)
-    {
-        r_over_R[i] = r_over_R_start + 1.0*i/(nz-1) * (r_over_R_end-r_over_R_start);
-        g[i] = 1.0/(r_over_R[i]*r_over_R[i]); // temp value
-    }
-
-    read_and_interpolate_solar_s_data(r_over_R, c_s, rho0, p0, Gamma_1, T0, H, superad_param, grad_s0, g, del_ad, nz);
-
-    // Saving data to file
-    hid_t file_id;
-    herr_t status;
-    hsize_t dims[1];
-    dims[0] = nz;
-    file_id = H5Fcreate("../data/solar_s_background_2.h5", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-
-    create_and_write_dataset_1D(file_id, "H", dims, H);
-    create_and_write_dataset_1D(file_id, "superadiabacicity_parameter", dims, superad_param);
-    create_and_write_dataset_1D(file_id, "grad_s0", dims, grad_s0);
-    create_and_write_dataset_1D(file_id, "r_over_R", dims, r_over_R);
-    create_and_write_dataset_1D(file_id, "c_s", dims, c_s);
-    create_and_write_dataset_1D(file_id, "Gamma_1", dims, Gamma_1);
-    create_and_write_dataset_1D(file_id, "T0", dims, T0);
-    create_and_write_dataset_1D(file_id, "rho0", dims, rho0);
-    create_and_write_dataset_1D(file_id, "p0", dims, p0);
-    create_and_write_dataset_1D(file_id, "g", dims, g);
-
-    status = H5Fclose(file_id);
-
-    double time_to_run = 10.0;
-    double dt = 0.1;
-    double t = 0.0;
-    double dx = 0.1;
-    double dz = 0.1;
-
-    double test1, test2, test3;
-    int i = 10;
-    int j = 10;
-    while (t < time_to_run)
-    {
-        one_time_step_2D_hd(s1, p1, rho1, T1, vx, vz, grad_s0, p0, rho0, T0, g, nz, nx, dx, dz);
-        t += dt;
-    }
-
-    // Save background thermodynamic variables to file
-    // ....
-
-    // Deallocating 1D arrays
-    deallocate_1D_array(T0);
-    deallocate_1D_array(grad_s0);
-    deallocate_1D_array(rho0);
-    deallocate_1D_array(p0);
-    deallocate_1D_array(c_s);
-    deallocate_1D_array(Gamma_1);
-    deallocate_1D_array(r_over_R);
-    deallocate_1D_array(H);
-    deallocate_1D_array(superad_param);
-    deallocate_1D_array(g);
-
-    // Deallocating 2D arrays
-    deallocate_2D_array(s1);
-    deallocate_2D_array(rho1);
-    deallocate_2D_array(p1);
-    deallocate_2D_array(T1);
-    deallocate_2D_array(vx);
-    deallocate_2D_array(vz);
-    */
+    deallocate_foreground_struct_2D(foreground_variables);
+    deallocate_foreground_struct_2D(foreground_variables_previous);
+    free(foreground_variables);
+    free(foreground_variables_previous);
     return 0;
 }

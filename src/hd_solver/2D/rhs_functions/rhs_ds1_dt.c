@@ -1,19 +1,15 @@
-#include "../../../shared_files/derivatives/spacial_derivatives/spacial_derivative_functions.h"
-#include "../boundaries/boundaries.h"
-#include "../../../global_parameters.h"
-#include "../../../shared_files/structs/structs.h"
+#include "rhs_functions.h"
 
-double rhs_ds1_dt(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j)
+double rhs_ds1_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
 {
-    int nx = foreground_variables->nx;
-    double central_ds1_dz, central_T0_dz;
+    int nx = fg->nx;
     double upwind_ds1_dx, upwind_ds1_dz;
 
-    double *grad_s0 = background_variables->grad_s0;
+    double *grad_s0 = bg->grad_s0;
 
-    double **vx = foreground_variables->vx;
-    double **vz = foreground_variables->vz;
-    double **s1 = foreground_variables->s1;
+    double **vx = fg->vx;
+    double **vz = fg->vz;
+    double **s1 = fg->s1;
 
     // print the value of vx[0][0] from the struct
 

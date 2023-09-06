@@ -1,21 +1,15 @@
-#include "../../../shared_files/derivatives/spacial_derivatives/spacial_derivative_functions.h"
-#include "../boundaries/boundaries.h"
-#include "../../../global_parameters.h"
-#include "../../../shared_files/structs/structs.h"
+#include "rhs_functions.h"
 
-double rhs_dvx_dt(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j)
+double rhs_dvx_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
 {
-    int nx = foreground_variables->nx;
+    int nx = fg->nx;
 
-    double **p1 = foreground_variables->p1;
-    double **vx = foreground_variables->vx;
-    double **vz = foreground_variables->vz;
-    double *rho0 = background_variables->rho0;
+    double **p1 = fg->p1;
+    double **vx = fg->vx;
+    double **vz = fg->vz;
+    double *rho0 = bg->rho0;
 
     double dp1_dx, dvx_dx, dvx_dz;
-
-
-    double first_term, second_term;
 
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);
