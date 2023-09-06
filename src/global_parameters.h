@@ -23,4 +23,8 @@
 #define dy 0.0001 // Step-size in y-direction in units of solar radii
 #define dz 0.0001 // Step-size in z-direction in units of solar radii
 
+
+// 0 for constant, others not implemented yet
+#define EXTRAPOLATE_GHOST_CELLS 0
+
 #endif
