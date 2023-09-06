@@ -3,10 +3,10 @@
 
 #include "../../../shared_files/structs/structs.h"
 
-double rhs_dvx_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j, double dx, double dz, int nx);
+double rhs_dvx_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j);
 
-double rhs_dvz_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j, double dx, double dz, int nx);
+double rhs_dvz_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j);
 
-double rhs_ds1_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j, double dx, double dz, int nx);
+double rhs_ds1_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j);
 
 #endif // RHS_FUNCTIONS_2D_HD_H
