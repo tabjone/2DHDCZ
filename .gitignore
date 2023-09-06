@@ -1,0 +1,6 @@
+*.o
+*.aux
+*.log
+*.h5
+**/.vscode/
+**/.ipynb_checkpoints/
