@@ -12,6 +12,10 @@ Unit test derivative functions if we have bugs
 
 Redo pertubation theory to end in continuity equation from anelastic approximation. Write part on equation of state ect. Discretize equations. Upwind/downwind ect.
 
+Clean up solar S initialization.
+
+Clean up main_hd_2D.c
+
 <b>THINGS TO REMEMBER</b>:
 
 grad_s0 is discontinous. Maybe this can cause a problem.
