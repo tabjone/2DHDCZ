@@ -9,4 +9,5 @@ void allocate_background_struct(int nz, struct BackgroundVariables *background_v
     allocate_1D_array(&background_variables->p0, nz);
     allocate_1D_array(&background_variables->grad_s0, nz);
     allocate_1D_array(&background_variables->g, nz);
+    background_variables->nz = nz;
 }

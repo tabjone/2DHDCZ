@@ -9,4 +9,6 @@ void allocate_foreground_struct_2D(int nz, int nx, struct ForegroundVariables2D 
     allocate_2D_array(&foreground_variables->s1, nz, nx);
     allocate_2D_array(&foreground_variables->vx, nz, nx);
     allocate_2D_array(&foreground_variables->vz, nz, nx);
+    foreground_variables->nz = nz;
+    foreground_variables->nx = nx;
 }
