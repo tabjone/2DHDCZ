@@ -30,4 +30,6 @@ void allocate_foreground_struct_2D(int nz, int nx, struct ForegroundVariables2D 
 void deallocate_background_struct(struct BackgroundVariables *background_variables);
 void deallocate_foreground_struct_2D(struct ForegroundVariables2D *foreground_variables);
 
+void deep_copy_foreground_2D(struct ForegroundVariables2D *destination, struct ForegroundVariables2D *source);
+
 #endif // STRUCTS_H__
