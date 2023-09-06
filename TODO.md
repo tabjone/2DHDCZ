@@ -1,25 +1,23 @@
-TODO CODE:
+<b>IMPORTANT</b>:
 
-Check that g(z) is the same in C-program as in python. Also see if the way this is calculated is correct. Og regn heller ut M(r) og bruk denne til å regne ut g(r)
+Implement boundary conditions
 
-Unit test derivative functions.
+Finish intitialization.tex
 
-Husk å endre delta z i rhs funksjoner. Den er jo ikke konstant.
+Produce plots for initialization.tex
 
-TODO PDFS:
+Use function for extrapolation in solar_s_background_initialization.c
+
+Unit test derivative functions if we have bugs
 
 Redo pertubation theory to end in continuity equation from anelastic approximation. Write part on equation of state ect. Discretize equations. Upwind/downwind ect.
 
+<b>THINGS TO REMEMBER</b>:
 
+grad_s0 is discontinous. Maybe this can cause a problem.
 
-TODO notes in anelastic approximation
+Mach number !(essential for approximation to hold)! and superadiabaticity parameter $\Delta\nabla$ should be low.
 
-<b>Code stuff to remember</b>
-
-Keep track of Mach number and make sure this is low. Also that the superadiabaticity parameter $\Delta\nabla$ is low (this is also related to the Mach number by eq (9) in Lantz).
-
-Keep track of "Alfvén Mach number" $M_A=v_{ar}/c_{sr}$. This needs to be comparable to the Mach number for the approximation to be valid. I.e magnetic energy should not greatly exceed kinetic energy (Lantz)
+Alfvén Mach number $M_A=v_{ar}/c_{sr}$ should be comparable to the Mach number for the approximation to be valid. I.e magnetic energy should not greatly exceed kinetic energy (Lantz)
 
 Change "current" in time derivatives to something else. Also this probably has to be changed entirely to account for RK methods.
-
-Fix potential out of bounds problem in interpolate_solar_s.c
