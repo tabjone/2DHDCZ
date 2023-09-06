@@ -268,13 +268,13 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     free(grad_s0_down);
 
     // Initialize background radius array
-    for (i = 0; i < bg->nz; i++)
+    for (i = 0; i < bg->nz+bg->nz_ghost; i++)
     {
-        bg->r[i] = R_SUN * R_START + i * R_SUN * (R_END - R_START) / (bg->nz-1.0);
+        bg->r[i+bg->nz_ghost] = R_SUN * R_START + i * R_SUN * (R_END - R_START) / (bg->nz-1.0);
     }
 
     // Interpolating the background variables to the grid
-    for (i = 0; i < bg->nz; i++)
+    for (i = bg->nz_ghost; i < bg->nz_full-bg->nz_ghost; i++)
     {
         // Handle edge cases
         if (bg->r[i] < r[0])
@@ -309,6 +309,27 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
             bg->g[i] = interpolate_1D_linear(x0, x1, g[k-1], g[k], bg->r[i]);
         }
     }
+
+    // Extrapolating ghost cells
+    #if EXTRAPOLATE_GHOST_CELLS == 0
+        // Constant extrapolation
+        for (i = 0; i < bg->nz_ghost; i++)
+        {
+            bg->r[i] = bg->r[bg->nz_ghost]-(bg->nz_ghost-i)*dz*R_SUN;
+            bg->p0[i] = bg->p0[bg->nz_ghost];
+            bg->T0[i] = bg->T0[bg->nz_ghost];
+            bg->rho0[i] = bg->rho0[bg->nz_ghost];
+            bg->grad_s0[i] = bg->grad_s0[bg->nz_ghost];
+            bg->g[i] = bg->g[bg->nz_ghost];
+
+            bg->r[bg->nz+bg->nz_ghost+i] = bg->r[bg->nz_full-bg->nz_ghost-1]+(i+1)*dz*R_SUN;
+            bg->p0[bg->nz+bg->nz_ghost+i] = bg->p0[bg->nz_full-bg->nz_ghost-1];
+            bg->T0[bg->nz+bg->nz_ghost+i] = bg->T0[bg->nz_full-bg->nz_ghost-1];
+            bg->rho0[bg->nz+bg->nz_ghost+i] = bg->rho0[bg->nz+bg->nz_ghost-1];
+            bg->grad_s0[bg->nz+bg->nz_ghost+i] = bg->grad_s0[bg->nz+bg->nz_ghost-1];
+            bg->g[bg->nz+bg->nz_ghost+i] = bg->g[bg->nz+bg->nz_ghost-1];
+        }
+    #endif
 
     // Deallocating integration arrays
     free(r);
