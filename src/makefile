@@ -14,7 +14,7 @@ SNAPSHOT_FILES = ${SNAPSHOT_IO_OPERATIONS_DIR}snapshot_saving/*.c ${SNAPSHOT_IO_
 SOLAR_S_INITIALIZATION = ./shared_files/solar_s_initialization/*.c
 DERIVATIVES = ${DERIVATIVES_DIR}spacial_derivatives/*.c ${DERIVATIVES_DIR}time_derivatives/*.c
 INTERPOLATION = ./shared_files/interpolation/*.c
-EXTRAPOLATION = 
+EXTRAPOLATION = ./shared_files/extrapolation/*.c
 
 SHARED_FILES = ${MEMORY_FILES} ${SNAPSHOT_FILES} ${DERIVATIVES} ${SOLAR_S_INITIALIZATION} ${INTERPOLATION} ${EXTRAPOLATION}
 
