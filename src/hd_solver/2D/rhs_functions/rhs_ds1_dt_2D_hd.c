@@ -3,8 +3,9 @@
 #include "../../../global_parameters.h"
 #include "../../../shared_files/structs/structs.h"
 
-double rhs_ds1_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j, double dx, double dz, int nx)
+double rhs_ds1_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j)
 {
+    int nx = foreground_variables->nx;
     double central_ds1_dz, central_T0_dz;
     double upwind_ds1_dx, upwind_ds1_dz;
 

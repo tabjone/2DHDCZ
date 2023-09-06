@@ -3,8 +3,10 @@
 #include "../../../global_parameters.h"
 #include "../../../shared_files/structs/structs.h"
 
-double rhs_dvz_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j, double dx, double dz, int nx)
+double rhs_dvz_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j)
 {
+    int nx = foreground_variables->nx;
+    
     double **rho1 = foreground_variables->rho1;
     double **p1 = foreground_variables->p1;
     double **vx = foreground_variables->vx;
