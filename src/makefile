@@ -1,5 +1,6 @@
+
 CC = gcc
-CFLAGS = -Isrc
+CFLAGS = -Isrc -Wall -I./shared_files
 LIBS = 
 
 ARRAY_MEMORY_MANAGEMENT_DIR = ./shared_files/array_memory_management/
@@ -15,6 +16,8 @@ SOLAR_S_INITIALIZATION = ./shared_files/solar_s_initialization/*.c
 DERIVATIVES = ${DERIVATIVES_DIR}spacial_derivatives/*.c ${DERIVATIVES_DIR}time_derivatives/*.c
 INTERPOLATION = ./shared_files/interpolation/*.c
 EXTRAPOLATION = ./shared_files/extrapolation/*.c
+
+
 
 SHARED_FILES = ${MEMORY_FILES} ${SNAPSHOT_FILES} ${DERIVATIVES} ${SOLAR_S_INITIALIZATION} ${INTERPOLATION} ${EXTRAPOLATION}
 

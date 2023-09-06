@@ -1,6 +1,5 @@
 #include "../../../shared_files/structs/structs.h"
 #include "./initialization.h"
-#include "../../../global_parameters.h"
 #include "../../../shared_files/extrapolation/extrapolation.h"
 
 void initialize_foreground_struct_zeros(struct ForegroundVariables2D *foreground_variables)

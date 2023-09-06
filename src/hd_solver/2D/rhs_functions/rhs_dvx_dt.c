@@ -1,9 +1,9 @@
 #include "../../../shared_files/derivatives/spacial_derivatives/spacial_derivative_functions.h"
-#include "../boundaries/boundary_functions_2D_hd.h"
+#include "../boundaries/boundaries.h"
 #include "../../../global_parameters.h"
 #include "../../../shared_files/structs/structs.h"
 
-double rhs_dvx_dt_2D_hd(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j)
+double rhs_dvx_dt(struct BackgroundVariables *background_variables, struct ForegroundVariables2D *foreground_variables, int i, int j)
 {
     int nx = foreground_variables->nx;
 
