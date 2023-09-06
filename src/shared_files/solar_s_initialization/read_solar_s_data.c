@@ -1,6 +1,6 @@
 #include "hdf5.h"
 
-void read_solar_s_data(const char* filename, double* r_over_R, double* rho, double* p, double* T, hsize_t size)
+void read_solar_s_data(const char* filename, double* r_over_R, double* rho0, double* p0, double* T0, hsize_t size)
 {
     /*
     Read the solar s data from a hdf5 file and store it in the arrays passed as arguments.
@@ -40,15 +40,15 @@ void read_solar_s_data(const char* filename, double* r_over_R, double* rho, doub
     H5Dclose(dataset_id);
 
     dataset_id = H5Dopen2(file_id, "/rho", H5P_DEFAULT);
-    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, rho);
+    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, rho0);
     H5Dclose(dataset_id);
 
     dataset_id = H5Dopen2(file_id, "/p", H5P_DEFAULT);
-    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, p);
+    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, p0);
     H5Dclose(dataset_id);
 
     dataset_id = H5Dopen2(file_id, "/T", H5P_DEFAULT);
-    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, T);
+    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, T0);
     H5Dclose(dataset_id);
 
     /* Close the file. */

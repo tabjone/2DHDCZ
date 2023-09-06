@@ -1,4 +1,4 @@
-double backward_first_derivative_first_order(double centre, double left, double dx)
+double backward_first_derivative_first_order(double centre, double left, double dx_)
 {
     /*
     Calculates the first derivate of a function using the first order backward difference method.
@@ -15,5 +15,5 @@ double backward_first_derivative_first_order(double centre, double left, double 
     double
         The first derivate of f(x)
     */
-    return (centre - left) / dx;
+    return (centre - left) / dx_;
 }

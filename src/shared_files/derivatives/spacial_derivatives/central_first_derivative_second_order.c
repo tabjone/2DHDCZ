@@ -1,4 +1,4 @@
-double central_first_derivative_second_order(double left, double right, double dx)
+double central_first_derivative_second_order(double left, double right, double dx_)
 {
     /*
     Calculates the first derivate of a function using the second order central difference method.
@@ -17,5 +17,5 @@ double central_first_derivative_second_order(double left, double right, double d
     double
         The first derivate of f(x)
     */
-    return (right - left) / (2 * dx);
+    return (right - left) / (2 * dx_);
 }

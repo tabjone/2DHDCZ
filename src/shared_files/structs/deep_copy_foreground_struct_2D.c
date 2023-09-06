@@ -1,4 +1,4 @@
-#include "./structs.h"
+#include "structs.h"
 
 void deep_copy_foreground_2D(struct ForegroundVariables2D *destination, struct ForegroundVariables2D *source) 
 {

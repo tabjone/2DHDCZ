@@ -30,4 +30,5 @@ void create_and_write_dataset_3D(hid_t file_id, const char* datasetname, hsize_t
     // Close the dataset and the dataspace.
     status = H5Dclose(dataset_id);
     status = H5Sclose(dataspace_id);
+    if (status < 0) fprintf(stderr, "Failed to close file\n");
 }

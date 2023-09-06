@@ -1,6 +1,6 @@
 #include "structs.h"
 #include "../array_memory_management/array_memory_management.h"
-#include "../../global_parameters.h"
+#include "global_parameters.h"
 
 void allocate_foreground_struct_2D(int nz, int nx, struct ForegroundVariables2D *foreground_variables)
 {

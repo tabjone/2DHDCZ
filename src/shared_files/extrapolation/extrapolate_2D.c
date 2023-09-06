@@ -1,4 +1,4 @@
-#include "../structs/structs.h"
+#include "extrapolation.h"
 
 void extrapolate_2D(struct ForegroundVariables2D *foreground_variables)
 {

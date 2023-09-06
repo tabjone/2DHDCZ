@@ -1,4 +1,4 @@
-double forward_first_derivative_first_order(double centre, double right, double dx)
+double forward_first_derivative_first_order(double centre, double right, double dx_)
 {
     /*
     Calculates the first derivate of a function using the first order forward difference method.
@@ -15,5 +15,5 @@ double forward_first_derivative_first_order(double centre, double right, double 
     double
         The first derivate of f(x)
     */
-    return (right - centre) / dx;
+    return (right - centre) / dx_;
 }

@@ -24,4 +24,5 @@ void read_dataset_1D(hid_t file_id, const char* datasetname, hsize_t* dims, doub
     herr_t status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &data[0]);
     // Close the dataset
     status = H5Dclose(dataset_id);
+    if (status < 0) fprintf(stderr, "Failed to close file\n");
 }

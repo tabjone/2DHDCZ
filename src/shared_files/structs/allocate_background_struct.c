@@ -1,6 +1,6 @@
 #include "structs.h"
 #include "../array_memory_management/array_memory_management.h"
-#include "../../global_parameters.h"
+#include "global_parameters.h"
 
 void allocate_background_struct(int nz, struct BackgroundVariables *background_variables)
 {

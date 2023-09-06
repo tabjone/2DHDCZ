@@ -1,11 +1,4 @@
 #include "solar_s_initialization.h"
-#include "../array_memory_management/array_memory_management.h"
-#include "../..//global_parameters.h"
-#include "../../global_constants.h"
-#include "../structs/structs.h"
-#include <math.h>
-#include <stdlib.h>
-#include "../interpolation/interpolation.h"
 
 void solar_s_background_initialization(struct BackgroundVariables *bg)
 {
@@ -19,7 +12,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     allocate_1D_array(&T_solar_s, solar_s_size);
 
     // Reading solar_s data
-    read_solar_s_data("../additional_files/solar_s.h5", r_over_R_solar_s, rho_solar_s, p_solar_s, T_solar_s, solar_s_size);
+    read_solar_s_data("additional_files/solar_s.h5", r_over_R_solar_s, rho_solar_s, p_solar_s, T_solar_s, solar_s_size);
 
     // Setting CZ start at 0.7 solar radii and finding the closest radius to that in the solar_s data
     int cz_start_index = 0;
