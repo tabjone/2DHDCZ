@@ -1,10 +1,10 @@
 #include "extrapolation.h"
 
-void extrapolate_2D(struct ForegroundVariables2D *foreground_variables)
+void extrapolate_2D(struct ForegroundVariables2D *fg)
 {
-    int nz_full = foreground_variables->nz_full;
-    int nz_ghost = foreground_variables->nz_ghost;
-    int nx = foreground_variables->nx;
+    int nz_full = fg->nz_full;
+    int nz_ghost = fg->nz_ghost;
+    int nx = fg->nx;
 
     // Constant extrapolation
     #if EXTAPOLATE_GHOST_CELLS == 0
@@ -12,19 +12,19 @@ void extrapolate_2D(struct ForegroundVariables2D *foreground_variables)
     {
         for (int j = 0; j < nx; j++)
         {
-            foreground_variables->p1[i][j] = foreground_variables->p1[nz_ghost][j];
-            foreground_variables->rho1[i][j] = foreground_variables->rho1[nz_ghost][j];
-            foreground_variables->T1[i][j] = foreground_variables->T1[nz_ghost][j];
-            foreground_variables->s1[i][j] = foreground_variables->s1[nz_ghost][j];
-            foreground_variables->vx[i][j] = foreground_variables->vx[nz_ghost][j];
-            foreground_variables->vz[i][j] = foreground_variables->vz[nz_ghost][j];
+            fg->p1[i][j] = fg->p1[nz_ghost][j];
+            fg->rho1[i][j] = fg->rho1[nz_ghost][j];
+            fg->T1[i][j] = fg->T1[nz_ghost][j];
+            fg->s1[i][j] = fg->s1[nz_ghost][j];
+            fg->vx[i][j] = fg->vx[nz_ghost][j];
+            fg->vz[i][j] = fg->vz[nz_ghost][j];
             
-            foreground_variables->p1[nz_full - nz_ghost + i][j] = foreground_variables->p1[nz_full - nz_ghost - 1][j];
-            foreground_variables->rho1[nz_full - nz_ghost + i][j] = foreground_variables->rho1[nz_full - nz_ghost - 1][j];
-            foreground_variables->T1[nz_full - nz_ghost + i][j] = foreground_variables->T1[nz_full - nz_ghost - 1][j];
-            foreground_variables->s1[nz_full - nz_ghost + i][j] = foreground_variables->s1[nz_full - nz_ghost - 1][j];
-            foreground_variables->vx[nz_full - nz_ghost + i][j] = foreground_variables->vx[nz_full - nz_ghost - 1][j];
-            foreground_variables->vz[nz_full - nz_ghost + i][j] = foreground_variables->vz[nz_full - nz_ghost - 1][j];
+            fg->p1[nz_full - nz_ghost + i][j] = fg->p1[nz_full - nz_ghost - 1][j];
+            fg->rho1[nz_full - nz_ghost + i][j] = fg->rho1[nz_full - nz_ghost - 1][j];
+            fg->T1[nz_full - nz_ghost + i][j] = fg->T1[nz_full - nz_ghost - 1][j];
+            fg->s1[nz_full - nz_ghost + i][j] = fg->s1[nz_full - nz_ghost - 1][j];
+            fg->vx[nz_full - nz_ghost + i][j] = fg->vx[nz_full - nz_ghost - 1][j];
+            fg->vz[nz_full - nz_ghost + i][j] = fg->vz[nz_full - nz_ghost - 1][j];
         }
     }
     #endif
