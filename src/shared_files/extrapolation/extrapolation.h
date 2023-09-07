@@ -3,6 +3,7 @@
 
 #include "shared_files.h"
 
-void extrapolate_2D(struct ForegroundVariables2D *foreground_variables);
+void extrapolate_2D(struct ForegroundVariables2D *fg);
+void extrapolate_background(struct BackgroundVariables *bg);
 
 #endif // EXTRAPOLATION_H
