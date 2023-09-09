@@ -1,12 +1,15 @@
 #include "structs.h"
 #include "../array_memory_management/array_memory_management.h"
+#include <stdlib.h>
 
-void deallocate_foreground_struct_2D(struct ForegroundVariables2D *foreground_variables)
+void deallocate_foreground_struct_2D(struct ForegroundVariables2D *fg)
 {
-    deallocate_2D_array(foreground_variables->p1);
-    deallocate_2D_array(foreground_variables->rho1);
-    deallocate_2D_array(foreground_variables->T1);
-    deallocate_2D_array(foreground_variables->s1);
-    deallocate_2D_array(foreground_variables->vx);
-    deallocate_2D_array(foreground_variables->vz);
+    deallocate_2D_array(fg->p1);
+    deallocate_2D_array(fg->rho1);
+    deallocate_2D_array(fg->T1);
+    deallocate_2D_array(fg->s1);
+    deallocate_2D_array(fg->vx);
+    deallocate_2D_array(fg->vz);
+
+    free(fg);
 }

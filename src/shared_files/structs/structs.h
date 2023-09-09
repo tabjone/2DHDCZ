@@ -24,11 +24,11 @@ struct ForegroundVariables2D
     int nx;
 };
 
-void allocate_background_struct(int nz, struct BackgroundVariables *background_variables);
-void allocate_foreground_struct_2D(int nz, int nx, struct ForegroundVariables2D *foreground_variables);
+void allocate_background_struct(int nz, struct BackgroundVariables **bg);
+void allocate_foreground_struct_2D(int nz, int nx, struct ForegroundVariables2D **fg);
 
-void deallocate_background_struct(struct BackgroundVariables *background_variables);
-void deallocate_foreground_struct_2D(struct ForegroundVariables2D *foreground_variables);
+void deallocate_background_struct(struct BackgroundVariables *bg);
+void deallocate_foreground_struct_2D(struct ForegroundVariables2D *fg);
 
 void deep_copy_foreground_2D(struct ForegroundVariables2D *destination, struct ForegroundVariables2D *source);
 

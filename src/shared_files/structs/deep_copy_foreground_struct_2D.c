@@ -5,7 +5,7 @@ void deep_copy_foreground_2D(struct ForegroundVariables2D *destination, struct F
     int nz_full = source->nz_full;
     int nx = source->nx;
 
-    allocate_foreground_struct_2D(nz_full, nx, destination);
+    allocate_foreground_struct_2D(nz_full, nx, &destination);
 
     for (int i = 0; i < nz_full; i++) 
     {
