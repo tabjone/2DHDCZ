@@ -54,6 +54,9 @@ double rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *
     {
         dvz_dz = forward_first_derivative_second_order(vz[i][j], vz[i+1][j], vz[i+2][j], dz);
     }
+    #else
+    // Print error message
+    printf("Error: UPWIND_ORDER must be 1 or 2\n");
 
     #endif
 

@@ -1,4 +1,5 @@
 #include "extrapolation.h"
+#include <stdio.h>
 
 void extrapolate_background(struct BackgroundVariables *bg)
 {
@@ -23,5 +24,8 @@ void extrapolate_background(struct BackgroundVariables *bg)
         bg->grad_s0[nz_full - nz_ghost + i] = bg->grad_s0[nz_full - nz_ghost - 1];
         bg->g[nz_full - nz_ghost + i] = bg->g[nz_full - nz_ghost - 1];
     }
+    #else
+    // Print error message
+    printf("Error: Extrapolation of ghost cells not implemented\n");
     #endif
 }

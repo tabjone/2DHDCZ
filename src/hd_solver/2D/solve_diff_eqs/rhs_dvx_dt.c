@@ -51,10 +51,16 @@ double rhs_dvx_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *
     {
         dvx_dz = forward_first_derivative_second_order(vx[i][j], vx[i+1][j], vx[i+2][j], dz);
     }
+    #else
+    // Print error message
+    printf("Error: UPWIND_ORDER must be 1 or 2\n");
     #endif
 
     #if CENTRAL_ORDER == 2
     dp1_dx = central_first_derivative_second_order(p1[i][j_minus], p1[i][j_plus], dx);
+    #else
+    // Print error message
+    printf("Error: CENTRAL_ORDER must be 2\n");
     #endif
 
     return -1.0/rho0[i] * dp1_dx - vx[i][j]*dvx_dx - vz[i][j]*dvx_dz;

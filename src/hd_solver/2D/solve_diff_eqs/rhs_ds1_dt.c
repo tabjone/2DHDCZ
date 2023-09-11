@@ -11,8 +11,6 @@ double rhs_ds1_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *
     double **vz = fg->vz;
     double **s1 = fg->s1;
 
-    // print the value of vx[0][0] from the struct
-
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);
     int j_minus2 = periodic_boundary(j-2, nx);
@@ -54,9 +52,12 @@ double rhs_ds1_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *
     {
         upwind_ds1_dz = forward_first_derivative_second_order(s1[i][j], s1[i+1][j], s1[i+2][j], dz);
     }
+    #else
+    // Print error message
+    printf("Error: UPWIND_ORDER must be 1 or 2\n");
     #endif
 
     return - vx[i][j] * upwind_ds1_dx 
            - vz[i][j] * upwind_ds1_dz
-           - vz[i][j] * grad_s0[i];;
+           - vz[i][j] * grad_s0[i];
 }
