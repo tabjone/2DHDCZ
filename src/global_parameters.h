@@ -8,6 +8,7 @@
 
 #define UPWIND_ORDER 2
 #define CENTRAL_ORDER 2
+#define TIME_ORDER 1
 
 #define R_START 0.6 // In units of solar radii
 #define R_END 0.97 // In units of solar radii
