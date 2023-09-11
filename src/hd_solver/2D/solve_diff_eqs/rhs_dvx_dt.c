@@ -1,4 +1,4 @@
-#include "rhs_functions.h"
+#include "solve_diff_eqs.h"
 
 double rhs_dvx_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
 {

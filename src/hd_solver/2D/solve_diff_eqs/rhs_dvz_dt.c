@@ -1,4 +1,4 @@
-#include "rhs_functions.h"
+#include "solve_diff_eqs.h"
 
 double rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
 {
@@ -62,6 +62,9 @@ double rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *
 
     #if CENTRAL_ORDER == 2
     dp1_dz = central_first_derivative_second_order(p1[i-1][j], p1[i+1][j], dz);
+    #else
+    // Print error message
+    printf("Error: CENTRAL_ORDER must be 2\n");
     #endif
 
     return - 1.0/rho0[i] * dp1_dz - vx[i][j]*dvz_dx - vz[i][j]*dvz_dz - rho1[i][j]/rho0[i] * g[i];
