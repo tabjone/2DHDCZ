@@ -74,4 +74,8 @@ void gauss_seidel_fast_second_order(double **b, double dz, double dx, int max_it
         tolerance_criteria = max_difference/max_pnew;
         iter++;
     }
+
+    #if DEBUG == 1
+    printf("Gauss-Seidel iterations: %d\n", iter);
+    #endif
 }
