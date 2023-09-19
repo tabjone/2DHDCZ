@@ -1,6 +1,6 @@
 #include <float.h>
 
-void gauss_seidel_fast_second_order(int max_iterations, double tolerance, double **b)
+void gauss_seidel_fast_second_order(double **b, double dz, double dx, int max_iterations, double tolerance)
 {
     double a = 1.0/(dz*dz);
     double g = 1.0/(dx*dx);
