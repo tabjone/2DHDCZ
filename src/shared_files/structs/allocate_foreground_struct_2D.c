@@ -3,7 +3,7 @@
 #include "global_parameters.h"
 #include <stdlib.h>
 
-void allocate_foreground_struct_2D(int nz, int nx, struct ForegroundVariables2D **fg)
+void allocate_foreground_struct_2D(int nz, int nx, double dz, double dx, struct ForegroundVariables2D **fg)
 {
     int nz_ghost;
     if (UPWIND_ORDER >= CENTRAL_ORDER)
@@ -28,5 +28,6 @@ void allocate_foreground_struct_2D(int nz, int nx, struct ForegroundVariables2D 
     (*fg)->nx = nx;
     (*fg)->nz_ghost = nz_ghost;
     (*fg)->nz_full = nz+2*nz_ghost;
-    
+    (*fg)->dx = dx;
+    (*fg)->dz = dz;
 }

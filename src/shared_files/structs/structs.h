@@ -10,6 +10,7 @@ struct BackgroundVariables
     double *grad_s0;
     double *g;
     int nz, nz_ghost, nz_full;
+    double dz;
 };
 
 struct ForegroundVariables2D
@@ -22,10 +23,11 @@ struct ForegroundVariables2D
     double **vz;
     int nz, nz_ghost, nz_full;
     int nx;
+    double dx, dz;
 };
 
-void allocate_background_struct(int nz, struct BackgroundVariables **bg);
-void allocate_foreground_struct_2D(int nz, int nx, struct ForegroundVariables2D **fg);
+void allocate_background_struct(int nz, double dz, struct BackgroundVariables **bg);
+void allocate_foreground_struct_2D(int nz, int nx, double dz, double dx, struct ForegroundVariables2D **fg);
 
 void deallocate_background_struct(struct BackgroundVariables *bg);
 void deallocate_foreground_struct_2D(struct ForegroundVariables2D *fg);

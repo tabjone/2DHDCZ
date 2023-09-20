@@ -3,7 +3,7 @@
 #include "global_parameters.h"
 #include <stdlib.h>
 
-void allocate_background_struct(int nz, struct BackgroundVariables **bg)
+void allocate_background_struct(int nz, double dz, struct BackgroundVariables **bg)
 {
     int nz_ghost;
     if (UPWIND_ORDER >= CENTRAL_ORDER)
@@ -26,4 +26,5 @@ void allocate_background_struct(int nz, struct BackgroundVariables **bg)
     (*bg)->nz = nz;
     (*bg)->nz_ghost = nz_ghost;
     (*bg)->nz_full = nz+2*nz_ghost;
+    (*bg)->dz = dz;
 }
