@@ -1,12 +1,15 @@
 #include "solve_diff_eqs.h"
 
-double rhs_ds1_dt_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
+double rhs_ds1_dt_horizontal_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
 {
+    /*
     int nx = fg->nx;
     double upwind_ds1_dx;
 
     double **vx = fg->vx;
     double **s1 = fg->s1;
+
+    double dx = fg->dx;
 
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);
@@ -37,5 +40,5 @@ double rhs_ds1_dt_vertical_boundary(struct BackgroundVariables *bg, struct Foreg
     printf("Error: UPWIND_ORDER must be 1 or 2\n");
     #endif
 
-    return - vx[i][j] * upwind_ds1_dx;
+    return - vx[i][j] * upwind_ds1_dx;*/
 }

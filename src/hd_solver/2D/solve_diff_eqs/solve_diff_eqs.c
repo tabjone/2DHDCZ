@@ -2,6 +2,9 @@
 
 void solve_diff_eqs(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct ForegroundVariables2D *fg_prev, double dt)
 {
+    /*
+    // DETTE ER JO Rk1 SCHEMET!!!!! 
+
     int nx = fg->nx;
     int nz_ghost = fg->nz_ghost;
     int nz_full = fg->nz_full;
@@ -18,9 +21,7 @@ void solve_diff_eqs(struct BackgroundVariables *bg, struct ForegroundVariables2D
     
 
     // OR SHOULD s1 BE ZERO AT THE BOUNDARIES????
-    /*
-    
-    */
+
     for (int j = 0; j < nx; j++)
     {
         // Top boundary
@@ -33,6 +34,6 @@ void solve_diff_eqs(struct BackgroundVariables *bg, struct ForegroundVariables2D
         fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_vertical_boundary(bg, fg_prev, nz_full-nz_ghost-1, j);
         fg->vz[nz_full-nz_ghost-1][j] = 0.0;
     }
-
+    */
     // MAYBE I SHOULD EXTRAPOLATE HERE
 }
