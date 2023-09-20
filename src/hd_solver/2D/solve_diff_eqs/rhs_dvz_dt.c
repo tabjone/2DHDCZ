@@ -11,6 +11,9 @@ double rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *
     double *rho0 = bg->rho0;
     double *g = bg->g;
 
+    double dx = fg->dx;
+    double dz = fg->dz;
+
     double dp1_dz, dvz_dx, dvz_dz;
 
     // Periodic boundary conditions

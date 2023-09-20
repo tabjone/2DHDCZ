@@ -11,6 +11,9 @@ double rhs_dvx_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *
 
     double dp1_dx, dvx_dx, dvx_dz;
 
+    double dx = fg->dx;
+    double dz = fg->dz;
+
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);
     int j_minus2 = periodic_boundary(j-2, nx);

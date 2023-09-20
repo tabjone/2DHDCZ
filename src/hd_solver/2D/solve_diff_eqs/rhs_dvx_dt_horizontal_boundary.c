@@ -1,6 +1,6 @@
 #include "solve_diff_eqs.h"
 
-double rhs_dvx_dt_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
+double rhs_dvx_dt_horizontal_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
 {
     int nx = fg->nx;
 
@@ -9,6 +9,8 @@ double rhs_dvx_dt_vertical_boundary(struct BackgroundVariables *bg, struct Foreg
     double *rho0 = bg->rho0;
 
     double dp1_dx, dvx_dx;
+
+    double dx = fg->dx;
 
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);
