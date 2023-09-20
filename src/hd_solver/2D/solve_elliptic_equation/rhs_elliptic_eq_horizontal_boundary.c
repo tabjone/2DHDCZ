@@ -1,12 +1,15 @@
 #include "solve_elliptic_equation.h"
 
-double rhs_elliptic_eq_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
+double rhs_elliptic_eq_horizontal_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
 {
     double *rho0 = bg->rho0;
     double *g = bg->g;
     double **rho1 = fg->rho1;
     double **vx = fg->vx;
     int nx = fg->nx;
+
+    double dx = fg->dx;
+    double dz = fg->dz;
 
     int j_minus = periodic_boundary(j-1, nx);
     int j_plus = periodic_boundary(j+1, nx);

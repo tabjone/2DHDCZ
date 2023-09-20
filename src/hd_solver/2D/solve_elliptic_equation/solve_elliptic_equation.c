@@ -5,8 +5,13 @@ void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVa
     int nx = fg->nx;
     int nz_ghost = fg->nz_ghost;
     int nz_full = fg->nz_full;
+    int nz = fg->nz;
 
-    double **rhs; // Maybe I should not include ghost cells on this. Will make it easier later because this is b.
+    double dx = fg->dx;
+    double dz = fg->dz;
+
+    double **rhs;
+    // CHECK THIS: THIS CAN BE OF SIZE nz, nx INSTEAD OF nz_full, nx !!!
     allocate_2D_array(&rhs, nz_full, nx);
 
     // Solve inside the grid
@@ -21,73 +26,63 @@ void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVa
     // Solve boudaries
     for (int j = 0; j < nx; j++)
     { 
-        // Top boundary
-        rhs[nz_ghost][j] = rhs_elliptic_eq_vertical_boundary(bg, fg, nz_ghost, j);
         // Bottom boundary
-        rhs[nz_full-nz_ghost-1][j] = rhs_elliptic_eq_vertical_boundary(bg, fg, nz_full-nz_ghost-1, j);
-
-        for (int k = 0; k < nz_ghost; k++)
-        {
-            rhs[k][j] = rhs[nz_ghost][j];
-            rhs[nz_full-k-1][j] = rhs[nz_full-nz_ghost-1][j];
-        }
+        rhs[nz_ghost][j] = 0.0;
+        // Top bundary
+        rhs[nz_full-nz_ghost-1][j] = 0.0;
     }
+
+    gauss_seidel_fast_second_order(rhs, dz, dx, nx, nz, nz_ghost, 1e5, 1e-6, fg->p1);
+    deallocate_2D_array(rhs);
+
     /*
-    double *x, *b;
-    double **A;
-    int maxIterations = 1000;
-    double tolerance = 1e-6;
-
-    int nz = fg->nz;
-    
-    allocate_1D_array(&x, nx*nz);
-    allocate_1D_array(&b, nx*nz);
-    allocate_2D_array(&A, nx*nz, nx*nz);
-
-    // Fill x
+    // Create rhs array without ghost cells
+    double *rhs_without_ghost_cells;
+    allocate_1D_array(&rhs_without_ghost_cells, nx*nz);
     for (int i = 0; i < nx*nz; i++)
     {
-        x[i] = fg->p1[i/nx+nz_ghost][i%nx];
-        b[i] = rhs[i/nx+nz_ghost][i%nx];
+        rhs_without_ghost_cells[i] = rhs[i/nx+nz_ghost][i%nx];
     }
+    // Create A matrix
+    double **A;
 
-    // Fill A
-    int z_pos = 0;
-    for (int i = 0; i < nx*nz; i++)
+    int N = nx*nz;
+
+    allocate_2D_array(&A, N, N);
+    int diagonal_pos = 0;
+    //printf("N = %d\n", N);
+    //printf("nx*nz = %d\n", nx*nz);
+    for (int i = 0; i < N; i++)
     {
-        for (int j = 0; j < nx*nz; j++)
+        for (int j = 0; j < N; j++)
         {
             A[i][j] = 0.0;
         }
-        A[i][z_pos] = -2.0*(1.0/(dx*dx)+1.0/(dz*dz));
+        A[i][diagonal_pos] = -2.0*(1.0/(dx*dx)+1.0/(dz*dz));
         if (i>0)
-        { A[i][z_pos-1] = 1.0/(dx*dx); }
+        { A[i][diagonal_pos-1] = 1.0/(dx*dx); }
         if (i<nx*nz-1)
-        { A[i][z_pos+1] = 1.0/(dx*dx); }
+        { A[i][diagonal_pos+1] = 1.0/(dx*dx); }
         if (i>nx-1)
-        { A[i][z_pos-nx] = 1.0/(dz*dz); }
+        { A[i][diagonal_pos-nx] = 1.0/(dz*dz); }
         if (i<nx*nz-nx)
-        { A[i][z_pos+nx] = 1.0/(dz*dz); }
-        z_pos += 1;
+        { A[i][diagonal_pos+nx] = 1.0/(dz*dz); }
+        diagonal_pos += 1;
     }
 
-    // Print matrix
-    for (int i = 0; i < nx*nz; i++)
+    double *x;
+    allocate_1D_array(&x, N);
+    gauss_seidel(A, rhs_without_ghost_cells, x, N, 100, 1e-6);
+ 
+    // Put x into p1
+    for (int i = 0; i < N; i++)
     {
-        for (int j = 0; j < nx*nz; j++)
-        {
-            //printf("%f ", A[i][j]);
-        }
-        //printf("\n");
+        fg->p1[i/nx+nz_ghost][i%nx] = x[i];
     }
 
-
-    
-    // Now use Gauss-Seidel to solve the equation
-    gaussSeidel(A, b, x, nx*nz, maxIterations, tolerance);
-    
-    deallocate_1D_array(b);
-    deallocate_2D_array(A);
-    deallocate_1D_array(x);*/
+    deallocate_1D_array(rhs_without_ghost_cells);
     deallocate_2D_array(rhs);
+    deallocate_2D_array(A);
+    deallocate_1D_array(x);
+    */
 }

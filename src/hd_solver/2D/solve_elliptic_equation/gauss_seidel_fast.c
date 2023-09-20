@@ -1,6 +1,7 @@
 #include <float.h>
+#include "solve_elliptic_equation.h"
 
-void gauss_seidel_fast_second_order(double **b, double dz, double dx, int max_iterations, double tolerance)
+void gauss_seidel_fast_second_order(double **b, double dz, double dx, int nx, int nz, int nz_ghost, int max_iterations, double tolerance, double **p1)
 {
     double a = 1.0/(dz*dz);
     double g = 1.0/(dx*dx);
@@ -27,10 +28,10 @@ void gauss_seidel_fast_second_order(double **b, double dz, double dx, int max_it
 
     double tolerance_criteria = DBL_MAX;
 
-    while (tolerance_criteria < tolerance)
+    while (tolerance_criteria > tolerance)
     {
-        max_difference = DBL_MAX;
-        max_pnew = DBL_MAX;
+        max_difference = 0.0;
+        max_pnew = 0.0;
 
         if (iter > max_iterations)
             {
@@ -40,9 +41,9 @@ void gauss_seidel_fast_second_order(double **b, double dz, double dx, int max_it
         // Copy p into pnew
         for (int i = 1; i < nz-1; i++)
         {
-            for (j = 1; j < nx-1; j++)
+            for (int j = 1; j < nx-1; j++)
             {
-                p[i][j] = pnew[i][j]
+                p[i][j] = pnew[i][j];
             }
         }
         
@@ -73,6 +74,15 @@ void gauss_seidel_fast_second_order(double **b, double dz, double dx, int max_it
 
         tolerance_criteria = max_difference/max_pnew;
         iter++;
+    }
+
+    // Updating p1
+    for (int i = 0; i < nz; i++)
+    {
+        for (int j = 0; j < nx; j++)
+        {
+            p1[i+nz_ghost][j] = pnew[i][j];
+        }
     }
 
     #if DEBUG == 1

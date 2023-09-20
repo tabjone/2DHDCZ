@@ -11,40 +11,43 @@ double rhs_elliptic_eq(struct BackgroundVariables *bg, struct ForegroundVariable
 
     int nx = fg->nx;
 
+    double dx = fg->dx;
+    double dz = fg->dz;
+
     int j_minus = periodic_boundary(j-1, nx);
     int j_plus = periodic_boundary(j+1, nx);
 
+    // I write this in to avoid bugs, but it is not necessary
+    double vx_up_right = vx[i+1][j_plus];
+    double vx_up_left = vx[i+1][j_minus];
+    double vx_down_right = vx[i-1][j_plus];
+    double vx_down_left = vx[i-1][j_minus];
+
+    double vz_up_right = vz[i+1][j_plus];
+    double vz_up_left = vz[i+1][j_minus];
+    double vz_down_right = vz[i-1][j_plus];
+    double vz_down_left = vz[i-1][j_minus];
+
     #if CENTRAL_ORDER == 2
     // First derivatives
-    double central_rho_g_dz = central_first_derivative_second_order(rho1[i-1][j]*g[i-1], rho1[i+1][j]*g[i+1], dz);
+    double drho1g_dz = central_first_derivative_second_order(rho1[i-1][j]*g[i-1], rho1[i+1][j]*g[i+1], dz);
+    double drho0_dz = central_first_derivative_second_order(rho0[i-1], rho0[i+1], dz);
 
-    double central_rho0_vx_dx = central_first_derivative_second_order(rho0[i]*vx[i][j_minus], rho0[i]*vx[i][j_plus], dx);
-    double central_rho0_vx_dz = central_first_derivative_second_order(rho0[i-1]*vx[i-1][j], rho0[i+1]*vx[i+1][j], dz);
-
-    double central_rho0_vz_dx = central_first_derivative_second_order(rho0[i]*vz[i][j_minus], rho0[i]*vz[i][j_plus], dx);
-    double central_rho0_vz_dz = central_first_derivative_second_order(rho0[i-1]*vz[i-1][j], rho0[i+1]*vz[i+1][j], dz);
-
-    double central_vx_dx = central_first_derivative_second_order(vx[i][j_minus], vx[i][j_plus], dx);
-    double central_vz_dx = central_first_derivative_second_order(vz[i][j_minus], vz[i][j_plus], dx);
-
-    double central_vx_dz = central_first_derivative_second_order(vx[i-1][j], vx[i+1][j], dz);
-    double central_vz_dz = central_first_derivative_second_order(vz[i-1][j], vz[i+1][j], dz);
+    double dvz_dx = central_first_derivative_second_order(vz[i][j_minus], vz[i][j_plus], dx);
+    double dvx_dz = central_first_derivative_second_order(vx[i-1][j], vx[i+1][j], dz);
 
     // Mixed derivatives
-    double central_vz_dxdz = central_mixed_derivative_second_order(vz[i+1][j_plus], vz[i-1][j_plus], vz[i+1][j_minus], vz[i-1][j_minus], dx, dy);
+    double dd_vx_vz_dxdz = central_mixed_derivative_second_order(vx_up_right*vz_up_right, vx_down_right*vz_down_right, vx_up_left*vz_up_left, vx_down_left*vz_down_left, dx, dz);
 
-    double central_vx_dxdz = central_mixed_derivative_second_order(vx[i+1][j_plus], vx[i-1][j_plus], vx[i+1][j_minus], vx[i-1][j_minus], dx, dy);
     // Second derivatives
-    double central_second_vx_dx = central_second_derivative_second_order(vx[i][j], vx[i][j_minus], vx[i][j_plus], dx);
-    double central_second_vz_dz = central_second_derivative_second_order(vz[i][j], vz[i+1][j], vz[i-1][j], dz);
+    double dd_vz_ddz = central_second_derivative_second_order(vz[i][j], vz[i-1][j], vz[i+1][j], dz);
     #else
     // Print error message
     printf("Error: CENTRAL_ORDER must be 2\n");
     #endif
 
-    return - central_rho_g_dz - rho0[i]*vx[i][j]*(central_second_vx_dx + central_vz_dxdz)
-           - rho0[i]*vz[i][j]*(central_second_vz_dz + central_vx_dxdz)
-           - central_vx_dx*central_rho0_vx_dx - central_vz_dx*central_rho0_vx_dz
-           - central_vx_dz*central_rho0_vz_dx - central_vz_dz*central_rho0_vz_dz;
+    return - drho1g_dz 
+           - rho0[i]*(dd_vx_vz_dxdz+vz[i][j]*dd_vz_ddz+2*dvx_dz*dvz_dx)-vx[i][j]*dvx_dz*drho0_dz;
+    
 
 }
