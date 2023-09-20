@@ -1,0 +1,176 @@
+\documentclass{article}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{natbib}
+
+% Uncomment to use Times New Roman font
+% \usepackage{times}
+
+% Margins
+\usepackage[margin=1in]{geometry}
+
+% Header/Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Anelastic approximation draft}
+\rhead{\today}
+\cfoot{Page \thepage}
+
+\begin{document}
+
+\section{Elliptic solver}
+
+Second order elliptic linear partial differential equation. Elliptic because discriminant is -4.
+
+
+Elliptic equation = equilibrium problem.
+
+Inverse of matrix is inneficient in terms of FLOPs. A will be a symmetric square matrix.
+Gaussian elimination: Row reduction is called forward substitution in the litterature.
+
+Vanilla Dirichlet boundary conditions = 0. General = any number.
+
+\textit{Momentum equation}
+\begin{equation}\label{eq:momentum_full}
+    \rho_0\left[\frac{\partial\mathbf{v}}{\partial t}+(\mathbf{v}\cdot\nabla)\mathbf{v}\right]=-\nabla p_1 + \rho_1\mathbf{g}.
+\end{equation}
+
+We take the divergence of the momentum equation
+
+\begin{equation}
+    \nabla\cdot \left[\rho_0\frac{\partial\mathbf{v}}{\partial t}+\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}\right]=-\nabla^2 p_1 + \nabla\cdot\left(\rho_1\mathbf{g}\right).
+\end{equation}
+
+\begin{equation}
+     \nabla\cdot\frac{\partial\left(\rho_0\mathbf{v}\right)}{\partial t}+\nabla\cdot\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}=-\nabla^2 p_1 - \partial_z\left(\rho_1 g\right).
+\end{equation}
+
+Using Clairaut's theorem on the first term
+
+\begin{equation}
+    \frac{\partial\left[\nabla\cdot\left(\rho_0\mathbf{v}\right)\right]}{\partial t}+\nabla\cdot\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}=-\nabla^2 p_1 - \partial_z\left(\rho_1 g\right).
+\end{equation}
+
+Then the first term is zero by the continuity equation, we solve for $\nabla^2 p_1$
+
+\begin{equation}
+    \nabla^2 p_1= - \partial_z\left(\rho_1 g\right) - \nabla\cdot\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}.
+\end{equation}
+
+Earlier we found that 
+
+\begin{equation}
+    (\mathbf{v}\cdot\nabla)\mathbf{v} = (v_x\partial_x+ v_z\partial_z)v_x\mathbf{\hat{i}}+(v_x\partial_x+ v_z\partial_z)v_z\mathbf{\hat{k}}.
+\end{equation}
+
+Inserting this
+
+\begin{equation}
+    \nabla^2 p_1= - \partial_z\left(\rho_1 g\right) - \nabla\cdot\rho_0\left[(v_x\partial_x+ v_z\partial_z)v_x\mathbf{\hat{i}}+(v_x\partial_x+ v_z\partial_z)v_z\mathbf{\hat{k}} \right].
+\end{equation}
+
+\begin{equation}
+    \nabla^2 p_1= - \partial_z\left(\rho_1 g\right) - \nabla\cdot\left[(\rho_0v_x\partial_x+ \rho_0v_z\partial_z)v_x\mathbf{\hat{i}}+(\rho_0v_x\partial_x+ \rho_0v_z\partial_z)v_z\mathbf{\hat{k}} \right].
+\end{equation}
+
+\begin{equation}
+    \nabla^2 p_1= - \partial_z\left(\rho_1 g\right) - \partial_x\left[\rho_0v_x\partial_xv_x+ \rho_0v_z\partial_zv_x\right]-\partial_z\left[\rho_0v_x\partial_xv_z + \rho_0v_z\partial_zv_z \right].
+\end{equation}
+
+\begin{align*}
+    \nabla^2 p_1 = &- \partial_z\left(\rho_1 g\right) \\
+    &-\partial_x(v_x)\partial_x(\rho_0v_x)-\rho_0v_x\partial^2_x v_x\\
+    &-\partial_z(v_x)\partial_x(\rho_0v_z)-\rho_0v_z \partial_x\partial_z(v_x)\\
+    &-\partial_x(v_z)\partial_z(\rho_0v_x)-\rho_0v_x\partial_z\partial_x(v_z)\\
+    &-\partial_z(v_z)\partial_z(\rho_0v_z)-\rho_0v_z\partial^2_z v_z.
+\end{align*}
+
+By the continuity equation we can remove some terms.
+
+\begin{align*}
+    \nabla^2 p_1 = &- \partial_z\left(\rho_1 g\right) \\
+    &-\rho_0v_x\partial^2_x v_x\\
+    &-\partial_z(v_x)\partial_x(\rho_0v_z)-\rho_0v_z \partial_x\partial_z(v_x)\\
+    &-\partial_x(v_z)\partial_z(\rho_0v_x)-\rho_0v_x\partial_z\partial_x(v_z)\\
+    &-\rho_0v_z\partial^2_z v_z.
+\end{align*}
+
+By $\rho_0$ being constant in the x-direction we get
+
+\begin{align*}
+    \nabla^2 p_1 = &- \partial_z\left(\rho_1 g\right) \\
+    &-v_x\partial^2_x (\rho_0 v_x)\\
+    &-\partial_z(v_x)\partial_x(\rho_0v_z)-\rho_0v_z \partial_x\partial_z(v_x)\\
+    &-\partial_x(v_z)\partial_z(\rho_0v_x)-\rho_0v_x\partial_z\partial_x(v_z)\\
+    &-\rho_0v_z\partial^2_z v_z.
+\end{align*}
+
+And we again use the continuity equation
+
+\begin{align*}
+    \nabla^2 p_1 = &- \partial_z\left(\rho_1 g\right) \\
+    &-\partial_z(v_x)\partial_x(\rho_0v_z)-\rho_0v_z \partial_x\partial_z(v_x)\\
+    &-\partial_x(v_z)\partial_z(\rho_0v_x)-\rho_0v_x\partial_z\partial_x(v_z)\\
+    &-\rho_0v_z\partial^2_z v_z.
+\end{align*}
+
+
+\begin{equation}
+    \nabla^2 p_1 = - \partial_z\left(\rho_1 g\right)
+    -\rho_0\left[v_z \partial_x\partial_z(v_x)+v_x\partial_z\partial_x(v_z)+v_z\partial^2_z v_z \right]
+    -\partial_x(v_z)\partial_z(\rho_0v_x)
+    -\partial_z(v_x)\partial_x(\rho_0v_z)
+\end{equation}
+
+We again use that $\rho_0$ is constant in the x-direction
+
+\begin{equation}
+    \nabla^2 p_1 = - \partial_z\left(\rho_1 g\right)
+    -\rho_0\left[v_z \partial_x\partial_z(v_x)+v_x\partial_z\partial_x(v_z)+v_z\partial^2_z v_z+\partial_z(v_x)\partial_x(v_z) \right]
+    -\partial_x(v_z)\partial_z(\rho_0v_x)
+\end{equation}
+
+This can be simplified to
+
+\begin{equation}
+    \nabla^2 p_1 = - \partial_z\left(\rho_1 g\right)
+    -\rho_0\left[v_z \partial_x\partial_z(v_x)+v_x\partial_z\partial_x(v_z)+v_z\partial^2_z v_z+\partial_z(v_x)\partial_x(v_z) \right]
+    -\partial_x(v_z)\partial_z(\rho_0v_x)
+\end{equation}
+
+Simplifying the bracket term
+
+\begin{equation}
+    \nabla^2 p_1 = - \partial_z\left(\rho_1 g\right)
+    -\rho_0\left[\partial_x\partial_z(v_x v_z)+v_z\partial^2_z v_z+\partial_z(v_x)\partial_x(v_z) \right]
+    -\partial_x(v_z)\partial_z(\rho_0v_x)
+\end{equation}
+
+Expanding the last term
+
+\begin{equation}
+    \nabla^2 p_1 = - \partial_z\left(\rho_1 g\right)
+    -\rho_0\left[\partial_x\partial_z(v_x v_z)+v_z\partial^2_z v_z+\partial_z(v_x)\partial_x(v_z) \right]
+    -\rho_0\partial_x(v_z)\partial_z(v_x)-v_x \partial_x(v_z)\partial_z(\rho_0)
+\end{equation}
+
+\begin{equation}
+    \nabla^2 p_1 = - \partial_z\left(\rho_1 g\right)
+    -\rho_0\left[\partial_x\partial_z(v_x v_z)+v_z\partial^2_z v_z+\partial_z(v_x)\partial_x(v_z) +\partial_x(v_z)\partial_z(v_x)\right]
+    -v_x \partial_x(v_z)\partial_z(\rho_0)
+\end{equation}
+
+\begin{equation}
+    \nabla^2 p_1 = - \partial_z\left(\rho_1 g\right)
+    -\rho_0\left[\partial_x\partial_z(v_x v_z)+v_z\partial^2_z v_z+2\partial_z(v_x)\partial_x(v_z)\right]
+    -v_x \partial_x(v_z)\partial_z(\rho_0)
+\end{equation}
+
+THERE MUST BE SOME WAY TO SIMPLIFY THIS BUT I CAN'T SEE IT!
+
+
+
+\bibliographystyle{apalike}
+\bibliography{initialization.bib}
+
+\end{document}

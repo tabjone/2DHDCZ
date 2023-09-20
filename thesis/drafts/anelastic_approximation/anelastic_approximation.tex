@@ -110,10 +110,18 @@ Doing the same with the \textit{entropy equation} \ref{eq:entropy_wrt_t} gives u
     \partial_t s_1 = \frac{1}{\rho_0 T_0}\left[ \partial_x (K\rho_0T_0\partial_xs_1) + \partial_z (K\rho_0T_0\partial_z s_1)\right] - (v_x\partial_x+v_z\partial_z)(s_0+s_1).
 \end{equation*}
 
+\begin{equation*}
+    \partial_t s_1 = - (v_x\partial_x+v_z\partial_z)(s_0+s_1).
+\end{equation*}
+
 Firstly we use that $K\rho_0=1.866\times10^6$, which is an approximation due to the fact that $c_p \nabla T_1$ and $T_0 \nabla s_1$ are fairly close as is used in \citep{1999ApJS..121..247L}. Secondly we have that $s_0$ and $T_0$ are variablees of $z$ only and can therefore re-write the equation as
 
 \begin{equation}
     \partial_t s_1 = \frac{1.866\times10^6}{\rho_0 T_0}\left[ T_0\partial^2_x s_1 + T_0\partial_z^2s_1 +\partial_z s_1 \partial_z T_0 \right] - (v_x\partial_x+v_z\partial_z)s_1 - v_z\partial_z s_0.
+\end{equation}
+
+\begin{equation}
+    \partial_t s_1 = - (v_x\partial_x+v_z\partial_z)s_1 - v_z\partial_z s_0.
 \end{equation}
 
 \section{Discretization}

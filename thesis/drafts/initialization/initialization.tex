@@ -23,7 +23,7 @@ To initialize the background fields we will start by picking some reference valu
 \begin{equation}
     m(r_r)=\int_0^{r_r} dm = 4\pi \int_0^{r_r} \rho(r')r'^2 dr',
 \end{equation}
-using cumulative trapezoidal integration. We extract the temperature $T(r_r)$, density $\rho(r_r)$ and pressure $p(r_r)$, and calculate the entropy $s(r_r)=c_p$, where the spesific heat at constant pressure
+using cumulative trapezoidal integration. We extract the temperature $T(r_r)$, density $\rho(r_r)$ and pressure $p(r_r)$, and calculate the entropy $s(r_r)=c_p$, where the spesific heat at constant pressure for an ideal gas is
 
 \begin{equation*}
     c_p = r_*/(1-1/\gamma),
@@ -37,14 +37,14 @@ $r_*=p/(\rho T)$ is the ideal gas constant normalized by the average mass per pa
 where $\Delta\nabla$ is the superadiabaticity parameter and
 
 \begin{equation*}
-    H = - \frac{dz}{d\ln p} = - p\frac{dz}{dp}
+    H = - \frac{dr}{d\ln p} = - p\frac{dr}{dp}
 \end{equation*}
 is the pressure scale height \citep{1999ApJS..121..247L}. This gives us that the governing equations for the background fields are
 \begin{align}
     \frac{\partial m}{\partial r} &= 4\pi r^2\rho(r), \label{eq:dm_dr}\\
     \frac{\partial p}{\partial r} &= -\frac{G m(r)}{r^2}\rho(r), \label{eq:dp_dr}\\
     \frac{\partial T}{\partial r} &= \nabla_{*} \frac{T}{p}\frac{\partial p}{\partial r}, \label{eq:dT_dr}\\
-    \frac{ds}{dr} &=\frac{c_p}{p}\frac{dp}{dr}\Delta\nabla, \label{eq:ds_dr}
+    \frac{ds}{dr} &=\frac{\Delta\nabla}{\rho T (1-1/\gamma)}\frac{dp}{dr}, \label{eq:ds_dr}
 \end{align}
 
 where $G$ is the universal gravitational constant. These equations, in order, are the mass of a shell with thickness $dr$, the hydrostatic equilibrium condition, the ????????? and the first-order entropy gradient.
@@ -86,8 +86,7 @@ where $p<1$ is constant. Then
 \begin{equation*}
     dr = \frac{pV}{f}.
 \end{equation*}
-
-To update the density we will use assume ideal gas and get the equation of state
+We can then pick the smallest $dr$ when calculating this for \label{eq:dm_dr}, \label{eq:dp_dr}, \label{eq:dT_dr} and \label{eq:ds_dr}. To update the density we will use assume ideal gas and get the equation of state
 \begin{equation*}
     pV = Nk_B T,
 \end{equation*}

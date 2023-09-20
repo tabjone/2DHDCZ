@@ -21,6 +21,16 @@
 
 \begin{document}
 
+POSSIBLE ERROR: The fourier series analysis assumes that $f$ is periodic in 
+
+\begin{equation*}
+    \frac{\partial u}{\partial t} = -a \frac{\partial u}{\partial x}=f.
+\end{equation*}
+
+This is true for the xy-plane but not in the z-direction. Hva setter jeg $k$ til på førsteaksen??
+
+ERROR: Rk2 method is not correct here. Division by 1/2 error in k2.
+
 \section{Von Neumann analysis}
 
 We will analyse the advection equation to determine the required step-sizes for our solver. The advection equation is
@@ -28,13 +38,12 @@ We will analyse the advection equation to determine the required step-sizes for 
 \begin{equation}
     \frac{\partial u(t,x)}{\partial t} = -a \frac{\partial u(t,x)}{\partial x},
 \end{equation}
-where $u(t,x)$ is the exact solution and $a$ is constant. This is discretized over a grid such that $y(t_n,x_j)=y_{n,j}$, where $t_n = n\Delta t$ and $x_j = j\Delta x$ for $n,j\in\mathbb{N}$, is our numerical solution. Then the advection equation becomes
+where $u(t,x)$ is the exact solution and $a$ is constant. This is discretized over a grid such that $y(t_n,x_j)=y_{n,j}$, where $t_n = n\Delta t$ and $x_j = j\Delta x$ for $n,j\in\mathbb{N}$, is our numerical solution. The advection equation then becomes
 
 \begin{equation}
     \left[\frac{\partial y}{\partial t}\right]_{n,j} = -a \left[\frac{\partial y}{\partial x}\right]_{n,j}.
 \end{equation}
-
-The numerical solution
+The numerical solution is
 \begin{equation}
     y_{n,j} = u(t_n,x_j)+\epsilon_{n,j},
 \end{equation}
@@ -119,7 +128,7 @@ And for the temporal schemes:
     \text{Fourth order RK} &: g = 1+\mu + \frac{1}{2}\mu^2+\frac{1}{6}\mu^3+\frac{1}{24}\mu^4.
 \end{align*}
 
-In figures \ref{fig:vn_rk1}, \ref{fig:vn_rk2}, \ref{fig:vn_rk3} and \ref{fig:vn_rk4} we see the amplification factor for different $C$ and $\beta$. Using the periodicity of the error we can set $k=1$ and pick $\Delta x$ and $\Delta t$ depending on the magnitude of $a$.
+In figures \ref{fig:vn_rk1}, \ref{fig:vn_rk2}, \ref{fig:vn_rk3} and \ref{fig:vn_rk4} we see the amplification factor for different $C$ and $\beta$. Using the periodicity of $\beta$ we can pick $\Delta x$ and a corresponding $\Delta t$ given the magnitude of $a$.
 
 \begin{figure}[htbp]
     \centering
