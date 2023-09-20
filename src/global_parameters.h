@@ -16,16 +16,22 @@
 #define GAMMA 5.0/3 // Superadiabatic parameter
 
 #define K 0.01 // superadiabacicity parameter in CZ
-#define p 0.1 // Number for determining step-size in space
+#define p_step 0.1 // Number for determining step-size in space
 #define NABLA_AD 0.4
+#define GAMMA 5.0/3 // Superadiabatic parameter
 
-#define x_size 0.01 // In units of solar radii
-#define dx 0.0001 // Step-size in x-direction in units of solar radii
-#define dy 0.0001 // Step-size in y-direction in units of solar radii
-#define dz 0.0001 // Step-size in z-direction in units of solar radii
+#define X_SIZE 0.05 // In units of solar radii
+
+// This should be split for x and z directions
+#define RESOLUTION 100 // ...
 
 
 // 0 for constant, others not implemented yet
 #define EXTRAPOLATE_GHOST_CELLS 0
+
+#define T 500 // Simulation time in seconds
+#define SAVE_INTERVAL 1.0 // Save interval in seconds
+
+#define DEBUG 1
 
 #endif
