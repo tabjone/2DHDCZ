@@ -137,6 +137,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     }
 
     // Interpolating the background variables to the grid
+    double x0, x1;
     for (i = bg->nz_ghost; i < bg->nz_full-bg->nz_ghost; i++)
     {
         // Handle edge cases
@@ -163,8 +164,8 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
             {
                 k++;
             }
-            double x0 = r[k-1];
-            double x1 = r[k];
+            x0 = r[k-1];
+            x1 = r[k];
             bg->p0[i] = interpolate_1D_linear(x0, x1, p0[k-1], p0[k], bg->r[i]);
             bg->T0[i] = interpolate_1D_linear(x0, x1, T0[k-1], T0[k], bg->r[i]);
             bg->rho0[i] = interpolate_1D_linear(x0, x1, rho0[k-1], rho0[k], bg->r[i]);

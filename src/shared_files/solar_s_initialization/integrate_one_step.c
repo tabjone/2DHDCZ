@@ -24,10 +24,10 @@ void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown)
         bg->N_increment = bg->N_increment + 1;
     }
 
-    double dr1 = fabs(p * bg->m[i]/dm_dr);
-    double dr2 = fabs(p * bg->p0[i]/dp_dr);
-    double dr3 = fabs(p * bg->T0[i]/dT_dr);
-    double dr4 = fabs(p * bg->s0[i]/ds_dr);
+    double dr1 = fabs(p_step * bg->m[i]/dm_dr);
+    double dr2 = fabs(p_step * bg->p0[i]/dp_dr);
+    double dr3 = fabs(p_step * bg->T0[i]/dT_dr);
+    double dr4 = fabs(p_step * bg->s0[i]/ds_dr);
 
     double dr;
     if (dr1 < dr2 && dr1 < dr3 && dr1 < dr4) {
