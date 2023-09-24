@@ -1,8 +1,8 @@
 #include "solve_diff_eqs.h"
 
-double rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
+double rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
 {
-    int nx = fg->nx;
+    int nx = grid_info->nx;
     
     double **rho1 = fg->rho1;
     double **p1 = fg->p1;
@@ -11,16 +11,18 @@ double rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *
     double *rho0 = bg->rho0;
     double *g = bg->g;
 
-    double dx = fg->dx;
-    double dz = fg->dz;
+    double dx = grid_info->dx;
+    double dz = grid_info->dz;
 
     double dp1_dz, dvz_dx, dvz_dz;
 
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);
-    int j_minus2 = periodic_boundary(j-2, nx);
     int j_plus = periodic_boundary(j+1, nx);
+    #if UPWIND_ORDER > 1
+    int j_minus2 = periodic_boundary(j-2, nx);
     int j_plus2 = periodic_boundary(j+2, nx);
+    #endif
 
     #if UPWIND_ORDER == 1
     if (vx[i][j] >= 0)

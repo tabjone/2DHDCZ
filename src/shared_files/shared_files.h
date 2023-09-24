@@ -12,5 +12,6 @@ int periodic_boundary(int i, int limit);
 #include "./solar_s_initialization/solar_s_initialization.h"
 #include "./interpolation/interpolation.h"
 #include "./extrapolation/extrapolation.h"
+#include "./array_copy/array_copy.h"
 
 #endif // SHARED_FILES_SHARED_FILES_H_

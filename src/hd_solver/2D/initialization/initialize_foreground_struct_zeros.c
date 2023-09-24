@@ -1,25 +1,22 @@
 #include "initialization.h"
 
-void initialize_foreground_struct_zeros(struct ForegroundVariables2D *fg)
+void initialize_foreground_struct_zeros(struct ForegroundVariables2D *fg, struct GridInfo *grid_info)
 {
-    int nz = fg->nz;
-    int nz_ghost = fg->nz_ghost;
-    int nx = fg->nx;
-    int i, j;
+    int nx = grid_info->nx;
+    int nz_full = grid_info->nz_full;
 
-
-    for (i = nz_ghost; i < nz+nz_ghost; i++)
+    for (int i = 0; i < nz_full; i++)
     {
-        for (j = 0; j < nx; j++)
+        for (int j = 0; j < nx; j++)
         {
             fg->p1[i][j] = 0.0;
             fg->rho1[i][j] = 0.0;
-            fg->T1[i][j] = 0.0;
+            fg->T1[i][j] = 100.0;
             fg->s1[i][j] = 0.0;
             fg->vx[i][j] = 0.0;
             fg->vz[i][j] = 0.0;
         }
     }
 
-    extrapolate_2D(fg);
+    extrapolate_2D(fg, grid_info);
 }

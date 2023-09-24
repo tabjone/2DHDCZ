@@ -1,10 +1,10 @@
 #include "extrapolation.h"
 
-void extrapolate_2D(struct ForegroundVariables2D *fg)
+void extrapolate_2D(struct ForegroundVariables2D *fg, struct GridInfo *grid_info)
 {
-    int nz_full = fg->nz_full;
-    int nz_ghost = fg->nz_ghost;
-    int nx = fg->nx;
+    int nz_full = grid_info->nz_full;
+    int nz_ghost = grid_info->nz_ghost;
+    int nx = grid_info->nx;
 
     // Constant extrapolation
     #if EXTAPOLATE_GHOST_CELLS == 0

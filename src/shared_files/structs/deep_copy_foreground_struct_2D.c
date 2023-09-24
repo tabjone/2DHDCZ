@@ -1,13 +1,11 @@
 #include "structs.h"
 
-void deep_copy_foreground_2D(struct ForegroundVariables2D *destination, struct ForegroundVariables2D *source) 
+void deep_copy_foreground_2D(struct ForegroundVariables2D *destination, struct ForegroundVariables2D *source, struct GridInfo *grid_info) 
 {
-    int nz_full = source->nz_full;
-    int nx = source->nx;
-    double dz = source->dz;
-    double dx = source->dx;
+    int nz_full = grid_info->nz_full;
+    int nx = grid_info->nx;
 
-    allocate_foreground_struct_2D(nz_full, nx, dz, dx, &destination);
+    allocate_foreground_struct_2D(&destination, nz_full, nx);
 
     for (int i = 0; i < nz_full; i++) 
     {
@@ -21,11 +19,5 @@ void deep_copy_foreground_2D(struct ForegroundVariables2D *destination, struct F
             destination->vz[i][j] = source->vz[i][j];
         }
     }
-    
-    destination->nz = source->nz;
-    destination->nz_ghost = source->nz_ghost;
-    destination->nz_full = source->nz_full;
-    destination->nx = source->nx;
-    destination->dx = source->dx;
-    destination->dz = source->dz;
+
 }

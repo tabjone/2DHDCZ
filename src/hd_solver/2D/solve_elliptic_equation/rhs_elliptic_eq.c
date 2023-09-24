@@ -1,6 +1,6 @@
 #include "solve_elliptic_equation.h"
 
-double rhs_elliptic_eq(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
+double rhs_elliptic_eq(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
 {
     double *rho0 = bg->rho0;
     double *g = bg->g;
@@ -9,10 +9,10 @@ double rhs_elliptic_eq(struct BackgroundVariables *bg, struct ForegroundVariable
     double **vx = fg->vx;
     double **vz = fg->vz;
 
-    int nx = fg->nx;
+    int nx = grid_info->nx;
 
-    double dx = fg->dx;
-    double dz = fg->dz;
+    double dx = grid_info->dx;
+    double dz = grid_info->dz;
 
     int j_minus = periodic_boundary(j-1, nx);
     int j_plus = periodic_boundary(j+1, nx);

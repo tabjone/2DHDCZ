@@ -2,85 +2,112 @@
 
 int main_hd_2D(int argc, char *argv[])
 {
-    // Fix this so that we instead chose nx, nz
+    double t, dt, t_since_save;
+    int save_nr = 0;
+
+    // Calculating the size of the grid
     double L_z = (R_END - R_START)*R_SUN;
     double L_x = X_SIZE*R_SUN;
 
-    printf("L_z = %.10f\n", L_z/R_SUN);
-    printf("L_x = %.10f\n", L_x/R_SUN);
+    // Calculating the size of the grid cells
+    double dx = L_x/(NX - 1);
+    double dz = L_z/(NZ - 1);
 
-    #if RESOLUTION == 0
-        printf("Error: Resolution must be greater than 0\n");
-    #endif
+    // Calculating the number of ghost cells
+    int nz_ghost;
+    if (UPWIND_ORDER >= CENTRAL_ORDER)
+    {
+        nz_ghost = UPWIND_ORDER;
+    }
+    else
+    {
+        nz_ghost = CENTRAL_ORDER;
+    }
 
-    #if UPWIND_ORDER == 2
-        double dx = 3*L_x/M_PI/RESOLUTION;
-        double dz = 3*L_z/M_PI/RESOLUTION;
-        //double dx = 100;
-        //double dz = 100;
+    // Calculating the number of cells in the full grid
+    int nz_full = NZ + 2*nz_ghost;
 
+    double z0 = R_SUN * R_START;
+    double z1 = R_SUN * R_END;
+    double x0 = 0.0;
+    double x1 = R_SUN * X_SIZE;
 
-    #endif
- 
-    int nx = L_x/dx + 1.5; // Number of grid points in x-direction
-    int nz = L_z/dz + 1.5; // Number of grid points in z-direction 
-
-    printf("nx*dx = %.10f\n", nx*dx/R_SUN);
-    printf("nz*dz = %.10f\n", nz*dz/R_SUN);
-
+    // Declare the background and foreground variables
     struct BackgroundVariables *bg;
     struct ForegroundVariables2D *fg, *fg_previous, *tmp_ptr;
+    struct GridInfo *grid_info;
 
-    allocate_background_struct(nz, dz, &bg);
-    allocate_foreground_struct_2D(nz, nx, dz, dx, &fg);
-    allocate_foreground_struct_2D(nz, nx, dz, dx, &fg_previous);
+    allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NX, dz, dx, z0, z1, x0, x1);
 
-    solar_s_background_initialization(bg);
-    save_background(bg);
+    // Allocating memory for the background and foreground variables
+    allocate_background_struct(&bg, NZ);
+    allocate_foreground_struct_2D(&fg, nz_full, NX);
+    allocate_foreground_struct_2D(&fg_previous, nz_full, NX);
+
+    // Initialize the background variables and saving it to file
+    solar_s_background_initialization(bg, grid_info);
+    save_background(bg, grid_info);
     
+    // Initialize the foreground variables
+    if (true)
+    {
+        initialize_foreground_struct_zeros(fg_previous, grid_info);
+    }
+    if (false)
+    {
+        initialize_foreground_struct_ones(fg_previous, grid_info);
+    }
+    if (false)
+    {
+        initialize_velocity_right(fg_previous, grid_info);
+    }
+    if (false)
+    {
+        initialize_foreground_struct_density_pertubation(fg_previous, grid_info);
+    }
 
-    //initialize_foreground_struct_zeros(fg_previous);
-    initialize_foreground_struct_pertubation(fg_previous);
-    //initialize_foreground_struct_zeros(fg_previous);
-    // Copy foreground_variables to fg_previous
-
-    // SOME ERROR HERE
-    //deep_copy_foreground_2D(fg_previous, fg);
-
-    double dt = 0.1;
-
-    save_foreground(fg_previous, 0, 0.0);
-    double t = 0.0;
-
-    int save_nr = 1;
     
-    double epsilon = 1e-6; // Small number for comparing doubles
+    // Saving the foreground variables to file
+    save_foreground(fg_previous, grid_info, 0, 0.0);
+    save_nr ++;
     
+    t_since_save = 0.0;
+    t = 0.0;
     while (t < T)
     {
-        one_time_step(bg, fg_previous, fg, dt);
+        break;
+        dt = one_time_step(bg, fg_previous, fg, grid_info, t==0);
         t += dt;
+        t_since_save += dt;
         
-        if (fabs(fmod(t, SAVE_INTERVAL)) < epsilon)
+        if (t_since_save > SAVE_INTERVAL && SAVE_ALL == 0)
         {
-        save_foreground(fg, save_nr, t);
-        save_nr++;
+            save_foreground(fg, grid_info, save_nr, t);
+            save_nr++;
+            t_since_save = 0.0;
         }
-        
+        else if (SAVE_ALL == 1)
+        {
+            save_foreground(fg, grid_info, save_nr, t);
+            save_nr++;
+        }        
 
         // pointer swap
         tmp_ptr = fg_previous;
         fg_previous = fg;
         fg = tmp_ptr;
         
-        printf("t = %.1f\n", t);
-        
-
+        printf("t = %.2f\n", t);
+        break;
     }
-    save_foreground(fg_previous, save_nr, t);
+
+    // Save last time step
+    save_foreground(fg_previous, grid_info, save_nr, t);
     
+    // Deallocating memory
     deallocate_background_struct(bg);
     deallocate_foreground_struct_2D(fg);
     deallocate_foreground_struct_2D(fg_previous);
+    deallocate_grid_info_struct(grid_info);
     return 0;
 }

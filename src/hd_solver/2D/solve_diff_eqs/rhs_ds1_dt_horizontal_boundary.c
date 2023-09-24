@@ -1,6 +1,6 @@
 #include "solve_diff_eqs.h"
 
-double rhs_ds1_dt_horizontal_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, int i, int j)
+double rhs_ds1_dt_horizontal_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
 {
     /*
     int nx = fg->nx;
@@ -41,4 +41,6 @@ double rhs_ds1_dt_horizontal_boundary(struct BackgroundVariables *bg, struct For
     #endif
 
     return - vx[i][j] * upwind_ds1_dx;*/
+    printf("THIS SHOULD NOT BE USED!\n");
+    return 1.0;
 }

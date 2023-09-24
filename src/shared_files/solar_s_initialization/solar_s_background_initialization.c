@@ -1,6 +1,6 @@
 #include "solar_s_initialization.h"
 
-void solar_s_background_initialization(struct BackgroundVariables *bg)
+void solar_s_background_initialization(struct BackgroundVariables *bg, struct GridInfo *grid_info)
 {
     // Creating arrays for solar_s data and allocating memory
     int solar_s_size = 2482;
@@ -131,14 +131,14 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     deallocate_integration_variables(&i_var_down);
 
     // Initialize background radius array
-    for (i = 0; i < bg->nz+bg->nz_ghost; i++)
+    for (i = 0; i < grid_info->nz+grid_info->nz_ghost; i++)
     {
-        bg->r[i+bg->nz_ghost] = R_SUN * R_START + i * R_SUN * (R_END - R_START) / (bg->nz-1.0);
+        bg->r[i+grid_info->nz_ghost] = R_SUN * R_START + i * R_SUN * (R_END - R_START) / (grid_info->nz-1.0);
     }
 
     // Interpolating the background variables to the grid
     double x0, x1;
-    for (i = bg->nz_ghost; i < bg->nz_full-bg->nz_ghost; i++)
+    for (i = grid_info->nz_ghost; i < grid_info->nz_full-grid_info->nz_ghost; i++)
     {
         // Handle edge cases
         if (bg->r[i] < r[0])
@@ -175,7 +175,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg)
     }
 
     // Extrapolating background variables to ghost cells
-    extrapolate_background(bg);
+    extrapolate_background(bg, grid_info);
 
     // Deallocating full integration arrays
     free(r);

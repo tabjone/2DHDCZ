@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int periodic_boundary(int i, int limit) 
 {
     /*
@@ -17,7 +19,7 @@ int periodic_boundary(int i, int limit)
 
     Ex.
     ----
-    i = -1, limit = 5 -> 4 (or 5?)
+    i = -1, limit = 5 -> 4
     i = 5, limit = 5 -> 0
     */
     return (i + limit) % (limit);

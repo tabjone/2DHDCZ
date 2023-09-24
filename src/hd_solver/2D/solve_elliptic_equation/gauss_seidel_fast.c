@@ -1,8 +1,14 @@
 #include <float.h>
 #include "solve_elliptic_equation.h"
 
-void gauss_seidel_fast_second_order(double **b, double dz, double dx, int nx, int nz, int nz_ghost, int max_iterations, double tolerance, double **p1)
+void gauss_seidel_fast_second_order(double **b, double **p1, double **initial_p1, struct GridInfo *grid_info)
 {
+    int nx = grid_info->nx;
+    int nz = grid_info->nz;
+    int nz_ghost = grid_info->nz_ghost;
+    double dx = grid_info->dx;
+    double dz = grid_info->dz;
+
     double a = 1.0/(dz*dz);
     double g = 1.0/(dx*dx);
     double c = 2.0*(a+g);
@@ -16,7 +22,7 @@ void gauss_seidel_fast_second_order(double **b, double dz, double dx, int nx, in
     {
         for (int j = 0; j < nx; j++)
         {
-            pnew[i][j] = 0.0;
+            pnew[i][j] = initial_p1[i+nz_ghost][j];
             p[i][j] = 0.0;
         }
     }
@@ -28,17 +34,19 @@ void gauss_seidel_fast_second_order(double **b, double dz, double dx, int nx, in
 
     double tolerance_criteria = DBL_MAX;
 
-    while (tolerance_criteria > tolerance)
+    int j_plus, j_minus;
+
+    while (tolerance_criteria > GS_TOL)
     {
         max_difference = 0.0;
         max_pnew = 0.0;
 
-        if (iter > max_iterations)
+        if (iter > GS_MAX_ITER)
             {
                 break;
             }
 
-        // Copy p into pnew
+        // Copy pnew to p
         for (int i = 1; i < nz-1; i++)
         {
             for (int j = 1; j < nx-1; j++)
@@ -52,7 +60,12 @@ void gauss_seidel_fast_second_order(double **b, double dz, double dx, int nx, in
         {
             for (int j = 1; j < nx-1; j++)
             {
-                pnew[i][j] = (a*(pnew[i+1][j]+p[i-1][j])+g*(p[i][j+1]+pnew[i][j-1])-b[i+nz_ghost][j])/c;
+                j_plus = periodic_boundary(j+1, nx);
+                j_minus = periodic_boundary(j-1, nx);
+
+                //pnew[i][j] = (a*(pnew[i+1][j]+p[i-1][j])+g*(p[i][j_plus]+pnew[i][j_minus])-b[i+nz_ghost][j])/c;
+                pnew[i][j] = (a*(p[i+1][j]+p[i-1][j])+g*(p[i][j_plus]+p[i][j_minus])-b[i+nz_ghost][j])/c;
+
 
                 // Finding maximum absolute value of pnew
                 abs_pnew = fabs(pnew[i][j]);

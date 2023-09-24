@@ -1,10 +1,7 @@
+#include "one_time_step.h"
+#include <float.h>
 
-
-
-
-/*
-
-void rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, double dt)
+double rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, bool first_run)
 {
     // Steps for each iteration:
     // Solve elliptic equation
@@ -14,32 +11,51 @@ void rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, 
     // Solve elliptic equation again
 
 
-    int nz_ghost = fg->nz_ghost;
-    int nz_full = fg->nz_full;
-    int nx = fg->nx;
+    int nz_ghost = grid_info->nz_ghost;
+    int nz_full = grid_info->nz_full;
+    int nx = grid_info->nx;
+    double dz = grid_info->dz;
+    double dx = grid_info->dx;
 
-    solve_elliptic_equation(bg, fg_prev); // Getting p1
-
-    // This is repeated in all methods, so make functions!!!
-
-    // Setting updated values of p1 to fg
-    for (int i = 0; i < nz_full; i++)
+     // Finding dt
+    double dt = DBL_MAX;  // Set to the maximum representable finite floating-point value
+    #if UPWIND_ORDER == 1
+    // First finding dt
+    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < nx; j++)
         {
-            fg->p1[i][j] = fg_prev->p1[i][j];
+            double new_dt = CFL_CUT *1.0 / (fabs(fg_prev->vx[i][j])/dx + fabs(fg_prev->vz[i][j])/dz);
+            if (new_dt < dt) 
+            {
+                dt = new_dt;  // update dt if the new value is smaller
+            }
         }
     }
-
-    // Extrapolating p1 (constant extrapolation, move this to function later with possiblity for different extrapolation scheme)
-    for (int k = 0; k < nz_ghost; k++)
+    #elif UPWIND_ORDER == 2
+    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < nx; j++)
         {
-            fg->p1[k][j] = fg->p1[nz_ghost][j];
-            fg->p1[nz_full-k-1][j] = fg->p1[nz_full-nz_ghost-1][j];
+            double new_dt = CFL_CUT *0.5 / (fabs(fg_prev->vx[i][j])/dx + fabs(fg_prev->vz[i][j])/dz);
+            if (new_dt < dt) 
+            {
+                dt = new_dt;  // update dt if the new value is smaller
+            }
         }
     }
+    #endif
+
+    if (dt > MAX_DT)
+    {
+        dt = MAX_DT;
+    }
+
+    if (first_run && dt > 1.0)
+    {
+        dt = 1.0;
+    }
+
 
     double **k1_s, **k2_s;
     double **k1_vx, **k2_vx;
@@ -55,15 +71,14 @@ void rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, 
 
     // Just implementing RK4 for s1 for now to understand implementation
 
-    double dt = 0.1;
     // Calculating k1
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
     {
         for (int j = 0; j < nx; j++)
         {
-            k1_s[i][j] = rhs_ds1_dt(bg, fg_prev, i, j);
-            k1_vx[i][j] = rhs_dvx_dt(bg, fg_prev, i, j);
-            k1_vz[i][j] = rhs_dvz_dt(bg, fg_prev, i, j);
+            k1_s[i][j] = rhs_ds1_dt(bg, fg_prev, grid_info, i, j);
+            k1_vx[i][j] = rhs_dvx_dt(bg, fg_prev, grid_info, i, j);
+            k1_vz[i][j] = rhs_dvz_dt(bg, fg_prev, grid_info, i, j);
 
             // This is what we feed into the rhs for finding k2
             fg->s1[i][j] = fg_prev->s1[i][j] + dt * k1_s[i][j];
@@ -71,22 +86,55 @@ void rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, 
             fg->vz[i][j] = fg_prev->vz[i][j] + dt * k1_vz[i][j];
         }
     }
+
+    // Implement top and bottom boundary conditions
+    // at [nz_ghost][j] and [nz_full-nz_ghost-1][j]
+    for (int j = 0; j < nx; j++)
+    {
+        // Top boundary
+        fg->s1[nz_ghost][j] = 0.0;
+        fg->vx[nz_ghost][j] = rhs_dvx_dt_horizontal_boundary(bg, fg_prev, grid_info, nz_ghost, j);
+        fg->vz[nz_ghost][j] = 0.0;
+
+        // Bottom boundary
+        fg->s1[nz_full-nz_ghost-1][j] = 0.0;
+        fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_horizontal_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
+        fg->vz[nz_full-nz_ghost-1][j] = 0.0;
+    }
+
     // Calculating k2
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
     {
         for (int j = 0; j < nx; j++)
         {
-            k2_s[i][j] = rhs_ds1_dt(bg, fg, i, j);
-            k2_vx[i][j] = rhs_dvx_dt(bg, fg, i, j);
-            k2_vz[i][j] = rhs_dvz_dt(bg, fg, i, j);
+            k2_s[i][j] = rhs_ds1_dt(bg, fg, grid_info, i, j);
+            k2_vx[i][j] = rhs_dvx_dt(bg, fg, grid_info, i, j);
+            k2_vz[i][j] = rhs_dvz_dt(bg, fg, grid_info, i, j);
         }
     }
 
-    // Find k1, k2 ect before for boundary before updating variables
+    // Implement top and bottom boundary conditions
+    // at [nz_ghost][j] and [nz_full-nz_ghost-1][j]
+    for (int j = 0; j < nx; j++)
+    {
+        // Top boundary
+        fg->s1[nz_ghost][j] = 0.0;
+        fg->vx[nz_ghost][j] = rhs_dvx_dt_horizontal_boundary(bg, fg, grid_info, nz_ghost, j);
+        fg->vz[nz_ghost][j] = 0.0;
 
-    // Requirement: the vertical velocity at the top and bottom boundaries must be zero
-    // Requirement: the horizontal velocity gradient at the top and bottom boundaries must be zero
+        // Bottom boundary
+        fg->s1[nz_full-nz_ghost-1][j] = 0.0;
+        fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_horizontal_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
+        fg->vz[nz_full-nz_ghost-1][j] = 0.0;
+    }
 
+    // Extrapolate
+    extrapolate_2D_array(fg->s1, nz_full, nz_ghost, nx);
+    extrapolate_2D_array(fg->vx, nz_full, nz_ghost, nx);
+    extrapolate_2D_array(fg->vz, nz_full, nz_ghost, nx);
+
+    solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
+    extrapolate_2D_array(fg->p1, nz_full, nz_ghost, nx);
 
     // Updating variables
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
@@ -99,16 +147,40 @@ void rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, 
         }
     }
 
+    // Extrapolate
+    extrapolate_2D_array(fg->s1, nz_full, nz_ghost, nx);
+    extrapolate_2D_array(fg->vx, nz_full, nz_ghost, nx);
+    extrapolate_2D_array(fg->vz, nz_full, nz_ghost, nx);
 
 
+    deallocate_2D_array(k1_s);
+    deallocate_2D_array(k2_s);
+    deallocate_2D_array(k1_vx);
+    deallocate_2D_array(k2_vx);
+    deallocate_2D_array(k1_vz);
+    deallocate_2D_array(k2_vz);
 
-    // Implement top and bottom boundary conditions
-    // at [nz_ghost][j] and [nz_full-nz_ghost-1][j]
 
-    //Update foreground variables
-    //Euler for ex: fg = fg_prev + rhs_dvx_dt_ * dt;
-    
+    // Solving algebraic equations. Eq of state should be in separate function
+    double c_p;
+    double total_density, total_temperature, total_pressure;
+    for (int i = 0; i < nz_full; i++)
+    {
+        for (int j = 0; j < nx; j++)
+        {
+            total_density = bg->rho0[i] + fg->rho1[i][j];
+            total_temperature = bg->T0[i] + fg->T1[i][j];
+            total_pressure = bg->p0[i] + fg->p1[i][j];
+            //total_density = fg->rho1[i][j];
+            //total_temperature = fg->T1[i][j];
+            //total_pressure = fg->p1[i][j];
+
+            c_p = total_pressure/(1-1/GAMMA) / (total_density*total_temperature);
+
+            fg->T1[i][j] = (fg->s1[i][j]/c_p + (GAMMA-1.0)/GAMMA * fg->p1[i][j]/bg->p0[i]) * bg->T0[i];
+            
+            fg->rho1[i][j] = (fg->p1[i][j]/bg->p0[i] - fg->T1[i][j]/bg->T0[i]) * bg->rho0[i];
+        }
+    }
+    return dt;
 }
-
-}
-*/
