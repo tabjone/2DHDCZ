@@ -1,11 +1,11 @@
 # Compiler and Flags
 CC = gcc
-CFLAGS = -Wall -Isrc -Isrc/shared_files $(HDF5_FLAGS)
+CFLAGS = -Wall -Isrc -Isrc/shared_files $(HDF5_FLAGS) -O3
 LIBS = $(HDF5_LIBS)
 
 # HDF5 library location
-HDF5_FLAGS = -I/opt/homebrew/Cellar/hdf5/1.14.1/include
-HDF5_LIBS = -L/opt/homebrew/Cellar/hdf5/1.14.1/lib -lhdf5
+HDF5_FLAGS = -I/opt/homebrew/opt/hdf5/include
+HDF5_LIBS = -L/opt/homebrew/opt/hdf5/lib -lhdf5
 
 # Source Files
 SRC = $(wildcard src/*.c src/*/*.c src/*/*/*.c src/*/*/*/*.c)
