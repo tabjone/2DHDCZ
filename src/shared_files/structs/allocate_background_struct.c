@@ -1,6 +1,7 @@
 #include "structs.h"
 #include "../array_memory_management/array_memory_management.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void allocate_background_struct(struct BackgroundVariables **bg, int nz_full)
 {

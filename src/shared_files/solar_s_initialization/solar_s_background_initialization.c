@@ -116,7 +116,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
         g[j-jj] = -G * i_var_down.m[jj] / pow(i_var_down.r[jj],2);
     }
 
-    for (int ii = j; ii < i+j; ii++)
+    for (int ii = j; ii < nz; ii++)
     {
         r[ii] = i_var_up.r[ii-j];
         p0[ii] = i_var_up.p0[ii-j];
@@ -131,7 +131,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     deallocate_integration_variables(&i_var_down);
 
     // Initialize background radius array
-    for (i = 0; i < grid_info->nz+grid_info->nz_ghost; i++)
+    for (i = 0; i < grid_info->nz_full-grid_info->nz_ghost; i++)
     {
         bg->r[i+grid_info->nz_ghost] = R_SUN * R_START + i * R_SUN * (R_END - R_START) / (grid_info->nz-1.0);
     }
