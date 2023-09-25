@@ -1,6 +1,6 @@
 #include "io_functions.h"
 
-hid_t create_write_dataset(hid_t group, const char* name, hid_t datatype, hid_t dataspace, void* data)
+hid_t create_write_dataset(hid_t group, const char* name, hid_t datatype, hid_t dataspace, void* data, const char* unit)
 {
     // Create dataset
     hid_t dataset = H5Dcreate2(group, name, datatype, dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -17,6 +17,9 @@ hid_t create_write_dataset(hid_t group, const char* name, hid_t datatype, hid_t 
         return -1;
     }
 
+    // Add unit attribute to the dataset
+    add_string_attribute(dataset, "unit", unit);
+
     // Close dataset
     status = H5Dclose(dataset);
     if (status < 0) {
@@ -26,3 +29,4 @@ hid_t create_write_dataset(hid_t group, const char* name, hid_t datatype, hid_t 
 
     return dataset;  // Return dataset id in case caller needs it (though in this context it's already closed)
 }
+

@@ -2,6 +2,7 @@
 
 int main_hd_2D(int argc, char *argv[])
 {
+    /*
     double t, dt, t_since_save;
     int save_nr = 0;
 
@@ -40,7 +41,7 @@ int main_hd_2D(int argc, char *argv[])
     allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NX, dz, dx, z0, z1, x0, x1);
 
     // Allocating memory for the background and foreground variables
-    allocate_background_struct(&bg, NZ);
+    allocate_background_struct(&bg, nz_full);
     allocate_foreground_struct_2D(&fg, nz_full, NX);
     allocate_foreground_struct_2D(&fg_previous, nz_full, NX);
 
@@ -109,5 +110,45 @@ int main_hd_2D(int argc, char *argv[])
     deallocate_foreground_struct_2D(fg);
     deallocate_foreground_struct_2D(fg_previous);
     deallocate_grid_info_struct(grid_info);
+    return 0;
+
+    */
+
+
+    
+   // Example of loading snap
+
+
+    struct BackgroundVariables *bg;
+    //struct ForegroundVariables2D *fg, *fg_previous, *tmp_ptr;
+    struct ForegroundVariables2D *fg_previous;
+    struct GridInfo *grid_info;
+
+    load_grid_info(&grid_info, "./data/save_test/snap0.h5");
+    allocate_background_struct(&bg, grid_info->nz_full);
+
+    printf("grid_info->nz_full = %d\n", grid_info->nz_full);
+    printf("grid_info->nx = %d\n", grid_info->nx);
+    allocate_foreground_struct_2D(&fg_previous, grid_info->nz_full, grid_info->nx);
+    
+    
+    load_background(bg, grid_info, "./data/save_test/background.h5");
+
+    save_background(bg, grid_info);
+
+    double time;
+    
+    time = load_foreground(fg_previous, grid_info, "./data/save_test/snap0.h5");
+
+    printf("time = %f\n", time);
+
+
+    save_foreground(fg_previous, grid_info, 11, time);
+
+
+    deallocate_grid_info_struct(grid_info);
+    deallocate_background_struct(bg);
+    deallocate_foreground_struct_2D(fg_previous);
+
     return 0;
 }
