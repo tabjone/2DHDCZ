@@ -2,7 +2,7 @@
 #define GLOBAL_PARAMETERS_H__
 
 // Run name, order, time ect.
-#define RUN_NAME "save_test"
+#define RUN_NAME "test_loading"
 
 #define T 1e5 // Simulation time in seconds
 #define MAX_DT 1 // Maximum time step in seconds
