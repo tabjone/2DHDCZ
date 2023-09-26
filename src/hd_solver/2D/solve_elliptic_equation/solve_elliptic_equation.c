@@ -6,7 +6,7 @@ void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVa
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
 
-    double **rhs;
+    FLOAT_P **rhs;
     // CHECK THIS: THIS CAN BE OF SIZE nz, nx INSTEAD OF nz_full, nx !!!
     allocate_2D_array(&rhs, nz_full, nx);
 

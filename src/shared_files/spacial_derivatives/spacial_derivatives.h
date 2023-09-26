@@ -1,19 +1,21 @@
 #ifndef SPACIAL_DERIVATIVES_H__
 #define SPACIAL_DERIVATIVES_H__
 
-double backward_first_derivative_first_order(double centre, double left, double dx_);
-double backward_first_derivative_second_order(double centre, double left, double left2, double dx_);
+#include "global_parameters.h"
 
-double central_first_derivative_second_order(double left, double right, double dx_);
-double central_second_derivative_second_order(double centre, double left, double right, double dx_);
+FLOAT_P backward_first_derivative_first_order(FLOAT_P centre, FLOAT_P left, FLOAT_P dx_);
+FLOAT_P backward_first_derivative_second_order(FLOAT_P centre, FLOAT_P left, FLOAT_P left2, FLOAT_P dx_);
 
-double forward_first_derivative_first_order(double centre, double right, double dx_);
-double forward_first_derivative_second_order(double centre, double right, double right2, double dx_);
+FLOAT_P central_first_derivative_second_order(FLOAT_P left, FLOAT_P right, FLOAT_P dx_);
+FLOAT_P central_second_derivative_second_order(FLOAT_P centre, FLOAT_P left, FLOAT_P right, FLOAT_P dx_);
 
-double central_mixed_derivative_second_order
-(double up_right, double down_right, double up_left, double down_left, double dx_, double dy_);
-double central_mixed_derivative_fourth_order
-(double up_right, double down_right, double up_left, double down_left, 
-double up2_left, double up2_right, double down2_left, double down2_right, double dx_, double dy_);
+FLOAT_P forward_first_derivative_first_order(FLOAT_P centre, FLOAT_P right, FLOAT_P dx_);
+FLOAT_P forward_first_derivative_second_order(FLOAT_P centre, FLOAT_P right, FLOAT_P right2, FLOAT_P dx_);
+
+FLOAT_P central_mixed_derivative_second_order
+(FLOAT_P up_right, FLOAT_P down_right, FLOAT_P up_left, FLOAT_P down_left, FLOAT_P dx_, FLOAT_P dy_);
+FLOAT_P central_mixed_derivative_fourth_order
+(FLOAT_P up_right, FLOAT_P down_right, FLOAT_P up_left, FLOAT_P down_left, 
+FLOAT_P up2_left, FLOAT_P up2_right, FLOAT_P down2_left, FLOAT_P down2_right, FLOAT_P dx_, FLOAT_P dy_);
 
 #endif // SPACIAL_DERIVATIVES_H__

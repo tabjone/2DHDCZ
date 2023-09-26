@@ -1,4 +1,6 @@
-void copy_2D_array(double **src, double **dest, int i_start, int i_end, int j_start, int j_end)
+#include "global_parameters.h"
+
+void copy_2D_array(FLOAT_P **src, FLOAT_P **dest, int i_start, int i_end, int j_start, int j_end)
 {
     for (int i = i_start; i < i_end; i++)
     {

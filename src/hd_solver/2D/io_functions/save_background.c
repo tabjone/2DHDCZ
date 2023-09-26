@@ -15,7 +15,7 @@ void save_background(struct BackgroundVariables *bg, struct GridInfo *grid_info)
     int nz_full = grid_info->nz_full;
     int nz_ghost = grid_info->nz_ghost;
     int nz = grid_info->nz;
-    double dz = grid_info->dz;
+    FLOAT_P dz = grid_info->dz;
 
     hid_t file, group_grid_data, group_variables;
     hid_t dataspace_scalar, dataspace_1d;

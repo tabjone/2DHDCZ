@@ -1,13 +1,15 @@
 #include <stdlib.h>
+#include "global_parameters.h"
 
-void allocate_3D_array(double ****array_ptr, int nz, int ny, int nx) 
+
+void allocate_3D_array(FLOAT_P ****array_ptr, int nz, int ny, int nx) 
 {
     /*
     Allocates memory for a 3D contiguous array.
 
     Parameters
     ----------
-    array_ptr : double****
+    array_ptr : FLOAT_P****
         Pointer to the array to allocate.
     nz : int
         Number of layers in the 3D array (depth).

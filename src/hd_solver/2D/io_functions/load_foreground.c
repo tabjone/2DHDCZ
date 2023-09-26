@@ -1,8 +1,9 @@
 #include "io_functions.h"
 
-double load_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, const char *file_path) {
-    double time;  
+FLOAT_P load_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, const char *file_path) {
+    FLOAT_P time;  
     herr_t status;
+    hid_t dataset_rho1, dataset_p1, dataset_s1, dataset_vx, dataset_vz;
 
     // Open the file
     hid_t file = H5Fopen(file_path, H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -19,57 +20,52 @@ double load_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_i
         exit(1);
     }
 
-    hid_t dataset_rho1 = H5Dopen(fg_group, "rho1", H5P_DEFAULT);
-    // Read the datasets into the structure
-    for (int i = 0; i < grid_info->nz_full; i++)
-    {
-        if (H5Dread(dataset_rho1, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, fg->rho1[i]) < 0)
-            fprintf(stderr, "Failed to read row %d of rho1 dataset\n", i);
-    }
-    H5Dclose(dataset_rho1);
-
     hid_t dataset_T1 = H5Dopen(fg_group, "T1", H5P_DEFAULT);
+    if (H5Dread(dataset_T1, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->T1[0][0]) < 0)
+    fprintf(stderr, "Failed to read the T1 dataset\n");
+    
+
+    printf("In load_foreground.c\n");
+    // print T-values
     for (int i = 0; i < grid_info->nz_full; i++)
     {
-        if (H5Dread(dataset_T1, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, fg->T1[i]) < 0)
-            fprintf(stderr, "Failed to read row %d of T1 dataset\n", i);
+        for (int j = 0; j < grid_info->nx; j++)
+        {
+            printf("%f ",fg->T1[i][j]);
+        }
+        printf("\n");
     }
-    H5Dclose(dataset_T1);
+    
+    dataset_rho1 = H5Dopen(fg_group, "rho1", H5P_DEFAULT);
+    if (H5Dread(dataset_rho1, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->rho1[0][0]) < 0)
+    fprintf(stderr, "Failed to read the rho1 dataset\n");
 
-    hid_t dataset_p1 = H5Dopen(fg_group, "p1", H5P_DEFAULT);
-    for (int i = 0; i < grid_info->nz_full; i++)
-    {
-        if (H5Dread(dataset_p1, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, fg->p1[i]) < 0)
-            fprintf(stderr, "Failed to read row %d of p1 dataset\n", i);
-    }
-    H5Dclose(dataset_p1);
+    dataset_p1 = H5Dopen(fg_group, "p1", H5P_DEFAULT);
+    if (H5Dread(dataset_p1, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->p1[0][0]) < 0)
+    fprintf(stderr, "Failed to read the p1 dataset\n");
 
-    hid_t dataset_s1 = H5Dopen(fg_group, "s1", H5P_DEFAULT);
-    for (int i = 0; i < grid_info->nz_full; i++)
-    {
-        if (H5Dread(dataset_s1, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, fg->s1[i]) < 0)
-            fprintf(stderr, "Failed to read row %d of s1 dataset\n", i);
-    }
-    H5Dclose(dataset_s1);
+    dataset_s1 = H5Dopen(fg_group, "s1", H5P_DEFAULT);
+    if (H5Dread(dataset_s1, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->s1[0][0]) < 0)
 
-    hid_t dataset_vx = H5Dopen(fg_group, "vx", H5P_DEFAULT);
-    for (int i = 0; i < grid_info->nz_full; i++)
-    {
-        if (H5Dread(dataset_vx, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, fg->vx[i]) < 0)
-            fprintf(stderr, "Failed to read row %d of vx dataset\n", i);
-    }
-    H5Dclose(dataset_vx);
+    dataset_vx = H5Dopen(fg_group, "vx", H5P_DEFAULT);
+    if (H5Dread(dataset_vx, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->vx[0][0]) < 0)
 
-    hid_t dataset_vz = H5Dopen(fg_group, "vz", H5P_DEFAULT);
-    for (int i = 0; i < grid_info->nz_full; i++)
-    {
-        if (H5Dread(dataset_vz, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, fg->vz[i]) < 0)
-            fprintf(stderr, "Failed to read row %d of vz dataset\n", i);
-    }
-    H5Dclose(dataset_vz);
-
+    dataset_vz = H5Dopen(fg_group, "vz", H5P_DEFAULT);
+    if (H5Dread(dataset_vz, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->vz[0][0]) < 0)
+ 
     // Close the variables group
     H5Gclose(fg_group);
+
+    printf("In load_foreground after group close\n");
+    // print T-values
+    for (int i = 0; i < grid_info->nz_full; i++)
+    {
+        for (int j = 0; j < grid_info->nx; j++)
+        {
+            printf("%f ",fg->T1[i][j]);
+        }
+        printf("\n");
+    }
 
     // Open the grid_info group
     hid_t grid_info_group = H5Gopen(file, "grid_info", H5P_DEFAULT);

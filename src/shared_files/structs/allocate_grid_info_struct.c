@@ -1,7 +1,7 @@
 #include "structs.h"
 #include <stdlib.h>
 
-void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int nx, double dz, double dx, double z0, double z1, double x0, double x1)
+void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int nx, FLOAT_P dz, FLOAT_P dx, FLOAT_P z0, FLOAT_P z1, FLOAT_P x0, FLOAT_P x1)
 {
     // Allocate grid_info
     *grid_info = (struct GridInfo *)malloc(sizeof(struct GridInfo));

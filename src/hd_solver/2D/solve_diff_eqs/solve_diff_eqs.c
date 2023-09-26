@@ -1,6 +1,6 @@
 #include "solve_diff_eqs.h"
 
-void solve_diff_eqs(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct ForegroundVariables2D *fg_prev, double dt)
+void solve_diff_eqs(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct ForegroundVariables2D *fg_prev, FLOAT_P dt)
 {
     /*
     // DETTE ER JO Rk1 SCHEMET!!!!! 

@@ -1,7 +1,9 @@
 #include "hdf5.h"
 #include <stdlib.h>
+#include "global_parameters.h"
 
-void create_and_write_dataset_1D(hid_t file_id, const char* datasetname, hsize_t* dims, double* data) 
+
+void create_and_write_dataset_1D(hid_t file_id, const char* datasetname, hsize_t* dims, FLOAT_P* data) 
 {
     /*
     Creates a HDF5 file and writes a 1D dataset to it.
@@ -14,7 +16,7 @@ void create_and_write_dataset_1D(hid_t file_id, const char* datasetname, hsize_t
         The name of the saved file.
     dims : hsize_t*
         The dimensions of the dataset.
-    data : double*
+    data : FLOAT_P*
         The data to be written to the dataset.
     */
     // Create the dataspace for the dataset.

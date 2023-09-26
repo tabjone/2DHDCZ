@@ -1,6 +1,6 @@
 #include "io_functions.h"
 
-void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int snap_number, double time)
+void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int snap_number, FLOAT_P time)
 {
     const char* root_header = "This is the root header";
     const char* grid_data_header = "This is the grid data header";
@@ -10,16 +10,16 @@ void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_inf
 
     snprintf(file_path, sizeof(file_path), "data/%s/snap%d.h5", RUN_NAME, snap_number);
 
-    double z0 = grid_info->z0;
-    double z1 = grid_info->z1;
-    double x0 = grid_info->x0;
-    double x1 = grid_info->x1;
+    FLOAT_P z0 = grid_info->z0;
+    FLOAT_P z1 = grid_info->z1;
+    FLOAT_P x0 = grid_info->x0;
+    FLOAT_P x1 = grid_info->x1;
     int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
     int nx = grid_info->nx;
-    double dx = grid_info->dx;
-    double dz = grid_info->dz;
+    FLOAT_P dx = grid_info->dx;
+    FLOAT_P dz = grid_info->dz;
 
     hid_t file, group_grid_data, group_variables;
     hid_t dataspace_scalar, dataspace_2d;

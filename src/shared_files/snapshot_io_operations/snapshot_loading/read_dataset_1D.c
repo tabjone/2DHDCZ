@@ -1,7 +1,9 @@
 #include "hdf5.h"
 #include <stdlib.h>
+#include "global_parameters.h"
 
-void read_dataset_1D(hid_t file_id, const char* datasetname, hsize_t* dims, double* data) 
+
+void read_dataset_1D(hid_t file_id, const char* datasetname, hsize_t* dims, FLOAT_P* data) 
 {
     /*
     Reads and writes a 1D HDF5 dataset into a 1D array.
@@ -14,7 +16,7 @@ void read_dataset_1D(hid_t file_id, const char* datasetname, hsize_t* dims, doub
         Name of the dataset to read.
     dims : hsize_t*
         Array of dimensions of the dataset.
-    data : double*
+    data : FLOAT_P*
         Pointer to the 1D array to write the dataset into.
     */
 

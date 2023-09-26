@@ -1,20 +1,20 @@
 #include "solve_diff_eqs.h"
 
-double rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
+FLOAT_P rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
 {
     int nx = grid_info->nx;
     
-    double **rho1 = fg->rho1;
-    double **p1 = fg->p1;
-    double **vx = fg->vx;
-    double **vz = fg->vz;
-    double *rho0 = bg->rho0;
-    double *g = bg->g;
+    FLOAT_P **rho1 = fg->rho1;
+    FLOAT_P **p1 = fg->p1;
+    FLOAT_P **vx = fg->vx;
+    FLOAT_P **vz = fg->vz;
+    FLOAT_P *rho0 = bg->rho0;
+    FLOAT_P *g = bg->g;
 
-    double dx = grid_info->dx;
-    double dz = grid_info->dz;
+    FLOAT_P dx = grid_info->dx;
+    FLOAT_P dz = grid_info->dz;
 
-    double dp1_dz, dvz_dx, dvz_dz;
+    FLOAT_P dp1_dz, dvz_dx, dvz_dz;
 
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);

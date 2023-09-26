@@ -1,15 +1,15 @@
 #include "solve_diff_eqs.h"
 
-double rhs_ds1_dt_horizontal_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
+FLOAT_P rhs_ds1_dt_horizontal_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
 {
     /*
     int nx = fg->nx;
-    double upwind_ds1_dx;
+    FLOAT_P upwind_ds1_dx;
 
-    double **vx = fg->vx;
-    double **s1 = fg->s1;
+    FLOAT_P **vx = fg->vx;
+    FLOAT_P **s1 = fg->s1;
 
-    double dx = fg->dx;
+    FLOAT_P dx = fg->dx;
 
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);

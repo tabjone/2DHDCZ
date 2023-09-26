@@ -1,4 +1,6 @@
-void copy_3D_array(double ***src, double ***dest, int nz, int ny, int nx)
+#include "global_parameters.h"
+
+void copy_3D_array(FLOAT_P ***src, FLOAT_P ***dest, int nz, int ny, int nx)
 {
     for (int i = 0; i < nz; i++)
     {

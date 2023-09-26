@@ -4,7 +4,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
 {
     // Creating arrays for solar_s data and allocating memory
     int solar_s_size = 2482;
-    double *r_over_R_solar_s, *rho_solar_s, *p_solar_s, *T_solar_s;
+    FLOAT_P *r_over_R_solar_s, *rho_solar_s, *p_solar_s, *T_solar_s;
 
     allocate_1D_array(&r_over_R_solar_s, solar_s_size);
     allocate_1D_array(&rho_solar_s, solar_s_size);
@@ -23,15 +23,15 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     cz_start_index--;
 
     // Variables for start of integration
-    double r_i = r_over_R_solar_s[cz_start_index] * R_SUN;
-    double p0_i = p_solar_s[cz_start_index];
-    double T0_i = T_solar_s[cz_start_index];
-    double rho0_i = rho_solar_s[cz_start_index];
+    FLOAT_P r_i = r_over_R_solar_s[cz_start_index] * R_SUN;
+    FLOAT_P p0_i = p_solar_s[cz_start_index];
+    FLOAT_P T0_i = T_solar_s[cz_start_index];
+    FLOAT_P rho0_i = rho_solar_s[cz_start_index];
     
     // Finding the mass at the start of CZ by cumulative trapezoidal integration
-    double m_i = 0.0; 
-    double dr;
-    double C = 4*M_PI*pow(R_SUN,3);
+    FLOAT_P m_i = 0.0; 
+    FLOAT_P dr;
+    FLOAT_P C = 4*M_PI*pow(R_SUN,3);
     for (int i = solar_s_size-2; i >= cz_start_index; i--) {
         dr =  r_over_R_solar_s[i]-r_over_R_solar_s[i+1];
         m_i += C * 0.5 * (rho_solar_s[i]*pow(r_over_R_solar_s[i], 2) + rho_solar_s[i+1]*pow(r_over_R_solar_s[i+1], 2)) * dr;
@@ -62,7 +62,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     set_initial_integration_values(&i_var_down, r_i, p0_i, T0_i, rho0_i, m_i);
 
     // Integration variables for last point
-    double dp_dr, nabla_star, k;
+    FLOAT_P dp_dr, nabla_star, k;
 
     // Upward integration
     int i = 0;
@@ -99,12 +99,12 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     int nz = i+j;
 
     // Combining the upward and downward integration arrays
-    double *r = malloc(sizeof(double)*(nz));
-    double *p0 = malloc(sizeof(double)*(nz));
-    double *T0 = malloc(sizeof(double)*(nz));
-    double *rho0 = malloc(sizeof(double)*(nz));
-    double *grad_s0 = malloc(sizeof(double)*(nz));
-    double *g = malloc(sizeof(double)*(nz));
+    FLOAT_P *r = malloc(sizeof(FLOAT_P)*(nz));
+    FLOAT_P *p0 = malloc(sizeof(FLOAT_P)*(nz));
+    FLOAT_P *T0 = malloc(sizeof(FLOAT_P)*(nz));
+    FLOAT_P *rho0 = malloc(sizeof(FLOAT_P)*(nz));
+    FLOAT_P *grad_s0 = malloc(sizeof(FLOAT_P)*(nz));
+    FLOAT_P *g = malloc(sizeof(FLOAT_P)*(nz));
 
     for (int jj = j; jj > 0; jj--)
     {
@@ -137,7 +137,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     }
 
     // Interpolating the background variables to the grid
-    double x0, x1;
+    FLOAT_P x0, x1;
     for (i = grid_info->nz_ghost; i < grid_info->nz_full-grid_info->nz_ghost; i++)
     {
         // Handle edge cases

@@ -11,7 +11,7 @@ void initialize_foreground_struct_zeros(struct ForegroundVariables2D *fg, struct
         {
             fg->p1[i][j] = 0.0;
             fg->rho1[i][j] = 0.0;
-            fg->T1[i][j] = 100.0;
+            fg->T1[i][j] = 0.0;
             fg->s1[i][j] = 0.0;
             fg->vx[i][j] = 0.0;
             fg->vz[i][j] = 0.0;

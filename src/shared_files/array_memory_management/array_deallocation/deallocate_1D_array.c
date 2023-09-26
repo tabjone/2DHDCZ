@@ -1,13 +1,14 @@
 #include <stdlib.h>
+#include "global_parameters.h"
 
-void deallocate_1D_array(double *array_ptr) 
+void deallocate_1D_array(FLOAT_P *array_ptr) 
 {
     /*
     Deallocates memory for a 1D array.
 
     Parameters
     ----------
-    array_ptr : double**
+    array_ptr : FLOAT_P**
         Pointer to the 1D array to deallocate.
     */
 

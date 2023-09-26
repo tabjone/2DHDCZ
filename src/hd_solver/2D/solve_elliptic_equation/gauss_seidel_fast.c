@@ -1,22 +1,22 @@
 #include <float.h>
 #include "solve_elliptic_equation.h"
 
-void gauss_seidel_fast_second_order(double **b, double **p1, double **initial_p1, struct GridInfo *grid_info)
+void gauss_seidel_fast_second_order(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo *grid_info)
 {
     int nx = grid_info->nx;
     int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
-    double dx = grid_info->dx;
-    double dz = grid_info->dz;
+    FLOAT_P dx = grid_info->dx;
+    FLOAT_P dz = grid_info->dz;
 
-    double a = 1.0/(dz*dz);
-    double g = 1.0/(dx*dx);
-    double c = 2.0*(a+g);
+    FLOAT_P a = 1.0/(dz*dz);
+    FLOAT_P g = 1.0/(dx*dx);
+    FLOAT_P c = 2.0*(a+g);
 
     // Initializing p and pnew to 0
     // When program runs properly: Set initial p to p1
-    double pnew[nz][nx];
-    double p[nz][nx];
+    FLOAT_P pnew[nz][nx];
+    FLOAT_P p[nz][nx];
 
     for (int i = 0; i < nz; i++)
     {
@@ -28,11 +28,11 @@ void gauss_seidel_fast_second_order(double **b, double **p1, double **initial_p1
     }
 
     int iter = 0;
-    double max_difference, max_pnew;
+    FLOAT_P max_difference, max_pnew;
 
-    double abs_difference, abs_pnew;
+    FLOAT_P abs_difference, abs_pnew;
 
-    double tolerance_criteria = DBL_MAX;
+    FLOAT_P tolerance_criteria = DBL_MAX;
 
     int j_plus, j_minus;
 
@@ -58,7 +58,7 @@ void gauss_seidel_fast_second_order(double **b, double **p1, double **initial_p1
         // Update pnew by eq. (54) from webpage (https://aquaulb.github.io/book_solving_pde_mooc/solving_pde_mooc/notebooks/05_IterativeMethods/05_01_Iteration_and_2D.html#gauss-seidel-method) modified to dx!=dz
         for (int i = 1; i < nz-1; i++)
         {
-            for (int j = 1; j < nx-1; j++)
+            for (int j = 0; j < nx; j++)
             {
                 j_plus = periodic_boundary(j+1, nx);
                 j_minus = periodic_boundary(j-1, nx);

@@ -5,7 +5,7 @@ void extrapolate_background(struct BackgroundVariables *bg, struct GridInfo *gri
 {
     int nz_full = grid_info->nz_full;
     int nz_ghost = grid_info->nz_ghost;
-    double dz = grid_info->dz;
+    FLOAT_P dz = grid_info->dz;
 
     // Constant extrapolation
     #if EXTAPOLATE_GHOST_CELLS == 0

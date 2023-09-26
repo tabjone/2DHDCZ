@@ -1,18 +1,18 @@
 #include "solve_diff_eqs.h"
 
-double rhs_dvx_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
+FLOAT_P rhs_dvx_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
 {
     int nx = grid_info->nx;
 
-    double **p1 = fg->p1;
-    double **vx = fg->vx;
-    double **vz = fg->vz;
-    double *rho0 = bg->rho0;
+    FLOAT_P **p1 = fg->p1;
+    FLOAT_P **vx = fg->vx;
+    FLOAT_P **vz = fg->vz;
+    FLOAT_P *rho0 = bg->rho0;
 
-    double dp1_dx, dvx_dx, dvx_dz;
+    FLOAT_P dp1_dx, dvx_dx, dvx_dz;
 
-    double dx = grid_info->dx;
-    double dz = grid_info->dz;
+    FLOAT_P dx = grid_info->dx;
+    FLOAT_P dz = grid_info->dz;
 
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, nx);

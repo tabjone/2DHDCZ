@@ -5,8 +5,8 @@ void initialize_foreground_struct_density_pertubation(struct ForegroundVariables
     int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int nx = grid_info->nx;
-    double dx = grid_info->dx;
-    double dz = grid_info->dz;
+    FLOAT_P dx = grid_info->dx;
+    FLOAT_P dz = grid_info->dz;
     int i, j;
 
 

@@ -4,7 +4,7 @@ void load_grid_info(struct GridInfo **grid_info, const char *file_path)
 {
     // Numbers to load into the grid_info struct
     int nz, nz_ghost, nz_full, nx;
-    double dz, dx, z0, z1, x0, x1;
+    FLOAT_P dz, dx, z0, z1, x0, x1;
 
     herr_t status;
 

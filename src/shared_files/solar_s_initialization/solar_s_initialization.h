@@ -10,26 +10,26 @@
 
 struct IntegrationVariables
 {
-    double *r;
-    double *rho0;
-    double *p0;
-    double *m;
-    double *T0;
-    double *s0;
-    double *grad_s0;
+    FLOAT_P *r;
+    FLOAT_P *rho0;
+    FLOAT_P *p0;
+    FLOAT_P *m;
+    FLOAT_P *T0;
+    FLOAT_P *s0;
+    FLOAT_P *grad_s0;
     int N;
     int N_increment;
 };
 
 void allocate_integration_variables(struct IntegrationVariables *i_var);
 void deallocate_integration_variables(struct IntegrationVariables *i_var);
-void set_initial_integration_values(struct IntegrationVariables *i_var, double r_i, double p0_i, double T0_i, double rho0_i, double m_i);
+void set_initial_integration_values(struct IntegrationVariables *i_var, FLOAT_P r_i, FLOAT_P p0_i, FLOAT_P T0_i, FLOAT_P rho0_i, FLOAT_P m_i);
 
-double get_k_value(double r);
+FLOAT_P get_k_value(FLOAT_P r);
 
 void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown);
 
-void read_solar_s_data(const char* filename, double* r_over_R, double* rho0, double* p0, double* T0, hsize_t size);
+void read_solar_s_data(const char* filename, FLOAT_P* r_over_R, FLOAT_P* rho0, FLOAT_P* p0, FLOAT_P* T0, hsize_t size);
 
 void solar_s_background_initialization(struct BackgroundVariables *bg, struct GridInfo *grid_info);
 

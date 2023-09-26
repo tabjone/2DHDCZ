@@ -1,9 +1,9 @@
 #include "solar_s_initialization.h"
 
-void set_initial_integration_values(struct IntegrationVariables *i_var, double r_i, double p0_i, double T0_i, double rho0_i, double m_i)
+void set_initial_integration_values(struct IntegrationVariables *i_var, FLOAT_P r_i, FLOAT_P p0_i, FLOAT_P T0_i, FLOAT_P rho0_i, FLOAT_P m_i)
     {
     // Setting the specific heat capacity at constant pressure for ideal gas
-    double c_p = p0_i /((rho0_i * T0_i)*(1.0-1.0/GAMMA));
+    FLOAT_P c_p = p0_i /((rho0_i * T0_i)*(1.0-1.0/GAMMA));
 
     // Setting the initial values for the integration variables
     i_var->r[0] = r_i;

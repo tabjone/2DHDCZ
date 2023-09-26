@@ -1,7 +1,7 @@
 #include "one_time_step.h"
 #include <float.h>
 
-double rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, bool first_run)
+FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, bool first_run)
 {
     // Steps for each iteration:
     // Solve elliptic equation
@@ -14,18 +14,18 @@ double rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
     int nx = grid_info->nx;
-    double dz = grid_info->dz;
-    double dx = grid_info->dx;
+    FLOAT_P dz = grid_info->dz;
+    FLOAT_P dx = grid_info->dx;
 
      // Finding dt
-    double dt = DBL_MAX;  // Set to the maximum representable finite floating-point value
+    FLOAT_P dt = DBL_MAX;  // Set to the maximum representable finite floating-point value
     #if UPWIND_ORDER == 1
     // First finding dt
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < nx; j++)
         {
-            double new_dt = CFL_CUT *1.0 / (fabs(fg_prev->vx[i][j])/dx + fabs(fg_prev->vz[i][j])/dz);
+            FLOAT_P new_dt = CFL_CUT *1.0 / (fabs(fg_prev->vx[i][j])/dx + fabs(fg_prev->vz[i][j])/dz);
             if (new_dt < dt) 
             {
                 dt = new_dt;  // update dt if the new value is smaller
@@ -37,7 +37,7 @@ double rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev
     {
         for (int j = 0; j < nx; j++)
         {
-            double new_dt = CFL_CUT *0.5 / (fabs(fg_prev->vx[i][j])/dx + fabs(fg_prev->vz[i][j])/dz);
+            FLOAT_P new_dt = CFL_CUT *0.5 / (fabs(fg_prev->vx[i][j])/dx + fabs(fg_prev->vz[i][j])/dz);
             if (new_dt < dt) 
             {
                 dt = new_dt;  // update dt if the new value is smaller
@@ -57,9 +57,9 @@ double rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev
     }
 
 
-    double **k1_s, **k2_s;
-    double **k1_vx, **k2_vx;
-    double **k1_vz, **k2_vz;
+    FLOAT_P **k1_s, **k2_s;
+    FLOAT_P **k1_vx, **k2_vx;
+    FLOAT_P **k1_vz, **k2_vz;
 
     // Allocate memory for k1, k2
     allocate_2D_array(&k1_s, nz_full, nx); // These only have to be nz long, but wait untill program runs to change it
@@ -162,8 +162,8 @@ double rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev
 
 
     // Solving algebraic equations. Eq of state should be in separate function
-    double c_p;
-    double total_density, total_temperature, total_pressure;
+    FLOAT_P c_p;
+    FLOAT_P total_density, total_temperature, total_pressure;
     for (int i = 0; i < nz_full; i++)
     {
         for (int j = 0; j < nx; j++)

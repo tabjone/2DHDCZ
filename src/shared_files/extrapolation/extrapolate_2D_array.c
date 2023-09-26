@@ -1,4 +1,6 @@
-void extrapolate_2D_array(double **array, int nz_full, int nz_ghost, int nx)
+#include "global_parameters.h"
+
+void extrapolate_2D_array(FLOAT_P **array, int nz_full, int nz_ghost, int nx)
 {
     // Extrapolating p1 (constant extrapolation, move this to function later with possiblity for different extrapolation scheme)
 
