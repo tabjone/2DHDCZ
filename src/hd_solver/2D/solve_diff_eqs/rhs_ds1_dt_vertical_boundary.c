@@ -1,6 +1,6 @@
 #include "solve_diff_eqs.h"
 
-FLOAT_P rhs_ds1_dt_horizontal_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
+FLOAT_P rhs_ds1_dt_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
 {
     /*
     int nx = fg->nx;

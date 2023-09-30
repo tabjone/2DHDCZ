@@ -3,7 +3,8 @@
 void set_initial_integration_values(struct IntegrationVariables *i_var, FLOAT_P r_i, FLOAT_P p0_i, FLOAT_P T0_i, FLOAT_P rho0_i, FLOAT_P m_i)
     {
     // Setting the specific heat capacity at constant pressure for ideal gas
-    FLOAT_P c_p = p0_i /((rho0_i * T0_i)*(1.0-1.0/GAMMA));
+    FLOAT_P r_star = K_B / (MU * M_U);
+    FLOAT_P c_p = r_star /(1.0-1.0/GAMMA);
 
     // Setting the initial values for the integration variables
     i_var->r[0] = r_i;

@@ -23,12 +23,12 @@ void load_grid_info(struct GridInfo **grid_info, const char *file_path)
     H5Dread(H5Dopen(grid_group, "nz", H5P_DEFAULT), H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, &nz);
     H5Dread(H5Dopen(grid_group, "nz_ghost", H5P_DEFAULT), H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, &nz_ghost);
     H5Dread(H5Dopen(grid_group, "nz_full", H5P_DEFAULT), H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, &nz_full);
-    H5Dread(H5Dopen(grid_group, "dz", H5P_DEFAULT), H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &dz);
-    H5Dread(H5Dopen(grid_group, "dx", H5P_DEFAULT), H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &dx);
-    H5Dread(H5Dopen(grid_group, "z0", H5P_DEFAULT), H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &z0);
-    H5Dread(H5Dopen(grid_group, "z1", H5P_DEFAULT), H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &z1);
-    H5Dread(H5Dopen(grid_group, "x0", H5P_DEFAULT), H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &x0);
-    H5Dread(H5Dopen(grid_group, "x1", H5P_DEFAULT), H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &x1);
+    H5Dread(H5Dopen(grid_group, "dz", H5P_DEFAULT), H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &dz);
+    H5Dread(H5Dopen(grid_group, "dx", H5P_DEFAULT), H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &dx);
+    H5Dread(H5Dopen(grid_group, "z0", H5P_DEFAULT), H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &z0);
+    H5Dread(H5Dopen(grid_group, "z1", H5P_DEFAULT), H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &z1);
+    H5Dread(H5Dopen(grid_group, "x0", H5P_DEFAULT), H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &x0);
+    H5Dread(H5Dopen(grid_group, "x1", H5P_DEFAULT), H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &x1);
 
     // Close the grid_info group
     status = H5Gclose(grid_group);

@@ -1,4 +1,5 @@
 #include "solve_elliptic_equation.h"
+#include "global_parameters.h"
 
 void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info)
 {
@@ -17,8 +18,7 @@ void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVa
         {
             rhs[i][j] = - rhs_elliptic_eq(bg, fg_prev, grid_info, i, j);
         }
-    }
-    
+    }    
 
     // Solve boudaries
     for (int j = 0; j < nx; j++)

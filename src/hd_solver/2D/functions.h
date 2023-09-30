@@ -8,6 +8,7 @@
 #include "./solve_elliptic_equation/solve_elliptic_equation.h"
 #include "./solve_diff_eqs/solve_diff_eqs.h"
 #include "./one_time_step/one_time_step.h"
+#include "./equations/equations.h"
 
 #include "./initialization/initialization.h"
 #include "shared_files.h"

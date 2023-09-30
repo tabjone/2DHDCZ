@@ -93,12 +93,12 @@ FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     {
         // Top boundary
         fg->s1[nz_ghost][j] = 0.0;
-        fg->vx[nz_ghost][j] = rhs_dvx_dt_horizontal_boundary(bg, fg_prev, grid_info, nz_ghost, j);
+        fg->vx[nz_ghost][j] = rhs_dvx_dt_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
         fg->vz[nz_ghost][j] = 0.0;
 
         // Bottom boundary
         fg->s1[nz_full-nz_ghost-1][j] = 0.0;
-        fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_horizontal_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
+        fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
         fg->vz[nz_full-nz_ghost-1][j] = 0.0;
     }
 
@@ -119,12 +119,12 @@ FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     {
         // Top boundary
         fg->s1[nz_ghost][j] = 0.0;
-        fg->vx[nz_ghost][j] = rhs_dvx_dt_horizontal_boundary(bg, fg, grid_info, nz_ghost, j);
+        fg->vx[nz_ghost][j] = rhs_dvx_dt_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
         fg->vz[nz_ghost][j] = 0.0;
 
         // Bottom boundary
         fg->s1[nz_full-nz_ghost-1][j] = 0.0;
-        fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_horizontal_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
+        fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
         fg->vz[nz_full-nz_ghost-1][j] = 0.0;
     }
 
@@ -160,27 +160,9 @@ FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     deallocate_2D_array(k1_vz);
     deallocate_2D_array(k2_vz);
 
+    // Solving algebraic equations
+    first_law_thermodynamics(fg, bg, grid_info);
+    equation_of_state(fg, bg, grid_info);
 
-    // Solving algebraic equations. Eq of state should be in separate function
-    FLOAT_P c_p;
-    FLOAT_P total_density, total_temperature, total_pressure;
-    for (int i = 0; i < nz_full; i++)
-    {
-        for (int j = 0; j < nx; j++)
-        {
-            total_density = bg->rho0[i] + fg->rho1[i][j];
-            total_temperature = bg->T0[i] + fg->T1[i][j];
-            total_pressure = bg->p0[i] + fg->p1[i][j];
-            //total_density = fg->rho1[i][j];
-            //total_temperature = fg->T1[i][j];
-            //total_pressure = fg->p1[i][j];
-
-            c_p = total_pressure/(1-1/GAMMA) / (total_density*total_temperature);
-
-            fg->T1[i][j] = (fg->s1[i][j]/c_p + (GAMMA-1.0)/GAMMA * fg->p1[i][j]/bg->p0[i]) * bg->T0[i];
-            
-            fg->rho1[i][j] = (fg->p1[i][j]/bg->p0[i] - fg->T1[i][j]/bg->T0[i]) * bg->rho0[i];
-        }
-    }
     return dt;
 }

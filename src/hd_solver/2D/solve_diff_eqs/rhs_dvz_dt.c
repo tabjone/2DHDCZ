@@ -72,5 +72,5 @@ FLOAT_P rhs_dvz_dt(struct BackgroundVariables *bg, struct ForegroundVariables2D 
     printf("Error: CENTRAL_ORDER must be 2\n");
     #endif
 
-    return - 1.0/rho0[i] * dp1_dz - vx[i][j]*dvz_dx - vz[i][j]*dvz_dz - rho1[i][j]/rho0[i] * g[i];
+    return - 1.0/rho0[i] * dp1_dz - vx[i][j]*dvz_dx - vz[i][j]*dvz_dz + rho1[i][j]/rho0[i] * g[i];
 }

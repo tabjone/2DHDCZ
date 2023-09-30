@@ -36,8 +36,8 @@ int main_hd_2D(int argc, char *argv[])
 
         printf("time = %f\n", t);
 
-        save_background(bg, grid_info);
-        save_foreground(fg_previous, grid_info, 12, t);
+        //save_background(bg, grid_info);
+        //save_foreground(fg_previous, grid_info, 12, t);
     
 
     #elif LOAD == 0
@@ -83,7 +83,7 @@ int main_hd_2D(int argc, char *argv[])
         save_background(bg, grid_info);
         
         // Initialize the foreground variables
-        if (true)
+        if (false)
         {
             initialize_foreground_struct_zeros(fg_previous, grid_info);
         }
@@ -92,10 +92,16 @@ int main_hd_2D(int argc, char *argv[])
             for (int j = 0; j < grid_info->nx; j++)
             {
                 fg_previous->vz[i][j] = 10.0;
-                fg_previous->vx[i][j] = 10.0;
+                fg_previous->vx[i][j] = 0.0;
             }
         }
+        //solve_elliptic_equation(bg, fg_previous, fg_previous, grid_info);
 
+
+        if (true)
+        {
+            initialize_foreground_struct_random(fg_previous, bg, grid_info);
+        }
 
         if (false)
         {

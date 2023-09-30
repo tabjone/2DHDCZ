@@ -49,7 +49,7 @@ void gauss_seidel_fast_second_order(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial
         // Copy pnew to p
         for (int i = 1; i < nz-1; i++)
         {
-            for (int j = 1; j < nx-1; j++)
+            for (int j = 0; j < nx; j++)
             {
                 p[i][j] = pnew[i][j];
             }

@@ -32,6 +32,7 @@ FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
         }
     }
     #elif UPWIND_ORDER == 2
+    #error("rk1 upwind2 not stable")
     // This is not stable anyway
     dt = 1.0;
     #endif
@@ -61,12 +62,12 @@ FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     {
         // Top boundary
         fg->s1[nz_ghost][j] = 0.0;
-        fg->vx[nz_ghost][j] = rhs_dvx_dt_horizontal_boundary(bg, fg_prev, grid_info, nz_ghost, j);
+        fg->vx[nz_ghost][j] = rhs_dvx_dt_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
         fg->vz[nz_ghost][j] = 0.0;
 
         // Bottom boundary
         fg->s1[nz_full-nz_ghost-1][j] = 0.0;
-        fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_horizontal_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
+        fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
         fg->vz[nz_full-nz_ghost-1][j] = 0.0;
     }
     // Extrapolate
@@ -74,29 +75,14 @@ FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     extrapolate_2D_array(fg->vx, nz_full, nz_ghost, nx);
     extrapolate_2D_array(fg->vz, nz_full, nz_ghost, nx);
 
-    // Burde jeg ikke egentlig gjøre dette til slutt? Og kanskje før man starter å løse
+    // Solving elliptic equation
     solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
     extrapolate_2D_array(fg->p1, nz_full, nz_ghost, nx);
 
 
     // Solving algebraic equations. Eq of state should be in separate function
-    FLOAT_P c_p;
-    FLOAT_P total_density, total_temperature, total_pressure;
-    for (int i = 0; i < nz_full; i++)
-    {
-        for (int j = 0; j < nx; j++)
-        {
-            total_density = bg->rho0[i] + fg->rho1[i][j];
-            total_temperature = bg->T0[i] + fg->T1[i][j];
-            total_pressure = bg->p0[i] + fg->p1[i][j];
-
-            c_p = total_pressure/(1-1/GAMMA) / (total_density*total_temperature);
-
-            fg->T1[i][j] = (fg->s1[i][j]/c_p + (GAMMA-1.0)/GAMMA * fg->p1[i][j]/bg->p0[i]) * bg->T0[i];
-            
-            fg->rho1[i][j] = (fg->p1[i][j]/bg->p0[i] - fg->T1[i][j]/bg->T0[i]) * bg->rho0[i];
-        }
-    }
+    first_law_thermodynamics(fg, bg, grid_info);
+    equation_of_state(fg, bg, grid_info);
 
     return dt;
 }

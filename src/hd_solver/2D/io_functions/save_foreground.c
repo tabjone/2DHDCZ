@@ -50,17 +50,17 @@ void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_inf
         fprintf(stderr, "Failed to create dataspace\n");
     }
 
-    create_write_dataset(group_grid_data, "t", H5T_NATIVE_DOUBLE, dataspace_scalar, &time, "s");
-    create_write_dataset(group_grid_data, "dx", H5T_NATIVE_DOUBLE, dataspace_scalar, &dx, "cm");
-    create_write_dataset(group_grid_data, "dz", H5T_NATIVE_DOUBLE, dataspace_scalar, &dz, "cm");
-    create_write_dataset(group_grid_data, "nx", H5T_NATIVE_INT, dataspace_scalar, &nx, "Grid points in x");
+    create_write_dataset(group_grid_data, "t", H5_FLOAT_P, dataspace_scalar, &time, "s");
+    create_write_dataset(group_grid_data, "dx", H5_FLOAT_P, dataspace_scalar, &dx, "cm");
+    create_write_dataset(group_grid_data, "dz", H5_FLOAT_P, dataspace_scalar, &dz, "cm");
+    create_write_dataset(group_grid_data, "nx", H5_FLOAT_P, dataspace_scalar, &nx, "Grid points in x");
     create_write_dataset(group_grid_data, "nz", H5T_NATIVE_INT, dataspace_scalar, &nz, "Grid points in z");
     create_write_dataset(group_grid_data, "nz_ghost", H5T_NATIVE_INT, dataspace_scalar, &nz_ghost, "Ghost points in z");
     create_write_dataset(group_grid_data, "nz_full", H5T_NATIVE_INT, dataspace_scalar, &nz_full, "Full grid points in z");
-    create_write_dataset(group_grid_data, "z0", H5T_NATIVE_DOUBLE, dataspace_scalar, &z0, "cm");
-    create_write_dataset(group_grid_data, "z1", H5T_NATIVE_DOUBLE, dataspace_scalar, &z1, "cm");
-    create_write_dataset(group_grid_data, "x0", H5T_NATIVE_DOUBLE, dataspace_scalar, &x0, "cm");
-    create_write_dataset(group_grid_data, "x1", H5T_NATIVE_DOUBLE, dataspace_scalar, &x1, "cm");
+    create_write_dataset(group_grid_data, "z0", H5_FLOAT_P, dataspace_scalar, &z0, "cm");
+    create_write_dataset(group_grid_data, "z1", H5_FLOAT_P, dataspace_scalar, &z1, "cm");
+    create_write_dataset(group_grid_data, "x0", H5_FLOAT_P, dataspace_scalar, &x0, "cm");
+    create_write_dataset(group_grid_data, "x1", H5_FLOAT_P, dataspace_scalar, &x1, "cm");
 
     status = H5Sclose(dataspace_scalar);
     if (status < 0) {
@@ -86,12 +86,12 @@ void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_inf
         fprintf(stderr, "Failed to create dataspace\n");
     }
     
-    create_write_dataset(group_variables, "T1", H5T_NATIVE_DOUBLE, dataspace_2d, fg->T1[0], "K");
-    create_write_dataset(group_variables, "p1", H5T_NATIVE_DOUBLE, dataspace_2d, fg->p1[0], "dyn/cm^2");
-    create_write_dataset(group_variables, "rho1", H5T_NATIVE_DOUBLE, dataspace_2d, fg->rho1[0], "g/cm^3");
-    create_write_dataset(group_variables, "s1", H5T_NATIVE_DOUBLE, dataspace_2d, fg->s1[0], "erg/K");
-    create_write_dataset(group_variables, "vx", H5T_NATIVE_DOUBLE, dataspace_2d, fg->vx[0], "cm/s");
-    create_write_dataset(group_variables, "vz", H5T_NATIVE_DOUBLE, dataspace_2d, fg->vz[0], "cm/s");
+    create_write_dataset(group_variables, "T1", H5_FLOAT_P, dataspace_2d, fg->T1[0], "K");
+    create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_2d, fg->p1[0], "dyn/cm^2");
+    create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_2d, fg->rho1[0], "g/cm^3");
+    create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_2d, fg->s1[0], "erg/K");
+    create_write_dataset(group_variables, "vx", H5_FLOAT_P, dataspace_2d, fg->vx[0], "cm/s");
+    create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_2d, fg->vz[0], "cm/s");
 
     status = H5Gclose(group_variables);
     if (status < 0) {

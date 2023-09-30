@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 
 #include "shared_files.h"
+#include "global_parameters.h"
 
 void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int snap_number, FLOAT_P time);
 void save_background(struct BackgroundVariables *bg, struct GridInfo *grid_info);
