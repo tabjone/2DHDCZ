@@ -89,6 +89,7 @@ FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
 
     // Implement top and bottom boundary conditions
     // at [nz_ghost][j] and [nz_full-nz_ghost-1][j]
+    // WAIT. THIS IS WRONG?
     for (int j = 0; j < nx; j++)
     {
         // Top boundary
@@ -133,9 +134,6 @@ FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     extrapolate_2D_array(fg->vx, nz_full, nz_ghost, nx);
     extrapolate_2D_array(fg->vz, nz_full, nz_ghost, nx);
 
-    solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
-    extrapolate_2D_array(fg->p1, nz_full, nz_ghost, nx);
-
     // Updating variables
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
     {
@@ -146,6 +144,9 @@ FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
             fg->vz[i][j] = fg_prev->vz[i][j] + dt/2.0 * (k1_vz[i][j] + k2_vz[i][j]);
         }
     }
+
+    solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
+    extrapolate_2D_array(fg->p1, nz_full, nz_ghost, nx);
 
     // Extrapolate
     extrapolate_2D_array(fg->s1, nz_full, nz_ghost, nx);

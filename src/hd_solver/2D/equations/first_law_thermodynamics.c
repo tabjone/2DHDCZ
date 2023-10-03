@@ -1,4 +1,5 @@
 #include "equations.h"
+#include "global_parameters.h"
 
 void first_law_thermodynamics(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info)
 {

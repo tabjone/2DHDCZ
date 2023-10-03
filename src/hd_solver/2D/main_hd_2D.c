@@ -98,7 +98,7 @@ int main_hd_2D(int argc, char *argv[])
         //solve_elliptic_equation(bg, fg_previous, fg_previous, grid_info);
 
 
-        if (true)
+        if (false)
         {
             initialize_foreground_struct_random(fg_previous, bg, grid_info);
         }
@@ -111,9 +111,9 @@ int main_hd_2D(int argc, char *argv[])
         {
             initialize_velocity_right(fg_previous, grid_info);
         }
-        if (false)
+        if (true)
         {
-            initialize_foreground_struct_density_pertubation(fg_previous, grid_info);
+            initialize_foreground_struct_density_pertubation(fg_previous, bg, grid_info);
         }
 
         
