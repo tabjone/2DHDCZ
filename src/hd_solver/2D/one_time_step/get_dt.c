@@ -62,10 +62,6 @@ FLOAT_P get_dt(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, FLO
     {
         dt = 1.5*dt_last;
     }
-    if (dt < 0.75*dt_last)
-    {
-        dt = 0.75*dt_last;
-    }
 
     if (dt > MAX_DT)
     {

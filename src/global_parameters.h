@@ -2,6 +2,9 @@
 #define GLOBAL_PARAMETERS_H__
 
 #include "hdf5.h"
+#include <mpi.h>
+
+#define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
 #define RUN_NAME "rk2_upw2_dt_test"
 #define LOAD 0 // 0 for not loading, 1 for loading
@@ -55,6 +58,7 @@
 // Debugging
 
 #define GRAVITY_ON 1 // 0 for gravity off, 1 for gravity on
+#define BFIELD_ON 0 // 0 for B-field off, 1 for B-field on
 
 #define DEBUG 1
 
@@ -67,12 +71,15 @@
 #if FLOAT_PRECISION == 0
     #define FLOAT_P float
     #define H5_FLOAT_P H5T_NATIVE_FLOAT
+    #define MPI_FLOAT_P MPI_FLOAT
 #elif FLOAT_PRECISION == 1
     #define FLOAT_P double
     #define H5_FLOAT_P H5T_NATIVE_DOUBLE
+    #define MPI_FLOAT_P MPI_DOUBLE
 #elif FLOAT_PRECISION == 2
     #define FLOAT_P long double
     #define H5_FLOAT_P H5T_NATIVE_LDOUBLE
+    #define MPI_FLOAT_P MPI_LONG_DOUBLE
 #else
     #error "Invalid FLOAT_PRECISION type specified."
 #endif // FLOAT_PRECISION

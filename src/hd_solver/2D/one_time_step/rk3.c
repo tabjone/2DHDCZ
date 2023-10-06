@@ -8,6 +8,10 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     int nx = grid_info->nx;
 
     FLOAT_P dt = get_dt(fg_prev, grid_info, dt_last, first_timestep);
+    #if MPI_ON == 1
+        // Picking smallest dt from all processes
+        MPI_Allreduce(&dt, &dt, 1, MPI_FLOAT_P, MPI_MIN, MPI_COMM_WORLD);
+    #endif // MPI_ON
 
     FLOAT_P **k1_s, **k2_s, **k3_s;
     FLOAT_P **k1_vx, **k2_vx, **k3_vx;
