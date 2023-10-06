@@ -27,6 +27,12 @@ void gauss_seidel_fast_second_order(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial
         }
     }
 
+    for (int j = 0; j < nx; j++)
+    {
+        pnew[0][j] = 0.0;
+        pnew[nz-1][j] = 0.0;
+    }
+
     int iter = 0;
     FLOAT_P max_difference, max_pnew;
 
@@ -63,8 +69,8 @@ void gauss_seidel_fast_second_order(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial
                 j_plus = periodic_boundary(j+1, nx);
                 j_minus = periodic_boundary(j-1, nx);
 
-                //pnew[i][j] = (a*(pnew[i+1][j]+p[i-1][j])+g*(p[i][j_plus]+pnew[i][j_minus])-b[i+nz_ghost][j])/c;
-                pnew[i][j] = (a*(p[i+1][j]+p[i-1][j])+g*(p[i][j_plus]+p[i][j_minus])-b[i+nz_ghost][j])/c;
+                pnew[i][j] = (a*(pnew[i+1][j]+p[i-1][j])+g*(p[i][j_plus]+pnew[i][j_minus])-b[i+nz_ghost][j])/c;
+                //pnew[i][j] = (a*(p[i+1][j]+p[i-1][j])+g*(p[i][j_plus]+p[i][j_minus])-b[i+nz_ghost][j])/c;
 
 
                 // Finding maximum absolute value of pnew

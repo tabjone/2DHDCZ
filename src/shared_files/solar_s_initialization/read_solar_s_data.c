@@ -12,16 +12,14 @@ void read_solar_s_data(const char* filename, FLOAT_P* r_over_R, FLOAT_P* rho0, F
         The name of the file to read from.
     r_over_R : FLOAT_P*
         The array to store the r_over_R data in (Normalized solar radius). In units of solar radii.
-    c_s : FLOAT_P*
-        The array to store the c_s data in (sound speed). In units of cm/s.
-    rho : FLOAT_P*
+    rho0 : FLOAT_P*
         The array to store the rho data in (density). In units of g/cm^3.
-    p : FLOAT_P*
+    p0 : FLOAT_P*
         The array to store the p data in (pressure). In units of dyn/cm^2.
-    Gamma_1 : FLOAT_P*
-        The array to store the Gamma_1 data in.
-    T : FLOAT_P*
+    T0 : FLOAT_P*
         The array to store the T data in (temperature). In units of K.
+    size : hsize_t
+        The size of the arrays to read.
     */
 
     hid_t file_id;

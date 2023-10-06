@@ -28,9 +28,7 @@ int main(int argc, char *argv[])
             main_hd_2D(argc, argv);
         #elif DIMENSIONS == 3
             printf("Not implemented yet\n");
-        #else
-            printf("Error: DIMENSIONS must be 1, 2 or 3\n");
-        #endif
+        #endif // DIMENSIONS
     #elif MHD == 1
         #if DIMENSIONS == 1
             printf("Not implemented yet\n");
@@ -38,8 +36,6 @@ int main(int argc, char *argv[])
             printf("Not implemented yet\n");
         #elif DIMENSIONS == 3
             printf("Not implemented yet\n");
-        #else
-            printf("Error: DIMENSIONS must be 1, 2 or 3\n");
-        #endif
-    #endif
+        #endif // DIMENSIONS
+    #endif // MHD
 }

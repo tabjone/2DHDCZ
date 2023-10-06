@@ -15,7 +15,7 @@ void initialize_foreground_struct_density_pertubation(struct ForegroundVariables
         for (j = 0; j < nx; j++)
         {
             
-            fg->rho1[i][j] = gaussian((i-nz_ghost)*dz, j*dx, 0.5*dz*nz, 0.25*dx*nx, 0.1*dz*nz, 0.1*dx*nx, 1.0e-4);
+            fg->rho1[i][j] = gaussian((i-nz_ghost)*dz, j*dx, 0.5*dz*nz, 0.25*dx*nx, 0.1*dz*nz, 0.1*dx*nx, 1.0e-5);
             fg->p1[i][j] = GAMMA*bg->p0[i]*fg->rho1[i][j]/bg->rho0[i];
             fg->T1[i][j] = bg->T0[i]*((GAMMA-1)/GAMMA * fg->p1[i][j]/bg->p0[i]);
             fg->s1[i][j] = 0.0;

@@ -1,59 +1,19 @@
 #include "one_time_step.h"
-#include <float.h>
 
-FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, bool first_run)
+FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
 {
 
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
     int nx = grid_info->nx;
-    FLOAT_P dz = grid_info->dz;
-    FLOAT_P dx = grid_info->dx;
 
-     // Finding dt
-    FLOAT_P dt = DBL_MAX;  // Set to the maximum representable finite floating-point value
-    #if UPWIND_ORDER == 1
-    // First finding dt
-    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
-    {
-        for (int j = 0; j < nx; j++)
-        {
-            FLOAT_P new_dt = CFL_CUT *1.25 / (fabs(fg_prev->vx[i][j])/dx + fabs(fg_prev->vz[i][j])/dz);
-            if (new_dt < dt) 
-            {
-                dt = new_dt;  // update dt if the new value is smaller
-            }
-        }
-    }
-    #elif UPWIND_ORDER == 2
-    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
-    {
-        for (int j = 0; j < nx; j++)
-        {
-            FLOAT_P new_dt = CFL_CUT *0.5 / (fabs(fg_prev->vx[i][j])/dx + fabs(fg_prev->vz[i][j])/dz);
-            if (new_dt < dt) 
-            {
-                dt = new_dt;  // update dt if the new value is smaller
-            }
-        }
-    }
-    #endif
-
-    if (dt > MAX_DT)
-    {
-        dt = MAX_DT;
-    }
-
-    if (first_run && dt > 1.0)
-    {
-        dt = 1.0;
-    }
+    FLOAT_P dt = get_dt(fg_prev, grid_info, dt_last, first_timestep);
 
     FLOAT_P **k1_s, **k2_s, **k3_s;
     FLOAT_P **k1_vx, **k2_vx, **k3_vx;
     FLOAT_P **k1_vz, **k2_vz, **k3_vz;
 
-    // Allocate memory for k1, k2
+    // Allocate memory for k1, k2, k3
     allocate_2D_array(&k1_s, nz_full, nx); // These only have to be nz long, but wait untill program runs to change it
     allocate_2D_array(&k2_s, nz_full, nx);
     allocate_2D_array(&k3_s, nz_full, nx);
@@ -80,12 +40,15 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
         }
     }
 
+    // Calculating k1 for the boundaries
     for (int j = 0; j < nx; j++)
     {
+        // Bottom boundary
         k1_s[nz_ghost][j] = 0.0;
         k1_vx[nz_ghost][j] = rhs_dvx_dt_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
         k1_vz[nz_ghost][j] = 0.0;
 
+        // Top boundary
         k1_s[nz_full-nz_ghost-1][j] = 0.0;
         k1_vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
         k1_vz[nz_full-nz_ghost-1][j] = 0.0;
@@ -105,6 +68,17 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     extrapolate_2D_array(fg->vx, nz_full, nz_ghost, nx);
     extrapolate_2D_array(fg->vz, nz_full, nz_ghost, nx);
 
+    // Using the fg struct to store mid-calculation variables. So need to fill these with the previous fg values for p1, T1 and rho1
+    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
+    {
+        for (int j = 0; j < nx; j++)
+        {
+            fg->p1[i][j] = fg_prev->p1[i][j];
+            fg->T1[i][j] = fg_prev->T1[i][j];
+            fg->rho1[i][j] = fg_prev->rho1[i][j];
+        }
+    }
+
     // Calculating k2
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
     {
@@ -121,12 +95,15 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
         }
     }
 
+    // Boundaries
     for (int j = 0; j < nx; j++)
     {
+        // Bottom boundary
         k2_s[nz_ghost][j] = 0.0;
         k2_vx[nz_ghost][j] = rhs_dvx_dt_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
         k2_vz[nz_ghost][j] = 0.0;
 
+        // Top boundary
         k2_s[nz_full-nz_ghost-1][j] = 0.0;
         k2_vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
         k2_vz[nz_full-nz_ghost-1][j] = 0.0;

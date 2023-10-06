@@ -3,16 +3,16 @@
 
 #include "hdf5.h"
 
-#define RUN_NAME "test_pert_rk1_upw1"
+#define RUN_NAME "rk1_upw1_dt_test"
 #define LOAD 0 // 0 for not loading, 1 for loading
-#define LOAD_SNAP_NUMBER 0 // Snap number to load
+#define LOAD_SNAP_NUMBER 2 // Snap number to load
 
-#define T 1e4 // Simulation time in seconds
-#define MAX_DT 1 // Maximum time step in seconds
-#define SAVE_INTERVAL 10 // Save interval in seconds
+#define T 1e6 // Simulation time in seconds
+#define MAX_DT 1e3 // Maximum time step in seconds
+#define SAVE_INTERVAL 1e3 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
 
-#define CFL_CUT 0.96 // CFL cut
+#define CFL_CUT 0.8 // CFL cut
 
 // Order of the scheme (only upwind 1,2, central 2,4, rk1,2 implemented so far)
 #define UPWIND_ORDER 1 // 1 for first order, 2 for second order
@@ -21,33 +21,20 @@
 
 #define FLOAT_PRECISION 1 // 0 for float, 1 for double, 2 for long double
 
-#if FLOAT_PRECISION == 0
-    #define FLOAT_P float
-    #define H5_FLOAT_P H5T_NATIVE_FLOAT
-#elif FLOAT_PRECISION == 1
-    #define FLOAT_P double
-    #define H5_FLOAT_P H5T_NATIVE_DOUBLE
-#elif FLOAT_PRECISION == 2
-    #define FLOAT_P long double
-    #define H5_FLOAT_P H5T_NATIVE_LDOUBLE
-#else
-    #error "Invalid FLOAT_PRECISION type specified."
-#endif
-
 // Dimensions and MHD (only 2D HD implemented so far)
 #define DIMENSIONS 2 // 1 for 1D, 2 for 2D, 3 for 3D
 #define MHD 0 // 0 for hydro, 1 for MHD
 
 // Grid size
-#define R_START 0.6 // In units of solar radii
-#define R_END 0.97 // In units of solar radii
+#define R_START 0.7 // In units of solar radii
+#define R_END 0.90 // In units of solar radii
 #define X_SIZE 0.05 // In units of solar radii
-#define NX 60 // Number of grid points in x-direction
-#define NZ 500 // Number of grid points in z-direction
+#define NX 20 // Number of grid points in x-direction
+#define NZ 150 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
 #define GS_TOL 1e-6 // Gauss-Seidel tolerance
-#define GS_MAX_ITER 2e6 // Gauss-Seidel max iterations
+#define GS_MAX_ITER 5e6 // Gauss-Seidel max iterations
 
 // Physical parameters
 #define DEL_AD 0.4 // Adiabatic temperature gradient
@@ -65,4 +52,34 @@
 
 #define DEBUG 1
 
-#endif
+
+
+#if FLOAT_PRECISION == 0
+    #define FLOAT_P float
+    #define H5_FLOAT_P H5T_NATIVE_FLOAT
+#elif FLOAT_PRECISION == 1
+    #define FLOAT_P double
+    #define H5_FLOAT_P H5T_NATIVE_DOUBLE
+#elif FLOAT_PRECISION == 2
+    #define FLOAT_P long double
+    #define H5_FLOAT_P H5T_NATIVE_LDOUBLE
+#else
+    #error "Invalid FLOAT_PRECISION type specified."
+#endif // FLOAT_PRECISION
+
+#if UPWIND_ORDER > 2
+    #error "Upwind order > 2 not implemented."
+#endif // UPWIND_ORDER > 2
+#if CENTRAL_ORDER > 4
+    #error "Central order > 4 not implemented."
+#endif // CENTRAL_ORDER > 4
+#if DIMENSIONS != 2
+    #error "Only 2D implemented."
+#endif // DIMENSIONS != 2
+#if MHD != 0
+    #error "Only hydrodynamics implemented."
+#endif // MHD != 0
+#if EXTRAPOLATE_GHOST_CELLS != 0
+    #error "Only constant extrapolation implemented."
+#endif // EXTRAPOLATE_GHOST_CELLS != 0
+#endif // GLOBAL_PARAMETERS_H__

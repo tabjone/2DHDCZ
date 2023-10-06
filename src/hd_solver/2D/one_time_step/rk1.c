@@ -1,50 +1,12 @@
 #include "one_time_step.h"
-#include <float.h>
 
-FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, bool first_run)
+FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
 {
-    // Steps for each iteration:
-    // Solve elliptic equation
-    // Extrapolate p1, v1, s1
-    // Solve diffeqs
-    // Solve algebraic equations
-    // Solve elliptic equation again
-
     int nx = grid_info->nx;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
-    FLOAT_P dz = grid_info->dz;
-    FLOAT_P dx = grid_info->dx;
 
-    // Finding dt
-    FLOAT_P dt = DBL_MAX;  // Set to the maximum representable finite floating-point value
-    #if UPWIND_ORDER == 1
-    // First finding dt
-    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
-    {
-        for (int j = 0; j < nx; j++)
-        {
-            FLOAT_P new_dt = CFL_CUT *1.0 / (fabs(fg_prev->vx[i][j])/dx + fabs(fg_prev->vz[i][j])/dz);
-            if (new_dt < dt) 
-            {
-                dt = new_dt;  // update dt if the new value is smaller
-            }
-        }
-    }
-    #elif UPWIND_ORDER == 2
-    #error("rk1 upwind2 not stable")
-    // This is not stable anyway
-    dt = 1.0;
-    #endif
-
-    if (dt > MAX_DT)
-    {
-        dt = MAX_DT;
-    }
-    if (first_run && dt > 1.0)
-    {
-        dt = 1.0;
-    }
+    FLOAT_P dt = get_dt(fg_prev, grid_info, dt_last, first_timestep);
 
     // Solving diff eqs
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
@@ -60,12 +22,12 @@ FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     // Solving boundaries
     for (int j = 0; j < nx; j++)
     {
-        // Top boundary
+        // Bottom boundary
         fg->s1[nz_ghost][j] = 0.0;
         fg->vx[nz_ghost][j] = rhs_dvx_dt_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
         fg->vz[nz_ghost][j] = 0.0;
 
-        // Bottom boundary
+        // Top boundary
         fg->s1[nz_full-nz_ghost-1][j] = 0.0;
         fg->vx[nz_full-nz_ghost-1][j] = rhs_dvx_dt_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
         fg->vz[nz_full-nz_ghost-1][j] = 0.0;
@@ -79,8 +41,7 @@ FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
     extrapolate_2D_array(fg->p1, nz_full, nz_ghost, nx);
 
-
-    // Solving algebraic equations. Eq of state should be in separate function
+    // Solving algebraic equations.
     first_law_thermodynamics(fg, bg, grid_info);
     equation_of_state(fg, bg, grid_info);
 

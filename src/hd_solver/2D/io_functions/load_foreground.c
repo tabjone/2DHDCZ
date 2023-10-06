@@ -27,26 +27,38 @@ FLOAT_P load_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_
     hid_t dataset_T1 = H5Dopen(fg_group, "T1", H5P_DEFAULT);
     if (H5Dread(dataset_T1, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->T1[0][0]) < 0)
     fprintf(stderr, "Failed to read the T1 dataset\n");
+
+    H5Dclose(dataset_T1);
     
     dataset_rho1 = H5Dopen(fg_group, "rho1", H5P_DEFAULT);
     if (H5Dread(dataset_rho1, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->rho1[0][0]) < 0)
     fprintf(stderr, "Failed to read the rho1 dataset\n");
 
+    H5Dclose(dataset_rho1);
+
     dataset_p1 = H5Dopen(fg_group, "p1", H5P_DEFAULT);
     if (H5Dread(dataset_p1, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->p1[0][0]) < 0)
     fprintf(stderr, "Failed to read the p1 dataset\n");
+
+    H5Dclose(dataset_p1);
 
     dataset_s1 = H5Dopen(fg_group, "s1", H5P_DEFAULT);
     if (H5Dread(dataset_s1, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->s1[0][0]) < 0)
     fprintf(stderr, "Failed to read the s1 dataset\n");
 
+    H5Dclose(dataset_s1);
+
     dataset_vx = H5Dopen(fg_group, "vx", H5P_DEFAULT);
     if (H5Dread(dataset_vx, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->vx[0][0]) < 0)
     fprintf(stderr, "Failed to read the vx dataset\n");
 
+    H5Dclose(dataset_vx);
+
     dataset_vz = H5Dopen(fg_group, "vz", H5P_DEFAULT);
     if (H5Dread(dataset_vz, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->vz[0][0]) < 0)
     fprintf(stderr, "Failed to read the vz dataset\n");
+
+    H5Dclose(dataset_vz);
  
     // Close the variables group
     H5Gclose(fg_group);
