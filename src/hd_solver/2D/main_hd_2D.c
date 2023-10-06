@@ -1,9 +1,10 @@
 #include "functions.h"
+#include <mpi.h>
 
 int main_hd_2D(int argc, char *argv[])
 {
-    
     FLOAT_P t, dt, dt_last, t_since_save;
+    FLOAT_P first_t;
     int save_nr;
 
     // Declare the background variables, foreground variables and grid info
@@ -27,7 +28,7 @@ int main_hd_2D(int argc, char *argv[])
         load_background(bg, grid_info, file_path_background);
 
         t = load_foreground(fg_previous, grid_info, file_path_foreground);
-
+        first_t = t;
 
         printf("time = %f\n", t);
         save_nr = LOAD_SNAP_NUMBER + 1;
@@ -100,14 +101,15 @@ int main_hd_2D(int argc, char *argv[])
         save_foreground(fg_previous, grid_info, 0, 0.0);
         save_nr ++;
     
-    t = 0.0;
+        t = 0.0;
+        first_t = 0.0;
     #endif // LOAD
 
     t_since_save = 0.0;
     dt_last = 0.0;
     while (t < T)
     {
-        dt = one_time_step(bg, fg_previous, fg, grid_info, dt_last, t==0);
+        dt = one_time_step(bg, fg_previous, fg, grid_info, dt_last, first_t == t);
         t += dt;
         t_since_save += dt;
         dt_last = dt;

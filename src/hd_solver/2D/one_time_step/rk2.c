@@ -7,6 +7,18 @@ FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     int nz_full = grid_info->nz_full;
     int nx = grid_info->nx;
 
+    FLOAT_P damping_factor[nz_full];
+    FLOAT_P damping_coeffs[5] = {0.0, 0.5, 0.75, 0.875, 0.9375};
+    for (int i = nz_ghost+5; i < nz_full-nz_ghost-5+1; i++)
+    {
+        damping_factor[i] = 1.0;
+    }
+    for (int i = nz_ghost; i < nz_ghost+5; i++)
+    {
+        damping_factor[i] = damping_coeffs[i-nz_ghost];
+        damping_factor[nz_full-i-1] = damping_coeffs[i-nz_ghost];
+    }
+
     FLOAT_P dt = get_dt(fg_prev, grid_info, dt_last, first_timestep);
 
     FLOAT_P **k1_s, **k2_s;
@@ -103,14 +115,14 @@ FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
         k2_vz[nz_full-nz_ghost-1][j] = 0.0;
     }
 
-    // Updating variables
+    // Updating variables for entire grid
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < nx; j++)
         {
-            fg->s1[i][j] = fg_prev->s1[i][j] + dt/2.0 * (k1_s[i][j] + k2_s[i][j]);
+            fg->s1[i][j] = fg_prev->s1[i][j] + dt/2.0 * damping_factor[i] *(k1_s[i][j] + k2_s[i][j]);
             fg->vx[i][j] = fg_prev->vx[i][j] + dt/2.0 * (k1_vx[i][j] + k2_vx[i][j]);
-            fg->vz[i][j] = fg_prev->vz[i][j] + dt/2.0 * (k1_vz[i][j] + k2_vz[i][j]);
+            fg->vz[i][j] = fg_prev->vz[i][j] + dt/2.0 * damping_factor[i] *(k1_vz[i][j] + k2_vz[i][j]);
         }
     }
 

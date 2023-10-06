@@ -14,16 +14,19 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     // Reading solar_s data
     read_solar_s_data("additional_files/solar_s.h5", r_over_R_solar_s, rho_solar_s, p_solar_s, T_solar_s, solar_s_size);
 
-    // Setting CZ start at 0.7 solar radii and finding the closest radius to that in the solar_s data
+    // Setting CZ start and finding the closest radius to that in the solar_s data
     int cz_start_index = 0;
-    while (r_over_R_solar_s[cz_start_index] > 0.7)
+    while (r_over_R_solar_s[cz_start_index] > CZ_START)
     {
         cz_start_index++;
     }
     cz_start_index--;
 
+    // Using CGS units for Solar S data, then converting to SI if UNITS == 1
+    FLOAT_P R_SUN_CGS = 6.957e10; // solar radius in CGS
+
     // Variables for start of integration
-    FLOAT_P r_i = r_over_R_solar_s[cz_start_index] * R_SUN;
+    FLOAT_P r_i = r_over_R_solar_s[cz_start_index] * R_SUN_CGS;
     FLOAT_P p0_i = p_solar_s[cz_start_index];
     FLOAT_P T0_i = T_solar_s[cz_start_index];
     FLOAT_P rho0_i = rho_solar_s[cz_start_index];
@@ -31,11 +34,19 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     // Finding the mass at the start of CZ by cumulative trapezoidal integration
     FLOAT_P m_i = 0.0; 
     FLOAT_P dr;
-    FLOAT_P C = 4*M_PI*pow(R_SUN,3);
+    FLOAT_P C = 4*M_PI*pow(R_SUN_CGS,3);
     for (int i = solar_s_size-2; i >= cz_start_index; i--) {
         dr =  r_over_R_solar_s[i]-r_over_R_solar_s[i+1];
         m_i += C * 0.5 * (rho_solar_s[i]*pow(r_over_R_solar_s[i], 2) + rho_solar_s[i+1]*pow(r_over_R_solar_s[i+1], 2)) * dr;
     }
+
+    #if UNITS == 1
+        // Convert from CGS to SI
+        r_i *= 1e-2;
+        p0_i *= 1e3;
+        rho0_i *= 1e-1;
+        m_i *= 1e-3;
+    #endif
 
     // Deallocating solar_s arrays
     deallocate_1D_array(r_over_R_solar_s);
