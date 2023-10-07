@@ -1,12 +1,12 @@
 #include "global_parameters.h"
 
-void copy_3D_array(FLOAT_P ***src, FLOAT_P ***dest, int nz, int ny, int nx)
+void copy_3D_array(FLOAT_P ***src, FLOAT_P ***dest, int i_start, int i_end, int j_start, int j_end, int k_start, int k_end)
 {
-    for (int i = 0; i < nz; i++)
+    for (int i = i_start; i < i_end; i++)
     {
-        for (int j = 0; j < ny; j++)
+        for (int j = j_start; j < j_end; j++)
         {
-            for (int k = 0; k < nx; k++)
+            for (int k = k_start; k < k_end; k++)
             {
                 dest[i][j][k] = src[i][j][k];
             }

@@ -124,7 +124,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
         T0[j-jj] = i_var_down.T0[jj];
         grad_s0[j-jj] = i_var_down.grad_s0[jj];
         rho0[j-jj] = i_var_down.rho0[jj];
-        g[j-jj] = -G * i_var_down.m[jj] / pow(i_var_down.r[jj],2);
+        g[j-jj] = G * i_var_down.m[jj] / pow(i_var_down.r[jj],2);
     }
 
     for (int ii = j; ii < nz; ii++)
@@ -134,7 +134,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
         T0[ii] = i_var_up.T0[ii-j];
         grad_s0[ii] = i_var_up.grad_s0[ii-j];
         rho0[ii] = i_var_up.rho0[ii-j];
-        g[ii] = -G * i_var_up.m[ii-j] / pow(i_var_up.r[ii-j],2);
+        g[ii] = G * i_var_up.m[ii-j] / pow(i_var_up.r[ii-j],2);
     }
 
     // Deallocating integration arrays
@@ -187,6 +187,31 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
 
     // Extrapolating background variables to ghost cells
     extrapolate_background(bg, grid_info);
+
+    // Pre-calculate 1/rho0
+    for (i = 0; i < grid_info->nz_full; i++)
+    {
+        bg->one_over_rho0[i] = 1.0/bg->rho0[i];
+
+    }
+
+    int nz_ghost = grid_info->nz_ghost;
+    int nz_full = grid_info->nz_full;
+
+    // Pre-calculate grad_g and grad_rho0
+    // First for endpoints
+    bg->grad_g[nz_ghost] = (bg->g[nz_ghost+1]-bg->g[nz_ghost])/(bg->r[nz_ghost+1]-bg->r[nz_ghost]);
+    bg->grad_rho0[nz_ghost] = (bg->rho0[nz_ghost+1]-bg->rho0[nz_ghost])/(bg->r[nz_ghost+1]-bg->r[nz_ghost]);
+
+    bg->grad_g[nz_full-nz_ghost-1] = (bg->g[nz_full-nz_ghost-1]-bg->g[nz_full-nz_ghost-2])/(bg->r[nz_full-nz_ghost-1]-bg->r[nz_full-nz_ghost-2]);
+    bg->grad_rho0[nz_full-nz_ghost-1] = (bg->rho0[nz_full-nz_ghost-1]-bg->rho0[nz_full-nz_ghost-2])/(bg->r[nz_full-nz_ghost-1]-bg->r[nz_full-nz_ghost-2]);
+
+    // Then for the rest of the grid using central derivative second order
+    for (i = nz_ghost+1; i < nz_full-nz_ghost-1; i++)
+    {
+        bg->grad_g[i] = (bg->g[i+1]-bg->g[i-1])/(bg->r[i+1]-bg->r[i-1]);
+        bg->grad_rho0[i] = (bg->rho0[i+1]-bg->rho0[i-1])/(bg->r[i+1]-bg->r[i-1]);
+    }
 
     // Deallocating full integration arrays
     free(r);

@@ -1,11 +1,11 @@
 #include "one_time_step.h"
 
-FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
 {
 
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
-    int nx = grid_info->nx;
+    int ny = grid_info->ny;
 
     FLOAT_P dt = get_dt(fg_prev, grid_info, dt_last, first_timestep);
     #if MPI_ON == 1
@@ -18,20 +18,20 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     FLOAT_P **k1_vz, **k2_vz, **k3_vz;
 
     // Allocate memory for k1, k2, k3
-    allocate_2D_array(&k1_s, nz_full, nx); // These only have to be nz long, but wait untill program runs to change it
-    allocate_2D_array(&k2_s, nz_full, nx);
-    allocate_2D_array(&k3_s, nz_full, nx);
-    allocate_2D_array(&k1_vx, nz_full, nx);
-    allocate_2D_array(&k2_vx, nz_full, nx);
-    allocate_2D_array(&k3_vx, nz_full, nx);
-    allocate_2D_array(&k1_vz, nz_full, nx);
-    allocate_2D_array(&k2_vz, nz_full, nx);
-    allocate_2D_array(&k3_vz, nz_full, nx);
+    allocate_2D_array(&k1_s, nz_full, ny); // These only have to be nz long, but wait untill program runs to change it
+    allocate_2D_array(&k2_s, nz_full, ny);
+    allocate_2D_array(&k3_s, nz_full, ny);
+    allocate_2D_array(&k1_vx, nz_full, ny);
+    allocate_2D_array(&k2_vx, nz_full, ny);
+    allocate_2D_array(&k3_vx, nz_full, ny);
+    allocate_2D_array(&k1_vz, nz_full, ny);
+    allocate_2D_array(&k2_vz, nz_full, ny);
+    allocate_2D_array(&k3_vz, nz_full, ny);
 
     // Calculating k1
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
     {
-        for (int j = 0; j < nx; j++)
+        for (int j = 0; j < ny; j++)
         {
             k1_s[i][j] = rhs_ds1_dt(bg, fg_prev, grid_info, i, j);
             k1_vx[i][j] = rhs_dvx_dt(bg, fg_prev, grid_info, i, j);
@@ -45,7 +45,7 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     }
 
     // Calculating k1 for the boundaries
-    for (int j = 0; j < nx; j++)
+    for (int j = 0; j < ny; j++)
     {
         // Bottom boundary
         k1_s[nz_ghost][j] = 0.0;
@@ -68,14 +68,14 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
         fg->vz[nz_full-nz_ghost-1][j] = fg_prev->vz[nz_full-nz_ghost-1][j] + dt/2.0 * k1_vz[nz_full-nz_ghost-1][j];
     }
 
-    extrapolate_2D_array(fg->s1, nz_full, nz_ghost, nx);
-    extrapolate_2D_array(fg->vx, nz_full, nz_ghost, nx);
-    extrapolate_2D_array(fg->vz, nz_full, nz_ghost, nx);
+    extrapolate_2D_array(fg->s1, nz_full, nz_ghost, ny);
+    extrapolate_2D_array(fg->vx, nz_full, nz_ghost, ny);
+    extrapolate_2D_array(fg->vz, nz_full, nz_ghost, ny);
 
     // Using the fg struct to store mid-calculation variables. So need to fill these with the previous fg values for p1, T1 and rho1
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
-        for (int j = 0; j < nx; j++)
+        for (int j = 0; j < ny; j++)
         {
             fg->p1[i][j] = fg_prev->p1[i][j];
             fg->T1[i][j] = fg_prev->T1[i][j];
@@ -86,7 +86,7 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     // Calculating k2
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
     {
-        for (int j = 0; j < nx; j++)
+        for (int j = 0; j < ny; j++)
         {
             k2_s[i][j] = rhs_ds1_dt(bg, fg, grid_info, i, j);
             k2_vx[i][j] = rhs_dvx_dt(bg, fg, grid_info, i, j);
@@ -100,7 +100,7 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     }
 
     // Boundaries
-    for (int j = 0; j < nx; j++)
+    for (int j = 0; j < ny; j++)
     {
         // Bottom boundary
         k2_s[nz_ghost][j] = 0.0;
@@ -123,14 +123,14 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
         fg->vz[nz_full-nz_ghost-1][j] = fg_prev->vz[nz_full-nz_ghost-1][j] - dt * k1_vz[nz_full-nz_ghost-1][j] + 2.0 * dt * k2_vz[nz_full-nz_ghost-1][j];
     }
 
-    extrapolate_2D_array(fg->s1, nz_full, nz_ghost, nx);
-    extrapolate_2D_array(fg->vx, nz_full, nz_ghost, nx);
-    extrapolate_2D_array(fg->vz, nz_full, nz_ghost, nx);
+    extrapolate_2D_array(fg->s1, nz_full, nz_ghost, ny);
+    extrapolate_2D_array(fg->vx, nz_full, nz_ghost, ny);
+    extrapolate_2D_array(fg->vz, nz_full, nz_ghost, ny);
 
     // Calculating k3
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
     {
-        for (int j = 0; j < nx; j++)
+        for (int j = 0; j < ny; j++)
         {
             k3_s[i][j] = rhs_ds1_dt(bg, fg, grid_info, i, j);
             k3_vx[i][j] = rhs_dvx_dt(bg, fg, grid_info, i, j);
@@ -138,7 +138,7 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
         }
     }
 
-    for (int j = 0; j < nx; j++)
+    for (int j = 0; j < ny; j++)
     {
         k3_s[nz_ghost][j] = 0.0;
         k3_vx[nz_ghost][j] = rhs_dvx_dt_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
@@ -152,7 +152,7 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     //Updating variables
     for (int i = nz_ghost+1; i < nz_full - nz_ghost-1; i++)
     {
-        for (int j = 0; j < nx; j++)
+        for (int j = 0; j < ny; j++)
         {
             fg->s1[i][j] = fg_prev->s1[i][j] + dt/6.0 * (k1_s[i][j] + 4.0*k2_s[i][j] + k3_s[i][j]);
             fg->vx[i][j] = fg_prev->vx[i][j] + dt/6.0 * (k1_vx[i][j] + 4.0*k2_vx[i][j] + k3_vx[i][j]);
@@ -161,12 +161,12 @@ FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_pre
     }
 
     // Extrapolate
-    extrapolate_2D_array(fg->s1, nz_full, nz_ghost, nx);
-    extrapolate_2D_array(fg->vx, nz_full, nz_ghost, nx);
-    extrapolate_2D_array(fg->vz, nz_full, nz_ghost, nx);
+    extrapolate_2D_array(fg->s1, nz_full, nz_ghost, ny);
+    extrapolate_2D_array(fg->vx, nz_full, nz_ghost, ny);
+    extrapolate_2D_array(fg->vz, nz_full, nz_ghost, ny);
 
     solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
-    extrapolate_2D_array(fg->p1, nz_full, nz_ghost, nx);
+    extrapolate_2D_array(fg->p1, nz_full, nz_ghost, ny);
 
     // Solving algebraic equations
     first_law_thermodynamics(fg, bg, grid_info);

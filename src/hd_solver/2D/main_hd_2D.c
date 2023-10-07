@@ -9,7 +9,7 @@ int main_hd_2D(int argc, char *argv[])
 
     // Declare the background variables, foreground variables and grid info
     struct BackgroundVariables *bg;
-    struct ForegroundVariables2D *fg, *fg_previous, *tmp_ptr;
+    struct ForegroundVariables *fg, *fg_previous, *tmp_ptr;
     struct GridInfo *grid_info;
 
     #if LOAD == 1
@@ -21,9 +21,9 @@ int main_hd_2D(int argc, char *argv[])
         snprintf(file_path_background, sizeof(file_path_background), "data/%s/background.h5", RUN_NAME);
                 
         load_grid_info(&grid_info, file_path_foreground);
-        allocate_background_struct(&bg, grid_info->nz_full);
-        allocate_foreground_struct_2D(&fg_previous, grid_info->nz_full, grid_info->nx);
-        allocate_foreground_struct_2D(&fg, grid_info->nz_full, grid_info->nx);
+        allocate_background_struct(&bg, grid_info);
+        allocate_foreground_struct(&fg_previous, grid_info);
+        allocate_foreground_struct(&fg, grid_info);
 
         load_background(bg, grid_info, file_path_background);
 
@@ -34,14 +34,15 @@ int main_hd_2D(int argc, char *argv[])
         save_nr = LOAD_SNAP_NUMBER + 1;
 
     #elif LOAD == 0
+        // Initializing the simulation
         save_nr = 0;
 
         // Calculating the size of the grid
         FLOAT_P L_z = (R_END - R_START)*R_SUN;
-        FLOAT_P L_x = X_SIZE*R_SUN;
+        FLOAT_P L_y = Y_SIZE*R_SUN;
 
         // Calculating the size of the grid cells
-        FLOAT_P dx = L_x/(NX - 1);
+        FLOAT_P dy = L_y/(NY - 1);
         FLOAT_P dz = L_z/(NZ - 1);
 
         // Calculating the number of ghost cells
@@ -60,15 +61,15 @@ int main_hd_2D(int argc, char *argv[])
 
         FLOAT_P z0 = R_SUN * R_START;
         FLOAT_P z1 = R_SUN * R_END;
-        FLOAT_P x0 = 0.0;
-        FLOAT_P x1 = R_SUN * X_SIZE;
+        FLOAT_P y0 = 0.0;
+        FLOAT_P y1 = R_SUN * Y_SIZE;
 
-        allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NX, dz, dx, z0, z1, x0, x1);
+        allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NY, dz, dy, z0, z1, y0, y1);
 
         // Allocating memory for the background and foreground variables
-        allocate_background_struct(&bg, nz_full);
-        allocate_foreground_struct_2D(&fg, nz_full, NX);
-        allocate_foreground_struct_2D(&fg_previous, nz_full, NX);
+        allocate_background_struct(&bg, grid_info);
+        allocate_foreground_struct(&fg, grid_info);
+        allocate_foreground_struct(&fg_previous, grid_info);
 
         // Initialize the background variables and saving it to file
         solar_s_background_initialization(bg, grid_info);
@@ -139,8 +140,8 @@ int main_hd_2D(int argc, char *argv[])
     
     deallocate_grid_info_struct(grid_info);
     deallocate_background_struct(bg);
-    deallocate_foreground_struct_2D(fg_previous);
-    deallocate_foreground_struct_2D(fg);
+    deallocate_foreground_struct(fg_previous);
+    deallocate_foreground_struct(fg);
 
     return 0;
 }

@@ -1,6 +1,6 @@
 #include "rhs_functions.h"
 
-FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i)
+FLOAT_P rhs_dvz_dt_1D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i)
 {
     /*
     Calculates the right hands side of the momentum equation for the z-direction in 1D.
@@ -48,7 +48,7 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
             dvz_dz = forward_first_derivative_first_order(vz[i], vz[i+1], dz);
         }
     #elif UPWIND_ORDER == 2
-        if (vz[i][j] >= 0)
+        if (vz[i] >= 0)
         {
             dvz_dz = backward_first_derivative_second_order(vz[i], vz[i-1], vz[i-2], dz);
         }

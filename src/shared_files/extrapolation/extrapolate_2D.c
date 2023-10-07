@@ -4,13 +4,13 @@ void extrapolate_2D(struct ForegroundVariables2D *fg, struct GridInfo *grid_info
 {
     int nz_full = grid_info->nz_full;
     int nz_ghost = grid_info->nz_ghost;
-    int nx = grid_info->nx;
+    int ny = grid_info->ny;
 
     // Constant extrapolation
     #if EXTAPOLATE_GHOST_CELLS == 0
     for (int i = 0; i < nz_ghost; i++)
     {
-        for (int j = 0; j < nx; j++)
+        for (int j = 0; j < ny; j++)
         {
             fg->p1[i][j] = fg->p1[nz_ghost][j];
             fg->rho1[i][j] = fg->rho1[nz_ghost][j];

@@ -1,6 +1,6 @@
 #include "solve_elliptic_equation.h"
 
-FLOAT_P rhs_elliptic_eq_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int i, int j)
+FLOAT_P rhs_elliptic_eq_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j)
 {
     // THIS IS NOT USED!!!!
     // THIS IS THE VERTICAL BOUNDARY

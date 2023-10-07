@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #include "./solve_elliptic_equation/solve_elliptic_equation.h"
-#include "./solve_diff_eqs/solve_diff_eqs.h"
+#include "./rhs_functions/rhs_functions.h"
 #include "./one_time_step/one_time_step.h"
 #include "./equations/equations.h"
 

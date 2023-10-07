@@ -1,5 +1,5 @@
 # Compiler and Flags
-CC = gcc
+CC = mpicc
 CFLAGS = -Wall -Isrc -Isrc/shared_files $(HDF5_FLAGS) -O3
 LIBS = $(HDF5_LIBS)
 

@@ -1,6 +1,6 @@
 #include "io_functions.h"
 
-void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, int snap_number, FLOAT_P time)
+void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info, int snap_number, FLOAT_P time)
 {
     const char* root_header = "This is the root header";
     const char* grid_data_header = "This is the grid data header";
@@ -12,19 +12,19 @@ void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_inf
 
     FLOAT_P z0 = grid_info->z0;
     FLOAT_P z1 = grid_info->z1;
-    FLOAT_P x0 = grid_info->x0;
-    FLOAT_P x1 = grid_info->x1;
+    FLOAT_P y0 = grid_info->y0;
+    FLOAT_P y1 = grid_info->y1;
     int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
-    int nx = grid_info->nx;
-    FLOAT_P dx = grid_info->dx;
+    int ny = grid_info->ny;
+    FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
 
     hid_t file, group_grid_data, group_variables;
     hid_t dataspace_scalar, dataspace_2d;
 
-    hsize_t dims[2] = {nz_full, nx};
+    hsize_t dims[2] = {nz_full, ny};
     herr_t status;
 
     // Create new default file 
@@ -52,28 +52,28 @@ void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_inf
 
     #if UNITS == 0
         create_write_dataset(group_grid_data, "t", H5_FLOAT_P, dataspace_scalar, &time, "s");
-        create_write_dataset(group_grid_data, "dx", H5_FLOAT_P, dataspace_scalar, &dx, "cm");
+        create_write_dataset(group_grid_data, "dy", H5_FLOAT_P, dataspace_scalar, &dy, "cm");
         create_write_dataset(group_grid_data, "dz", H5_FLOAT_P, dataspace_scalar, &dz, "cm");
-        create_write_dataset(group_grid_data, "nx", H5T_NATIVE_INT, dataspace_scalar, &nx, "Grid points in x");
+        create_write_dataset(group_grid_data, "ny", H5T_NATIVE_INT, dataspace_scalar, &ny, "Grid points in y");
         create_write_dataset(group_grid_data, "nz", H5T_NATIVE_INT, dataspace_scalar, &nz, "Grid points in z");
         create_write_dataset(group_grid_data, "nz_ghost", H5T_NATIVE_INT, dataspace_scalar, &nz_ghost, "Ghost points in z");
         create_write_dataset(group_grid_data, "nz_full", H5T_NATIVE_INT, dataspace_scalar, &nz_full, "Full grid points in z");
         create_write_dataset(group_grid_data, "z0", H5_FLOAT_P, dataspace_scalar, &z0, "cm");
         create_write_dataset(group_grid_data, "z1", H5_FLOAT_P, dataspace_scalar, &z1, "cm");
-        create_write_dataset(group_grid_data, "x0", H5_FLOAT_P, dataspace_scalar, &x0, "cm");
-        create_write_dataset(group_grid_data, "x1", H5_FLOAT_P, dataspace_scalar, &x1, "cm");
+        create_write_dataset(group_grid_data, "y0", H5_FLOAT_P, dataspace_scalar, &y0, "cm");
+        create_write_dataset(group_grid_data, "y1", H5_FLOAT_P, dataspace_scalar, &y1, "cm");
     #else
         create_write_dataset(group_grid_data, "t", H5_FLOAT_P, dataspace_scalar, &time, "s");
-        create_write_dataset(group_grid_data, "dx", H5_FLOAT_P, dataspace_scalar, &dx, "m");
+        create_write_dataset(group_grid_data, "dy", H5_FLOAT_P, dataspace_scalar, &dy, "m");
         create_write_dataset(group_grid_data, "dz", H5_FLOAT_P, dataspace_scalar, &dz, "m");
-        create_write_dataset(group_grid_data, "nx", H5T_NATIVE_INT, dataspace_scalar, &nx, "Grid points in x");
+        create_write_dataset(group_grid_data, "ny", H5T_NATIVE_INT, dataspace_scalar, &ny, "Grid points in y");
         create_write_dataset(group_grid_data, "nz", H5T_NATIVE_INT, dataspace_scalar, &nz, "Grid points in z");
         create_write_dataset(group_grid_data, "nz_ghost", H5T_NATIVE_INT, dataspace_scalar, &nz_ghost, "Ghost points in z");
         create_write_dataset(group_grid_data, "nz_full", H5T_NATIVE_INT, dataspace_scalar, &nz_full, "Full grid points in z");
         create_write_dataset(group_grid_data, "z0", H5_FLOAT_P, dataspace_scalar, &z0, "m");
         create_write_dataset(group_grid_data, "z1", H5_FLOAT_P, dataspace_scalar, &z1, "m");
-        create_write_dataset(group_grid_data, "x0", H5_FLOAT_P, dataspace_scalar, &x0, "m");
-        create_write_dataset(group_grid_data, "x1", H5_FLOAT_P, dataspace_scalar, &x1, "m");
+        create_write_dataset(group_grid_data, "y0", H5_FLOAT_P, dataspace_scalar, &y0, "m");
+        create_write_dataset(group_grid_data, "y1", H5_FLOAT_P, dataspace_scalar, &y1, "m");
     #endif // UNITS == 0
 
     status = H5Sclose(dataspace_scalar);

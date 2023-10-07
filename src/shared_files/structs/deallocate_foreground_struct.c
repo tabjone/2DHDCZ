@@ -2,7 +2,7 @@
 #include "../array_memory_management/array_memory_management.h"
 #include <stdlib.h>
 
-void deallocate_foreground_struct_2D(struct ForegroundVariables2D *fg)
+void deallocate_foreground_struct(struct ForegroundVariables *fg)
 {
     #if DIMENSIONS == 1
         deallocate_1D_array(fg->p1);
@@ -22,7 +22,7 @@ void deallocate_foreground_struct_2D(struct ForegroundVariables2D *fg)
         deallocate_2D_array(fg->vx);
         #if BFIELD_ON == 1
             deallocate_2D_array(fg->Bz);
-            deallocate_2D_array(fg->Bx);
+            deallocate_2D_array(fg->By);
         #endif // BFIELD_ON
     #elif DIMENSIONS == 3
         deallocate_3D_array(fg->p1);
@@ -34,8 +34,8 @@ void deallocate_foreground_struct_2D(struct ForegroundVariables2D *fg)
         deallocate_3D_array(fg->vy);
         #if BFIELD_ON == 1
             deallocate_3D_array(fg->Bz);
-            deallocate_3D_array(fg->Bx);
             deallocate_3D_array(fg->By);
+            deallocate_3D_array(fg->Bx);
         #endif // BFIELD_ON
     #endif // DIMENSIONS
 

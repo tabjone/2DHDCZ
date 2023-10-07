@@ -6,9 +6,9 @@
 
 #define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
-#define RUN_NAME "rk2_upw2_dt_test"
-#define LOAD 0 // 0 for not loading, 1 for loading
-#define LOAD_SNAP_NUMBER 23 // Snap number to load
+#define RUN_NAME "rk3_upw2_dt_test"
+#define LOAD 1 // 0 for not loading, 1 for loading
+#define LOAD_SNAP_NUMBER 24 // Snap number to load
 
 #define T 1e6 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
@@ -20,21 +20,24 @@
 // Order of the scheme (only upwind 1,2, central 2,4, rk1,2 implemented so far)
 #define UPWIND_ORDER 2 // 1 for first order, 2 for second order
 #define CENTRAL_ORDER 2 // 2 for second order, 4 for fourth order
-#define TIME_ORDER 2 // 1,2,3,4 for RK1, RK2, RK3, RK4
+#define TIME_ORDER 3 // 1,2,3,4 for RK1, RK2, RK3, RK4
 
 #define FLOAT_PRECISION 1 // 0 for float, 1 for double, 2 for long double
+
+// Warning, the units might not be correct in the equations of the system for SI
 #define UNITS 0 // 0 for cgs, 1 for SI
 
 // Dimensions and MHD (only 2D HD implemented so far)
 #define DIMENSIONS 2 // 1 for 1D, 2 for 2D, 3 for 3D
+// THIS WILL BE CHANGED TO MHD INTEGRATED IN FUNCTIONS BUT BFIELD_ON WILL CHOSE TO INCLUDE OR NOT INCLUDE B-FIELD
 #define MHD 0 // 0 for hydro, 1 for MHD
 
 // Grid size
 #define CZ_START 0.7 // In units of solar radii
 #define R_START 0.7 // In units of solar radii
 #define R_END 0.90 // In units of solar radii
-#define X_SIZE 0.05 // In units of solar radii
-#define NX 90 // Number of grid points in x-direction
+#define Y_SIZE 0.05 // In units of solar radii
+#define NY 90 // Number of grid points in y-direction
 #define NZ 350 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
@@ -58,6 +61,9 @@
 // Debugging
 
 #define GRAVITY_ON 1 // 0 for gravity off, 1 for gravity on
+#define ADVECTION_ON 1 // 0 for advection off, 1 for advection on
+#define GAS_PRESSURE_ON 1 // 0 for gas pressure off, 1 for gas pressure on
+#define THERMAL_DIFFUSIVITY_ON 1 // 0 for thermal diffusivity off, 1 for thermal diffusivity on
 #define BFIELD_ON 0 // 0 for B-field off, 1 for B-field on
 
 #define DEBUG 1
@@ -96,6 +102,9 @@
 #if MHD != 0
     #error "Only hydrodynamics implemented."
 #endif // MHD != 0
+#if BFIELD_ON != 0
+    #error "Only hydrodynamics implemented."
+#endif // BFIELD_ON != 0
 #if EXTRAPOLATE_GHOST_CELLS != 0
     #error "Only constant extrapolation implemented."
 #endif // EXTRAPOLATE_GHOST_CELLS != 0

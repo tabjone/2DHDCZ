@@ -2,32 +2,137 @@
 \section{Background Theory}
 \subsection{Theory about the Sun}
 Statification
+Radiative zone, superadiabaticity
+Convection zone
+Convective cells, granule size
+Pressure scale height
+Time scales
 
 \subsection{Mixing length theory}
 \subsection{Perturbation theory}
 
 \section{Anelastic MHD}
 \subsection{General anelastic MHD}
+!!!!
+!!!!
+The anelastic model is an extention of MLT which includes stratification by including a first order pertubed field upon a static background. It is based on the assumption that convective flow is carried by the foreground field. This approach filters out sound waves 
+
+... DERIVATION LIKE SONDRE ON THE BLACKBOARD ...
+
+
+The anelastic approximation is motivated by Mixing-Length Theory (MLT), which is a model where we look at how energy is transported over a characteristic mixing length before being dissapated. This model gives us the dominant balance for the lowest order equations and the relative sizes of pertubations to the first order \citep{1999ApJS..121..247L}. The MLT model has been verified against fully-compressible simulations which appear to support it's validity \citep{1989ApJ...336.1022C}, but needs modification around the bottom and top of a convective layer \citep{1996ApJ...466..372C}. This is where the anelastic approximation comes in, which is a an extention of MLT which includes stratification. 
+
+In the anelastic approximation we separate the thermodynamical quantities upon a background reference state and an overlaying pertubation. The background state can be set up with a non-trivial depth stratification without full compressibility, filtering out fast-moving sound waves \citep{1999ApJS..121..247L}. This has the effect of lowering the required time-resolution due to not having to consider the acoustic time scale. Instead we only have to consider the much lower dynamic time scale, which is determined by the flow velocity and Alfvén speed. 
+
+The background state can be time dependent \citep{1976ApJ...207..545T} or time independent. The problem with a time dependent background state is that the entropy gradient can be strongly superadiabatic in an upper thermal boundary layer, resulting a high Mach flow number, making this layer supersonically unstable \citep{1975JFM....68..695G}. It is therefore prefered that the entropy background is constant in time.
+
+% TODO: CHECK THIS
+(HERE: ADIABATIC PARAMETERS. PLASMA BETA. WHERE DOES THE ANELASTIC APPRXIMATION HOLD. EQUATION OF STATE (IDEAL GAS LAW WITH FIRST ORDER PERTUBATION?))
+
+We will now show a simple example of how to use pertubation theory on the hydrodynamical equations. Assume that we are in one dimension with a constant flow and that the continuity equation has no sinks or sources. This gives us that the flux of the mass density $\rho$ is $\rho u$, where $u$ is the fluid velocity, and we get that the continuity equation becomes
+!!!!
+!!!!
 
 
 
+\subsection{Ideal anelastic HD}
+We start by looking at the ideal case where the thermal diffusivity $K=0$, the viscous stress $\mu=0\rightarrow\Pi=0$, no magnetic field and no geometrical effects $\mathbf{g}=-g\mathbf{\hat{k}}$, where ${\hat{k}}$ is the unit vector in the upward direction (z-direction). This gives us the momentum equation
 
-\subsection{Ideal anelastic MHD}
+\begin{equation}\label{eq:momentum_ideal}
+    \rho_0\left[\frac{\partial\mathbf{v}}{\partial t}+(\mathbf{v}\cdot\nabla)\mathbf{v}\right]=-\nabla p_1 - \rho_1g\mathbf{\hat{k}}
+\end{equation}
+and the conservation of entropy
+\begin{equation}\label{eq:entropy_ideal}
+    \rho_0 T_0 \left[\frac{\partial s_1}{\partial t} + (\mathbf{v}\cdot \nabla)(s_0+s_1) \right]
+    = 0
+\end{equation}
+in the ideal case. The other equations are unchanged. To solve this we start by writing the momentum equation w.r.t the time derivative
+\begin{equation}\label{eq:momentum_wrt_t}
+    \frac{\partial\mathbf{v}}{\partial t} = -\frac{1}{\rho_0}\nabla p_1 - (\mathbf{v}\cdot\nabla)\mathbf{v} - \frac{\rho_1}{\rho_0}g\mathbf{\hat{k}},
+\end{equation}
+Then we split this up into it's two components for the horizontal (x-direction) $\mathbf{\hat{i}}$ and the vertical direction $\mathbf{\hat{k}}$ giving us 
+\begin{align}
+    \mathbf{\hat{i}}&:\ \partial_t v_x = -\frac{1}{\rho_0}\partial_x p_1 - (v_x\partial_x + v_z\partial_z)v_x, \label{eq:momentum_wrt_i}\\
+    \mathbf{\hat{k}}&:\ \partial_t v_z = -\frac{1}{\rho_0}\partial_z p_1 - (v_x\partial_x + v_z\partial_z)v_z - \frac{\rho_1}{\rho_0}g(z). \label{eq:momentum_wrt_k}
+\end{align}
+We then write the entropy equation w.r.t. the time derivative, giving us
+\begin{equation}
+    \partial_t s_1 = - (v_x\partial_x+v_z\partial_z)s_1 - v_z\partial_z s_0.
+\end{equation}
 
-
-
-\subsection{Timestepping}
+\subsection{Adding thermal diffusivity}
+\subsection{Adding viscous stress}
+\subsection{Adding the magnetic field}
 
 \section{Numerical Methods}
-\subsection{Discretization}
-\subsection{Simulation Box}
-\subsection{Temporal Methods}
-\subsection{Spatial Methods}
+\subsection{Discretization and derivatives}
 
+The simulation box is set up with $N_z$ grid points in the z-direction and $N_x$ in the x-direction. These have a resolution of $\Delta z$ and $\Delta x$ respectively. Then our grid points are at locations
+\begin{align*}
+    z_i &= z_0 + i\Delta z,\ i\in[0,N_z-1], \\ 
+    x_j &= x_0 + j\Delta x,\ j\in[0,N_x-1].\\ 
+\end{align*}
+For the temporal discretization we get that the resolution $\Delta t$ will be different in each time-step due to the Courant-Friedrichs-Lewy (CFL) condition from the Von Neumann analysis. We start at a time $t_0$ and before ending at a time $T$. The time of at step $n+1$ is then
+\begin{equation*}
+    t_{n+1} = t_n + \Delta t
+\end{equation*}
+We name the foreground variables $f(z,x,t)$ and the background variables $h(z)$. These are then discretized as
+\begin{align*}
+    f(z,x,t) &\rightarrow f(z_i, x_i, t_n) = f_{i,j}^n,\\
+    h(z) &\rightarrow h(z_i) = h_i.
+\end{align*}
+We then let the analytical derivatives go to a numerical derivative on the discretized variables, here for a derivative in the x-direction
+\begin{equation*}
+    \frac{\partial f(z,x,t)}{\partial x}\rightarrow \left[\frac{\partial f(z_i,x_j,t_n)}{\partial t} \right]_{i,j}^n.
+\end{equation*}
+These are handled using a number of known spacial and temporal schemes. For the temporal schemes we will use the Runge-Kutta methods and for the spacial methods we have to take care in which method used based on the form of the equation. As is shown in section \ref{subsec:von_neumann} from Von Neumann analysis the advection equation is numerically unstable for a variety of spacial schemes based on the order of the Runge-Kutta method. Especially the central schemes are unstable and the advection terms should therefore be handled using upwind methods, or forward spacial (FS). Using the second order upwind method we have
+\begin{equation}
+    \left[\frac{\partial f}{\partial x} \right]_{i,j}^n= 
+    \begin{cases} 
+        \frac{3f_{i,j}^n-4f_{i,j-1}^n+f_{i,j-2}^n}{2\Delta x} & \text{if } v_x \geq 0 \\
+        \frac{-3f_{i,j}^n+4f_{i,j+1}^n-f_{i,j+2}^n}{2\Delta x} & \text{if } v_x < 0 
+    \end{cases}
+\end{equation}
+In the following we will write out the momentum- and entropy-equations using the second order central scheme where possible and keep the brackets on derivatives including temporal methods or terms that needs an FS scheme.
+\begin{align}
+    \left[\frac{\partial v_x}{\partial t} \right]_{i,j}^n &= -\frac{1}{\rho_{0,(i)}}\frac{p_{1,(i,j+1)}^n - p_{1,(i,j-1)}^n}{2\Delta x} - v_{x,(i,j)}^n \left[\frac{\partial v_{x}}{\partial x}\right]_{i,j}^n - v_{z,(i,j)}^n \left[\frac{\partial v_{x}}{\partial z}\right]_{i,j}^n, \\
+    \left[\frac{\partial v_z}{\partial t} \right]_{i,j}^n &= -\frac{1}{\rho_{0,(i)}}\frac{p_{1,(i+1,j)}^n - p_{1,(i-1,j)}^n}{2\Delta z} - v_{x,(i,j)}^n \left[\frac{\partial v_{z}}{\partial x}\right]_{i,j}^n - v_{z,(i,j)}^n \left[\frac{\partial v_{z}}{\partial z}\right]_{i,j}^n - \frac{\rho_{1,(i,j)}^n}{\rho_{0,(i)}}g(z_i)\\
+    \left[\frac{\partial s_1}{\partial t}\right] &= - v_{x,(i,j)} \left[\frac{\partial s_1}{\partial x} \right]_{i,j}^n- v_{z,(i,j)} \left[\frac{\partial s_1}{\partial z} \right]_{i,j}^n - v_{z,(i,j)}\frac{s_{0,(i+1,j)}-s_{0,(i-1,j)}}{2\Delta x}. 
+\end{align}
 
+\subsection{The Elliptic Equation}
 
+To find the pressure we take the divergence of the momentum equation \ref{eq:momentum}
+\begin{equation*}
+    \nabla\cdot\frac{\partial\left(\rho_0\mathbf{v}\right)}{\partial t}+\nabla\cdot\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}=-\nabla^2 p_1 - \partial_z\left(\rho_1 g\right).
+\end{equation*}
+We use Clairaut's theorem on the first term 
+\begin{equation*}
+    \frac{\partial\left[\nabla\cdot\left(\rho_0\mathbf{v}\right)\right]}{\partial t}+\nabla\cdot\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}=-\nabla^2 p_1 - \partial_z\left(\rho_1 g\right)
+\end{equation*}
+and get that the first term is zero due to the continuity equation. After simplification we end up with the expression
+\begin{equation}\label{eq:elliptic}
+    \nabla^2 p_1 = - \partial_z\left(\rho_1 g\right)
+    -\rho_0\left[\partial_x\partial_z(v_x v_z)+v_z\partial^2_z v_z+2\partial_z(v_x)\partial_x(v_z)\right]
+    -v_x \partial_x(v_z)\partial_z(\rho_0).
+\end{equation}
+We call the right hand side $F(z,x,t)$ and write the equation on discretized form
+\begin{equation}
+    \left[\nabla^2 p \right]_{i,j}^n = F_{i,j}^n.
+\end{equation}
+We remove the sub- and super-script, keeping in mind that this is the pertubed pressure at timestep $n$. Using the second order central second derivative we get that
+\begin{equation}
+    \frac{p_{i-1,j}-2p_{i,j}+p_{i+1,j}}{\Delta z^2} + \frac{p_{i,j-1}-2p_{i,j}+p_{i,j-1}}{\Delta x^2} = F_{i,j}.
+\end{equation}
+We call $a=1/\Delta z^2$, $b=1/\Delta x^2$ and $c=-2(a+b)$. This gives us that
+\begin{equation}
+    ap_{i-1,j}+ap_{i+1,j}+cp_{i,j}+bp_{i,j-1}+bp_{i,j-1}=F_{i,j}
+\end{equation}
+
+TODO: SET UP AS MATRIX WITH FLAT F, p. TALK ABOUT THE STENCIL FOR THIS MATRIX AND HOW TO SOLVE USING JACOBI METHOD. THEN GAUSS-SEIDEL BUT NEED TO FIGURE OUT HOW TO HANDLE BOUNDARY.
 
 \subsection{Stability Analysis}
+\label{subsec:von_neumann}
 
 We will use Von Neumann analysis of the advection equation to determine the required time-step sizes for our solver. The advection equation is
 \begin{equation}
@@ -129,13 +234,6 @@ In figures \ref{fig:vn_rk1}, \ref{fig:vn_rk2}, \ref{fig:vn_rk3} and \ref{fig:vn_
 \end{figure}
 
 
-
-
-
-
-
-
-
 \subsection{Background Initialization}
 
 We base our background on reference values from the standard solar model, Solar S, \citep{1996Sci...272.1286C}. This data is downloaded from \href{https://users-phys.au.dk/~jcd/solar_models/cptrho.l5bi.d.15c}{https://users-phys.au.dk/~jcd/solar_models/cptrho.l5bi.d.15c} at 31.08.2023. The reference values for density $\rho_0(r_r)$, temperature $T_0(r_r)$ and pressure $p_0(r_r)$ are picked at a radius $r_r=0.71R_{\odot}$, which is the bottom of the convection zone \citep{1991ApJ...378..413C}. The mass at this point is calculated by
@@ -190,7 +288,7 @@ and $r_*$ is the spesific gas constant and $\gamma$ is the adiabatic parameter. 
     \begin{equation*}
         p = \frac{k_B}{\mu m_u} T,
     \end{equation*}
-where $k_B$ is Boltzmanns constant $m_u$ is the atomic mass unit and $\mu$ is the mean molecular mass. Using the chemical abundaces of Hydrogen $\text{Ab(H)}=12$, Helium $\text{Ab(He)}=10.93$ and metals $\text{Ab(Metals)}=0.012$ \citep{2007SSRv..130..105G} we can calculate their number densities by 
+where $k_B$ is Boltzmanns constant $m_u$ is the atomic mass unit and $\mu$ is the mean molecular mass. Using the chemical abundaces of Hydrogen $\text{Ab(H)}=12$, Helium $\text{Ab(He)}=10.93$ and metals $\text{Ab(Metals)}=0.012$ \citep{2007SSRv..130..105G} we can calculate their relative number densities by 
     \begin{equation*}
         n_E = 10^{\text{Ab(E)}},
     \end{equation*}
@@ -205,8 +303,8 @@ where $m_e$ is the mass of the element, and the fractional abundance
 where $\rho$ is the total density. This gives us that $n_\text{H}=10^{12}$, $n_\text{He}=10^{10.93}$ and $n_\text{metals} = 10^{0.012}\approx1$. For simplification we firstly approximate $n_\text{metals}=0$, since $n_\text{metals}\approx1 \ll n_\text{H},n_\text{He}$, secondly $m_\text{He}\approx 4m_\text{H}$ and thirdly $m_\text{H}\approx m_u$. Then the the fractional abundance for Hydrogen, Helium and metals are
     \begin{align*}
         X_\text{H} &= \frac{n_\text{H}}{n_\text{H}+4 n_\text{He}} \approx 0.746,\\
-        X_\text{He} &= \frac{n_\text{He}}{n_\text{H}+4n_\text{He}}\approx 0.063, \\
-        X_\text{metals} &= 1 - X_{\text{H}} - X_\text{He} \approx 0.190
+        X_\text{He} &= \frac{4n_\text{He}}{n_\text{H}+4n_\text{He}}\approx 0.254, \\
+        X_\text{metals} &= 1 - X_{\text{H}} - X_\text{He} \approx 0.000
     \end{align*}
 We will assume full ionization due to the high temperatures and densities of the convection zone as can be seen in figures \ref{fig:temperature} and \ref{fig:pressure} from the standard solar model. Then the total number of particles due to Hydrogen is 
 \begin{equation*}
@@ -216,20 +314,14 @@ by one proton and electron. The total number of particles due to Helium is
 \begin{equation*}
     \frac{3 X_\text{He}\rho}{4 m_u},
 \end{equation*}
-by one alpha particle and two electrons. The metals will have one nucleus and a number of electrons equal to the number of protons in the nucleus per particle. This means that the ratio of free particles to the number of particles in the nucleus is always $(Z+1)/A$, where $Z$ is the number of protons and $A$ is the atomic weight. We can approximate this to $Z/A\approx 1/2m_u$ and get that the total number of particles due to the metals is
+by one alpha particle and two electrons. Then the total number of particles
 \begin{equation*}
-    \frac{X_\text{metals}\rho}{2m_u}.
+    n_{total} = \frac{\rho}{m_u}\left( 2X_\text{H} + \frac{3 X_\text{He}}{4}{2} \right).
 \end{equation*}
-Then the total number of particles
-\begin{equation*}
-    n_{total} = \frac{\rho}{m_u}\left( 2X_\text{H} + \frac{3 X_\text{He}}{4} + \frac{X_\text{metals}}{2} \right).
-\end{equation*}
-
 This gives us the mean molecular weight per particle
 \begin{equation}
-    \mu = \frac{1}{2X_\text{H} + 3X_\text{He}/4 + X_\text{metals}/2}\approx 0.61.
+    \mu = \frac{1}{2X_\text{H} + 3X_\text{He}/4}\approx 0.594.
 \end{equation}
-
 We can then calculate the spesific gas constant 
     \begin{equation*}
         r_* = \frac{k_B}{m_u \mu},
@@ -280,3 +372,5 @@ When we have the background set up we can interpolate this to a grid. We have do
     \caption{Gravitational acceleration as a function of radius for the integrated hydrostatic model in dashed lines and the Solar S model in dotted line.}
     \label{fig:gravitationa_acceleration} % For referencing the figure elsewhere in your document
 \end{figure}
+
+\subsection{Code testing, maybe not in theory}

@@ -1,7 +1,7 @@
 #include "io_functions.h"
 #include "global_parameters.h"
 
-FLOAT_P load_foreground(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, const char *file_path) 
+FLOAT_P load_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info, const char *file_path) 
 {    
     // There needs to be a function to read a dataset into a 2D array for a given address
 

@@ -1,9 +1,9 @@
 #include "one_time_step.h"
 #include <float.h>
 
-FLOAT_P get_dt(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P get_dt(struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
 {
-    int nx = grid_info->nx;
+    int ny = grid_info->ny;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
     FLOAT_P dz = grid_info->dz;
@@ -42,7 +42,7 @@ FLOAT_P get_dt(struct ForegroundVariables2D *fg, struct GridInfo *grid_info, FLO
     FLOAT_P dt_gridpoint; // dt at each grid point
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
-        for (int j = 0; j < nx; j++)
+        for (int j = 0; j < ny; j++)
         {
             dt_gridpoint = CFL_CUT * C_max / (fabs(fg->vx[i][j])/dx + fabs(fg->vz[i][j])/dz);
             if (dt_gridpoint < dt) 
