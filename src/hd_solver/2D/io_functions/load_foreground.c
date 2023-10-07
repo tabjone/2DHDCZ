@@ -7,7 +7,7 @@ FLOAT_P load_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_in
 
     FLOAT_P time;  
     herr_t status;
-    hid_t dataset_rho1, dataset_p1, dataset_s1, dataset_vx, dataset_vz;
+    hid_t dataset_rho1, dataset_p1, dataset_s1, dataset_vy, dataset_vz;
 
     // Open the file
     hid_t file = H5Fopen(file_path, H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -48,11 +48,11 @@ FLOAT_P load_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_in
 
     H5Dclose(dataset_s1);
 
-    dataset_vx = H5Dopen(fg_group, "vx", H5P_DEFAULT);
-    if (H5Dread(dataset_vx, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->vx[0][0]) < 0)
-    fprintf(stderr, "Failed to read the vx dataset\n");
+    dataset_vy = H5Dopen(fg_group, "vy", H5P_DEFAULT);
+    if (H5Dread(dataset_vy, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->vy[0][0]) < 0)
+    fprintf(stderr, "Failed to read the vy dataset\n");
 
-    H5Dclose(dataset_vx);
+    H5Dclose(dataset_vy);
 
     dataset_vz = H5Dopen(fg_group, "vz", H5P_DEFAULT);
     if (H5Dread(dataset_vz, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->vz[0][0]) < 0)

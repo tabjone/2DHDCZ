@@ -1,5 +1,6 @@
 #include "rhs_functions.h"
 
+#if DIMENSIONS == 1
 FLOAT_P rhs_dvz_dt_1D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i)
 {
     /*
@@ -77,3 +78,4 @@ FLOAT_P rhs_dvz_dt_1D(struct BackgroundVariables *bg, struct ForegroundVariables
 
     return rhs;
 }
+#endif // DIMENSIONS == 1

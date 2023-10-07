@@ -1,5 +1,6 @@
 #include "rhs_functions.h"
 
+#if DIMENSIONS == 2
 FLOAT_P rhs_ds1_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j)
 {
     /*
@@ -86,8 +87,9 @@ FLOAT_P rhs_ds1_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     #endif
 
     #if ADVECTION_ON == 1
-        rhs -= vy[i][j]*ds1_dy + vz[i][j]*ds1_dz;
+        rhs -= vy[i][j]*ds1_dy + vz[i][j]*ds1_dz + vz[i][j]*grad_s0[i];
     #endif
 
     return rhs;
 }
+#endif // DIMENSIONS == 2

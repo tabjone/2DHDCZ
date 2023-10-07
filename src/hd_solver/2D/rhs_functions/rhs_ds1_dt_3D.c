@@ -1,5 +1,6 @@
 #include "rhs_functions.h"
 
+#if DIMENSIONS == 3
 FLOAT_P rhs_ds1_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j, int k)
 {
     /*
@@ -111,8 +112,9 @@ FLOAT_P rhs_ds1_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
     #endif
 
     #if ADVECTION_ON == 1
-        rhs -= vx[i][j][k]*ds1_dx + vy[i][j][k]*ds1_dy + vz[i][j][k]*ds1_dz;
+        rhs -= vx[i][j][k]*ds1_dx + vy[i][j][k]*ds1_dy + vz[i][j][k]*ds1_dz + vz[i][j][k]*grad_s0[i];
     #endif
 
     return rhs;
 }
+#endif // DIMENSIONS == 3

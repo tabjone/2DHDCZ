@@ -20,7 +20,7 @@ void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVa
     }    
 
     // Solve boudaries
-    for (int j = 0; j < nx; j++)
+    for (int j = 0; j < ny; j++)
     { 
         // Bottom boundary
         rhs[nz_ghost][j] = 0.0;

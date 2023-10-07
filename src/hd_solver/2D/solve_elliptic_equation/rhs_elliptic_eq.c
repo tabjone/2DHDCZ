@@ -1,5 +1,5 @@
 #include "solve_elliptic_equation.h"
-
+/*
 FLOAT_P rhs_elliptic_eq(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j)
 {
     FLOAT_P *rho0 = bg->rho0;
@@ -51,3 +51,4 @@ FLOAT_P rhs_elliptic_eq(struct BackgroundVariables *bg, struct ForegroundVariabl
     return - drho1g_dz 
            - rho0[i]*(dd_vy_vz_dydz+vz[i][j]*dd_vz_ddz+2*dvy_dz*dvz_dy)-vy[i][j]*dvy_dz*drho0_dz;
 }
+*/

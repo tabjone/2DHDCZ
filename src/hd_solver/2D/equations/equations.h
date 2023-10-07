@@ -5,7 +5,7 @@
 #include "global_parameters.h"
 #include "global_parameters.h"
 
-void equation_of_state(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info);
-void first_law_thermodynamics(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info);
+void equation_of_state(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info);
+void first_law_thermodynamics(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info);
 
 #endif // EQUATIONS_H__

@@ -7,7 +7,7 @@ FLOAT_P get_dt(struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
     FLOAT_P dz = grid_info->dz;
-    FLOAT_P dx = grid_info->dx;
+    FLOAT_P dy = grid_info->dy;
 
     FLOAT_P dt;
     
@@ -44,7 +44,7 @@ FLOAT_P get_dt(struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT
     {
         for (int j = 0; j < ny; j++)
         {
-            dt_gridpoint = CFL_CUT * C_max / (fabs(fg->vx[i][j])/dx + fabs(fg->vz[i][j])/dz);
+            dt_gridpoint = CFL_CUT * C_max / (fabs(fg->vy[i][j])/dy + fabs(fg->vz[i][j])/dz);
             if (dt_gridpoint < dt) 
             {
                 dt = dt_gridpoint;  // update dt if the new value is smaller

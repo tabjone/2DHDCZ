@@ -6,9 +6,9 @@
 #include "global_parameters.h"
 #include "../rhs_functions/rhs_functions.h"
 
-FLOAT_P rhs_elliptic_eq(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j);
+//FLOAT_P rhs_elliptic_eq(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j);
 
-FLOAT_P rhs_elliptic_eq_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j);
+//FLOAT_P rhs_elliptic_eq_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j);
 
 void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info);
 

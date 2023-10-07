@@ -1,5 +1,6 @@
 #include "rhs_functions.h"
 
+#if DIMENSIONS == 3
 FLOAT_P rhs_dvy_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j, int k)
 {
     /*
@@ -126,3 +127,4 @@ FLOAT_P rhs_dvy_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
 
     return rhs;
 }
+#endif // DIMENSIONS == 3

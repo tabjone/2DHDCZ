@@ -6,9 +6,9 @@
 
 #define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
-#define RUN_NAME "rk3_upw2_dt_test"
-#define LOAD 1 // 0 for not loading, 1 for loading
-#define LOAD_SNAP_NUMBER 24 // Snap number to load
+#define RUN_NAME "rk3_new_test"
+#define LOAD 0 // 0 for not loading, 1 for loading
+#define LOAD_SNAP_NUMBER 0 // Snap number to load
 
 #define T 1e6 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
@@ -37,8 +37,8 @@
 #define R_START 0.7 // In units of solar radii
 #define R_END 0.90 // In units of solar radii
 #define Y_SIZE 0.05 // In units of solar radii
-#define NY 90 // Number of grid points in y-direction
-#define NZ 350 // Number of grid points in z-direction
+#define NY 20 // Number of grid points in y-direction
+#define NZ 60 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
 #define GS_TOL 1e-6 // Gauss-Seidel tolerance

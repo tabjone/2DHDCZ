@@ -6,7 +6,7 @@ void allocate_foreground_struct(struct ForegroundVariables **fg, struct GridInfo
 {
     int nz_full = grid_info->nz_full;
     
-    *fg = (struct ForegroundVariables2D *)malloc(sizeof(struct ForegroundVariables));
+    *fg = (struct ForegroundVariables *)malloc(sizeof(struct ForegroundVariables));
 
     #if DIMENSIONS == 1
         allocate_1D_array(&((*fg)->p1), nz_full);
@@ -23,7 +23,7 @@ void allocate_foreground_struct(struct ForegroundVariables **fg, struct GridInfo
         allocate_2D_array(&((*fg)->T1), nz_full, ny);
         allocate_2D_array(&((*fg)->rho1), nz_full, ny);
         allocate_2D_array(&((*fg)->s1), nz_full, ny);
-        allocate_2D_array(&((*fg)->vx), nz_full, ny);
+        allocate_2D_array(&((*fg)->vy), nz_full, ny);
         allocate_2D_array(&((*fg)->vz), nz_full, ny);
         #if BFIELD_ON == 1
             allocate_2D_array(&((*fg)->Bz), nz_full, ny);

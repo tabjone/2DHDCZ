@@ -1,6 +1,6 @@
 #include "one_time_step.h"
 
-FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
 {   
     FLOAT_P dt;
     #if TIME_ORDER == 1

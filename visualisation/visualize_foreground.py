@@ -18,27 +18,28 @@ formatter.set_scientific(True)
 R_sun = 6.957e10
 
 def read_fg(file_path):
+    # NOW THIS IS A LITTLE BIT HACKY TO MAKE NEW DATA WORK WITH OLD CODE
     with h5py.File(file_path, 'r') as f:
         T1 = np.array(f['variables/T1'])
         rho1 = np.array(f['variables/rho1'])
         p1 = np.array(f['variables/p1'])
         s1 = np.array(f['variables/s1'])
-        vx = np.array(f['variables/vx'])
+        vy = np.array(f['variables/vy'])
         vz = np.array(f['variables/vz'])
         
         t = np.array(f['grid_info/t'])
-        nx = np.array(f['grid_info/nx'])
+        nx = np.array(f['grid_info/ny'])
         nz = np.array(f['grid_info/nz'])
         nz_full = np.array(f['grid_info/nz_full'])
         nz_ghost = np.array(f['grid_info/nz_ghost'])
-        dx = np.array(f['grid_info/dx'])
+        dx = np.array(f['grid_info/dy'])
         dz = np.array(f['grid_info/dz'])
         z0 = np.array(f['grid_info/z0'])
         z1 = np.array(f['grid_info/z1'])
-        x0 = np.array(f['grid_info/x0'])
-        x1 = np.array(f['grid_info/x1'])
+        x0 = np.array(f['grid_info/y0'])
+        x1 = np.array(f['grid_info/y1'])
         
-        variables = {"T1": T1, "rho1": rho1, "p1": p1, "s1": s1, "vx": vx, "vz": vz}
+        variables = {"T1": T1, "rho1": rho1, "p1": p1, "s1": s1, "vx": vy, "vz": vz}
         info = {"t": t, "nx": nx, "nz": nz, "nz_full": nz_full, "nz_ghost": nz_ghost, "dx": dx, "dz": dz, "z0": z0, "z1": z1, "x0": x0, "x1": x1}
     return variables, info
 
@@ -322,7 +323,7 @@ class Visualize_Foreground:
 
 
 if __name__ == "__main__":
-    vf = Visualize_Foreground("../data/rk3_upw2_dt_test/")
+    vf = Visualize_Foreground("../data/rk3_new_test/")
 
     #vf.plot_params['T1'] = (True, -1e3, 1e3, vf.plot_params['T1'][3])
     #vf.plot_params['rho1'] = (True, -1e-4, 1e-4, vf.plot_params['rho1'][3])
@@ -332,5 +333,5 @@ if __name__ == "__main__":
     #vf.plot_params['vz'] = (True, -1e4, 1e4, vf.plot_params['vz'][3])
 
     vf.plot_v_of_t()
-    vf.animate_all_no_vmin_vmax(save=True, save_name="rk3_upw_2_dt_test.mp4", fps=4, save_interval=1)
+    vf.animate_all_no_vmin_vmax(save=True, save_name="rk3_new_test.mp4", fps=4, save_interval=1)
     

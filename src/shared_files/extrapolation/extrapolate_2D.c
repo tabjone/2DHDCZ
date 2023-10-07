@@ -1,6 +1,6 @@
 #include "extrapolation.h"
 
-void extrapolate_2D(struct ForegroundVariables2D *fg, struct GridInfo *grid_info)
+void extrapolate_2D(struct ForegroundVariables *fg, struct GridInfo *grid_info)
 {
     int nz_full = grid_info->nz_full;
     int nz_ghost = grid_info->nz_ghost;
@@ -16,14 +16,14 @@ void extrapolate_2D(struct ForegroundVariables2D *fg, struct GridInfo *grid_info
             fg->rho1[i][j] = fg->rho1[nz_ghost][j];
             fg->T1[i][j] = fg->T1[nz_ghost][j];
             fg->s1[i][j] = fg->s1[nz_ghost][j];
-            fg->vx[i][j] = fg->vx[nz_ghost][j];
+            fg->vy[i][j] = fg->vy[nz_ghost][j];
             fg->vz[i][j] = fg->vz[nz_ghost][j];
             
             fg->p1[nz_full - nz_ghost + i][j] = fg->p1[nz_full - nz_ghost - 1][j];
             fg->rho1[nz_full - nz_ghost + i][j] = fg->rho1[nz_full - nz_ghost - 1][j];
             fg->T1[nz_full - nz_ghost + i][j] = fg->T1[nz_full - nz_ghost - 1][j];
             fg->s1[nz_full - nz_ghost + i][j] = fg->s1[nz_full - nz_ghost - 1][j];
-            fg->vx[nz_full - nz_ghost + i][j] = fg->vx[nz_full - nz_ghost - 1][j];
+            fg->vy[nz_full - nz_ghost + i][j] = fg->vy[nz_full - nz_ghost - 1][j];
             fg->vz[nz_full - nz_ghost + i][j] = fg->vz[nz_full - nz_ghost - 1][j];
         }
     }

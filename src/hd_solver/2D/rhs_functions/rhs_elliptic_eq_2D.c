@@ -1,5 +1,6 @@
 #include "rhs_functions.h"
 
+#if DIMENSIONS == 2
 FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j)
 {
     /*
@@ -56,7 +57,7 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     FLOAT_P vz_ur = vz[i+1][j_plus];
     FLOAT_P vz_ul = vz[i+1][j_minus];
     FLOAT_P vz_dr = vz[i-1][j_plus];
-    FLOAT_P vz_d = vz[i-1][j_minus];
+    FLOAT_P vz_dl = vz[i-1][j_minus];
 
     // Calculate the derivatives
     // First derivatives
@@ -67,17 +68,17 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     FLOAT_P dd_vz_ddz;
 
     #if CENTRAL_ORDER == 2
-    // First derivatives
-    dvz_dy = central_first_derivative_second_order(vz[i][j_minus], vz[i][j_plus], dy);
-    dvy_dz = central_first_derivative_second_order(vy[i-1][j], vy[i+1][j], dz);
-    drho1_dz = central_first_derivative_second_order(rho1[i-1][j], rho1[i+1][j], dz);
+        // First derivatives
+        dvz_dy = central_first_derivative_second_order(vz[i][j_minus], vz[i][j_plus], dy);
+        dvy_dz = central_first_derivative_second_order(vy[i-1][j], vy[i+1][j], dz);
+        drho1_dz = central_first_derivative_second_order(rho1[i-1][j], rho1[i+1][j], dz);
 
-    // Mixed derivatives
-    dd_vy_dydz = (vy_ur-vy_ul-vy_dr+vy_dl)/(4.0*dy*dz);
-    dd_vz_dydz = (vz_ur-vz_ul-vz_dr+vz_dl)/(4.0*dy*dz);
-    
-    // Second derivatives
-    dd_vz_ddz = central_second_derivative_second_order(vz[i][j], vz[i-1][j], vz[i+1][j], dz);
+        // Mixed derivatives
+        dd_vy_dydz = (vy_ur-vy_ul-vy_dr+vy_dl)/(4.0*dy*dz);
+        dd_vz_dydz = (vz_ur-vz_ul-vz_dr+vz_dl)/(4.0*dy*dz);
+        
+        // Second derivatives
+        dd_vz_ddz = central_second_derivative_second_order(vz[i][j], vz[i-1][j], vz[i+1][j], dz);
     #endif
 
     #if GRAVITY_ON == 1
@@ -95,3 +96,4 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
 
     return rhs;
 }
+#endif // DIMENSIONS == 2

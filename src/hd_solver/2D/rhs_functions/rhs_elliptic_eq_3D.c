@@ -1,7 +1,7 @@
 #include "rhs_functions.h"
+#include "global_parameters.h"
 
-#include "rhs_functions.h"
-
+#if DIMENSIONS == 3
 FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j, int k)
 {
     /*
@@ -67,23 +67,23 @@ FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVari
     FLOAT_P dd_vz_ddz;
 
     #if CENTRAL_ORDER == 2
-    // First derivatives
-    dvx_dy = central_first_derivative_second_order(vx[i][j_minus][k], vx[i][j_plus][k], dy);
-    dvx_dz = central_first_derivative_second_order(vx[i-1][j][k], vx[i+1][j][k], dz);
-    dvy_dx = central_first_derivative_second_order(vy[i][j][k_minus], vy[i][j][k_plus], dx);
-    dvy_dz = central_first_derivative_second_order(vy[i-1][j][k], vy[i+1][j][k], dz);
-    dvz_dy = central_first_derivative_second_order(vz[i][j_minus][k], vz[i][j_plus][k], dy);
-    dvz_dx = central_first_derivative_second_order(vz[i][j][k_minus], vz[i][j][k_plus], dx);
-    drho1_dz = central_first_derivative_second_order(rho1[i-1][j], rho1[i+1][j], dz);
+        // First derivatives
+        dvx_dy = central_first_derivative_second_order(vx[i][j_minus][k], vx[i][j_plus][k], dy);
+        dvx_dz = central_first_derivative_second_order(vx[i-1][j][k], vx[i+1][j][k], dz);
+        dvy_dx = central_first_derivative_second_order(vy[i][j][k_minus], vy[i][j][k_plus], dx);
+        dvy_dz = central_first_derivative_second_order(vy[i-1][j][k], vy[i+1][j][k], dz);
+        dvz_dy = central_first_derivative_second_order(vz[i][j_minus][k], vz[i][j_plus][k], dy);
+        dvz_dx = central_first_derivative_second_order(vz[i][j][k_minus], vz[i][j][k_plus], dx);
+        drho1_dz = central_first_derivative_second_order(rho1[i-1][j][k], rho1[i+1][j][k], dz);
 
-    // Mixed derivatives
-    dd_vy_dydz = (vy[i+1][j_plus][k]-vy[i+1][j_minus][k]-vy[i-1][j_plus][k]+vy[i-1][j_minus][k])/((4.0*dy*dz));
-    dd_vz_dydz = (vz[i+1][j_plus][k]-vz[i+1][j_minus][k]-vz[i-1][j_plus][k]+vz[i-1][j_minus][k])/((4.0*dy*dz));
-    dd_vz_dxdz = (vz[i+1][j][k_plus]-vz[i+1][j][k_minus]-vz[i-1][j][k_plus]+vz[i-1][j][k_minus])/((4.0*dx*dz));
-    dd_vx_dxdz = (vx[i+1][j][k_plus]-vx[i+1][j][k_minus]-vx[i-1][j][k_plus]+vx[i-1][j][k_minus])/((4.0*dx*dz));
-    
-    // Second derivatives
-    dd_vz_ddz = central_second_derivative_second_order(vz[i][j], vz[i-1][j], vz[i+1][j], dz);
+        // Mixed derivatives
+        dd_vy_dydz = (vy[i+1][j_plus][k]-vy[i+1][j_minus][k]-vy[i-1][j_plus][k]+vy[i-1][j_minus][k])/((4.0*dy*dz));
+        dd_vz_dydz = (vz[i+1][j_plus][k]-vz[i+1][j_minus][k]-vz[i-1][j_plus][k]+vz[i-1][j_minus][k])/((4.0*dy*dz));
+        dd_vz_dxdz = (vz[i+1][j][k_plus]-vz[i+1][j][k_minus]-vz[i-1][j][k_plus]+vz[i-1][j][k_minus])/((4.0*dx*dz));
+        dd_vx_dxdz = (vx[i+1][j][k_plus]-vx[i+1][j][k_minus]-vx[i-1][j][k_plus]+vx[i-1][j][k_minus])/((4.0*dx*dz));
+        
+        // Second derivatives
+        dd_vz_ddz = central_second_derivative_second_order(vz[i][j][k], vz[i-1][j][k], vz[i+1][j][k], dz);
     #endif
     
     #if GRAVITY_ON == 1
@@ -94,9 +94,10 @@ FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVari
 
     #if ADVECTION_ON == 1
     {
-        rhs -= rho0[i]*(dvy_dx*dvx_dy + 2*dvz_dx*dvx_dz + dvx_dy*dvy_dx + 2*dvz_dy*dvy_dz + vz[i][j][k]*(dd_vx_dxdz+dd_vy_dy_dz) + vx[i][j][k]*dd_vz_dxdz + vy[i][j][k]*dd_vz_dydz + vz[i][j][k]*dd_vz_ddz) - grad_rho0[i]*(vx[i][j][k]*dvz_dx + vy[i][j][k]*dvz_dy);
+        rhs -= rho0[i]*(dvy_dx*dvx_dy + 2*dvz_dx*dvx_dz + dvx_dy*dvy_dx + 2*dvz_dy*dvy_dz + vz[i][j][k]*(dd_vx_dxdz+dd_vy_dydz) + vx[i][j][k]*dd_vz_dxdz + vy[i][j][k]*dd_vz_dydz + vz[i][j][k]*dd_vz_ddz) - grad_rho0[i]*(vx[i][j][k]*dvz_dx + vy[i][j][k]*dvz_dy);
     }
     #endif // ADVECTION_ON
 
     return rhs;
 }
+#endif // DIMENSIONS == 3

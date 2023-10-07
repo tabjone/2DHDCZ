@@ -105,14 +105,14 @@ void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info,
         create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_2d, fg->p1[0], "dyn/cm^2");
         create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_2d, fg->rho1[0], "g/cm^3");
         create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_2d, fg->s1[0], "erg/K");
-        create_write_dataset(group_variables, "vx", H5_FLOAT_P, dataspace_2d, fg->vx[0], "cm/s");
+        create_write_dataset(group_variables, "vy", H5_FLOAT_P, dataspace_2d, fg->vy[0], "cm/s");
         create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_2d, fg->vz[0], "cm/s");
     #else
         create_write_dataset(group_variables, "T1", H5_FLOAT_P, dataspace_2d, fg->T1[0], "K");
         create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_2d, fg->p1[0], "Pa/m^2");
         create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_2d, fg->rho1[0], "kg/m^3");
         create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_2d, fg->s1[0], "J/K");
-        create_write_dataset(group_variables, "vx", H5_FLOAT_P, dataspace_2d, fg->vx[0], "m/s");
+        create_write_dataset(group_variables, "vy", H5_FLOAT_P, dataspace_2d, fg->vy[0], "m/s");
         create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_2d, fg->vz[0], "m/s");
     #endif // UNITS == 0
 

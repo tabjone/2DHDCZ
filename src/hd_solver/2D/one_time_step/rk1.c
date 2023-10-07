@@ -5,7 +5,7 @@ FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev,
     int ny = grid_info->ny;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
-    int nz = grid_info->nz;
+    //int nz = grid_info->nz;
 
     FLOAT_P damping_factor[nz_full];
     FLOAT_P damping_coeffs[5] = {0.0, 0.5, 0.75, 0.875, 0.9375};
@@ -35,7 +35,7 @@ FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev,
             fg->vz[i][j] = fg_prev->vz[i][j] + dt * damping_factor[i]*rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
         }
     }
-    // Updating vx for the vertical boundaries
+    // Updating vy for the vertical boundaries
     for (int j = 0; j < ny; j++)
     {   
         // THIS NEEDS TO BE UPDATED. JUST EXTRAPOLATE VX SO THAT ITS ANTISYMMETRICAL
@@ -50,7 +50,7 @@ FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev,
     }
     // Extrapolate
     extrapolate_2D_array(fg->s1, nz_full, nz_ghost, ny);
-    extrapolate_2D_array(fg->vx, nz_full, nz_ghost, ny);
+    extrapolate_2D_array(fg->vy, nz_full, nz_ghost, ny);
     extrapolate_2D_array(fg->vz, nz_full, nz_ghost, ny);
 
     // Solving elliptic equation

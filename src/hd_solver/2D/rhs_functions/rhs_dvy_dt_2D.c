@@ -1,5 +1,6 @@
 #include "rhs_functions.h"
 
+#if DIMENSIONS == 2
 FLOAT_P rhs_dvy_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j)
 {
     /*
@@ -32,7 +33,6 @@ FLOAT_P rhs_dvy_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P dz = grid_info->dz;
     
     // Creating pointers to foreground arrays
-    FLOAT_P **rho1 = fg->rho1;
     FLOAT_P **p1 = fg->p1;
     FLOAT_P **vy = fg->vy;
     FLOAT_P **vz = fg->vz;
@@ -101,3 +101,4 @@ FLOAT_P rhs_dvy_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
 
     return rhs;
 }
+#endif // DIMENSIONS == 2
