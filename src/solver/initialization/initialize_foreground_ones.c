@@ -1,6 +1,6 @@
 #include "initialization.h"
 
-void initialize_foreground_struct_ones(struct ForegroundVariables *fg, struct GridInfo *grid_info)
+void initialize_foreground_ones(struct ForegroundVariables *fg, struct GridInfo *grid_info)
 {
     int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;
