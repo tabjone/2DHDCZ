@@ -109,11 +109,33 @@ FLOAT_P rhs_ds1_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
         {
             ds1_dz = forward_first_derivative_second_order(s1[i][j], s1[i+1][j], s1[i+2][j][k], dz);
         }
-    #endif
+    #endif  // UPWIND_ORDER
 
     #if ADVECTION_ON == 1
         rhs -= vx[i][j][k]*ds1_dx + vy[i][j][k]*ds1_dy + vz[i][j][k]*ds1_dz + vz[i][j][k]*grad_s0[i];
-    #endif
+    #endif // ADVECTION_ON == 1
+
+    #if B_FIELD_ON == 1
+        FLOAT_P *eta_over_four_pi_rho0_T0 = bg->eta_over_four_pi_rho0_T0;
+
+        FLOAT_P ***Bx = fg->Bx;
+        FLOAT_P ***By = fg->By;
+        FLOAT_P ***Bz = fg->Bz;
+
+        FLOAT_P dBx_dz, dBz_dx, dBy_dz, dBz_dy, dBy_dx, dBx_dy;
+        #if CENTRAL_ORDER == 2
+            dBz_dx = central_first_derivative_second_order(Bz[i][j][k_minus], Bz[i][j][k_plus], dx);
+            dBx_dz = central_first_derivative_second_order(Bx[i-1][j][k], Bx[i+1][j][k], dz);
+            dBz_dy = central_first_derivative_second_order(Bz[i][j_minus][k], Bz[i][j_plus][k], dy);
+            dBy_dx = central_first_derivative_second_order(By[i][j][k_minus], By[i][j][k_plus], dx);
+            dBx_dy = central_first_derivative_second_order(Bx[i][j_minus][k], Bx[i][j_plus][k], dy);
+            dBy_dz = central_first_derivative_second_order(By[i-1][j][k], By[i+1][j][k], dz);
+        #endif // CENTRAL_ORDER == 2
+
+        rhs -= eta_over_four_pi_rho0_T0[i] * ((dBz_dy-dBy_dz)*(dBz_dy-dBy_dz)
+                                             +(dBx_dz-dBz_dx)*(dBx_dz-dBz_dx)
+                                             +(dBy_dx-dBx_dy)*(dBy_dx-dBx_dy));
+    #endif // B_FIELD_ON == 1
 
     return rhs;
 }

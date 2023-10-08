@@ -2,7 +2,7 @@
 #define functions_H__
 
 #include "./shared_files/shared_files.h"
-#include "./hd_solver/hd_functions.h"
+#include "./solver/main_hd_2D.h"
 
 #include "global_parameters.h"
 

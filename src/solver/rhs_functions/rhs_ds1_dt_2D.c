@@ -50,6 +50,7 @@ FLOAT_P rhs_ds1_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
 
     // Calculate the derivatives
     FLOAT_P ds1_dy, ds1_dz;
+
     #if UPWIND_ORDER == 1
         if (vy[i][j] >= 0)
         {
@@ -84,11 +85,29 @@ FLOAT_P rhs_ds1_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
         {
             ds1_dz = forward_first_derivative_second_order(s1[i][j], s1[i+1][j], s1[i+2][j], dz);
         }
-    #endif
+    #endif // UPWIND_ORDER
 
     #if ADVECTION_ON == 1
         rhs -= vy[i][j]*ds1_dy + vz[i][j]*ds1_dz + vz[i][j]*grad_s0[i];
-    #endif
+    #endif // ADVECTION_ON == 1
+
+    #if BFIELD_ON == 1
+        FLOAT_P *eta_over_four_pi_rho0_T0 = bg->eta_over_four_pi_rho0_T0;
+
+        FLOAT_P **Bx = fg->Bx;
+        FLOAT_P **By = fg->By;
+        FLOAT_P **Bz = fg->Bz;
+
+        FLOAT_P dBx_dy, dBy_dz, dBx_dz, dBz_dy;
+        #if CENTRAL_ORDER == 2
+            dBx_dy = central_first_derivative_second_order(Bx[i][j_minus], Bx[i][j_plus], dy);
+            dBy_dz = central_first_derivative_second_order(By[i-1][j], By[i+1][j], dz);
+            dBx_dz = central_first_derivative_second_order(Bx[i-1][j], Bx[i+1][j], dz);
+            dBz_dy = central_first_derivative_second_order(Bz[i][j_minus], Bz[i][j_plus], dy);
+        #endif // CENTRAL_ORDER == 2
+
+        rhs -= eta_over_four_pi_rho0_T0[i] * ((dBz_dy - dBy_dz)*(dBz_dy - dBy_dz) + (dBx_dz)*(dBx_dz) + (dBx_dy)*(dBx_dy));
+    #endif // BFIELD_ON == 1
 
     return rhs;
 }

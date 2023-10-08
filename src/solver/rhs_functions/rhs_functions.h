@@ -3,7 +3,8 @@
 
 #include "shared_files.h"
 #include "global_parameters.h"
-
+#include "math.h"
+#include "global_constants.h"
 
 #if DIMENSIONS == 1
 // Entropy

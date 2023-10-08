@@ -6,7 +6,7 @@
 
 #define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
-#define RUN_NAME "rk3_new_test"
+#define RUN_NAME "rk1_new_test"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
@@ -18,9 +18,9 @@
 #define CFL_CUT 0.8 // CFL cut
 
 // Order of the scheme (only upwind 1,2, central 2,4, rk1,2 implemented so far)
-#define UPWIND_ORDER 2 // 1 for first order, 2 for second order
+#define UPWIND_ORDER 1 // 1 for first order, 2 for second order
 #define CENTRAL_ORDER 2 // 2 for second order, 4 for fourth order
-#define TIME_ORDER 3 // 1,2,3,4 for RK1, RK2, RK3, RK4
+#define TIME_ORDER 1 // 1,2,3,4 for RK1, RK2, RK3, RK4
 
 #define FLOAT_PRECISION 1 // 0 for float, 1 for double, 2 for long double
 
@@ -36,7 +36,9 @@
 #define CZ_START 0.7 // In units of solar radii
 #define R_START 0.7 // In units of solar radii
 #define R_END 0.90 // In units of solar radii
+#define X_SIZE 0.05 // In units of solar radii
 #define Y_SIZE 0.05 // In units of solar radii
+#define NX 20 // Number of grid points in x-direction
 #define NY 20 // Number of grid points in y-direction
 #define NZ 60 // Number of grid points in z-direction
 

@@ -188,10 +188,11 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     // Extrapolating background variables to ghost cells
     extrapolate_background(bg, grid_info);
 
-    // Pre-calculate 1/rho0
+    // Pre-calculate 1/rho0 and eta/(4*pi*rho0*T0)
     for (i = 0; i < grid_info->nz_full; i++)
     {
         bg->one_over_rho0[i] = 1.0/bg->rho0[i];
+        bg->eta_over_four_pi_rho0_T0[i] = ETA/(4*M_PI*bg->rho0[i]*bg->T0[i]);
 
     }
 

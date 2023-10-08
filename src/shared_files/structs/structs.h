@@ -14,6 +14,7 @@ struct BackgroundVariables
     FLOAT_P *g;
     FLOAT_P *grad_g;
     FLOAT_P *grad_rho0;
+    FLOAT_P *eta_over_four_pi_rho0_T0;
 };
 
 struct ForegroundVariables
@@ -24,6 +25,8 @@ struct ForegroundVariables
         FLOAT_P *T1;
         FLOAT_P *s1;
         FLOAT_P *vz;
+        FLOAT_P *Bx;
+        FLOAT_P *By;
         FLOAT_P *Bz;
     #elif DIMENSIONS == 2
         FLOAT_P **p1;
@@ -32,6 +35,7 @@ struct ForegroundVariables
         FLOAT_P **s1;
         FLOAT_P **vy;
         FLOAT_P **vz;
+        FLOAT_P **Bx;
         FLOAT_P **By;
         FLOAT_P **Bz;
     #elif DIMENSIONS == 3

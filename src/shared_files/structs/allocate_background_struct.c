@@ -17,4 +17,5 @@ void allocate_background_struct(struct BackgroundVariables **bg, struct GridInfo
     allocate_1D_array(&(*bg)->g, nz_full);
     allocate_1D_array(&(*bg)->grad_g, nz_full);
     allocate_1D_array(&(*bg)->grad_rho0, nz_full);
+    allocate_1D_array(&(*bg)->eta_over_four_pi_rho0_T0, nz_full);
 }

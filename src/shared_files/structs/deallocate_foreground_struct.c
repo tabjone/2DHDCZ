@@ -11,6 +11,8 @@ void deallocate_foreground_struct(struct ForegroundVariables *fg)
         deallocate_1D_array(fg->s1);
         deallocate_1D_array(fg->vz);
         #if BFIELD_ON == 1
+            deallocate_1D_array(fg->Bx);
+            deallocate_1D_array(fg->By);
             deallocate_1D_array(fg->Bz);
         #endif // BFIELD_ON
     #elif DIMENSIONS == 2
@@ -21,8 +23,9 @@ void deallocate_foreground_struct(struct ForegroundVariables *fg)
         deallocate_2D_array(fg->vz);
         deallocate_2D_array(fg->vy);
         #if BFIELD_ON == 1
-            deallocate_2D_array(fg->Bz);
+            deallocate_2D_array(fg->Bx);
             deallocate_2D_array(fg->By);
+            deallocate_2D_array(fg->Bz);
         #endif // BFIELD_ON
     #elif DIMENSIONS == 3
         deallocate_3D_array(fg->p1);
@@ -33,9 +36,9 @@ void deallocate_foreground_struct(struct ForegroundVariables *fg)
         deallocate_3D_array(fg->vx);
         deallocate_3D_array(fg->vy);
         #if BFIELD_ON == 1
-            deallocate_3D_array(fg->Bz);
-            deallocate_3D_array(fg->By);
             deallocate_3D_array(fg->Bx);
+            deallocate_3D_array(fg->By);
+            deallocate_3D_array(fg->Bz);
         #endif // BFIELD_ON
     #endif // DIMENSIONS
 

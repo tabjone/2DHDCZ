@@ -32,7 +32,7 @@ FLOAT_P rhs_ds1_dt_1D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P *vy = fg->vy;
     FLOAT_P *vz = fg->vz;
     FLOAT_P *s1 = fg->s1;
-
+    
     // Creating pointers to background arrays
     FLOAT_P *grad_s0 = bg->grad_s0;
 
@@ -56,11 +56,25 @@ FLOAT_P rhs_ds1_dt_1D(struct BackgroundVariables *bg, struct ForegroundVariables
         {
             ds1_dz = forward_first_derivative_second_order(s1[i], s1[i+1], s1[i+2], dz);
         }
-    #endif
+    #endif // UPWIND_ORDER
 
     #if ADVECTION_ON == 1
         rhs -= vz[i]*ds1_dz + vz[i]*grad_s0[i];
-    #endif
+    #endif // ADVECTION_ON == 1
+
+    #if BFIELD_ON == 1
+        FLOAT_P *eta_over_four_pi_rho0_T0 = bg->eta_over_four_pi_rho0_T0;
+        FLOAT_P *By = fg->By;
+        FLOAT_P *Bz = fg->Bz;
+
+        FLOAT_P dBy_dz, dBz_dz;
+        #if CENTRAL_ORDER == 2
+            dBy_dz = central_first_derivative_second_order(By[i-1], By[i+1], dz);
+            dBx_dz = central_first_derivative_second_order(Bx[i-1], Bx[i+1], dz);
+        #endif // CENTRAL_ORDER == 2
+
+        rhs -= eta_over_four_pi_rho0_T0[i] * ((dBy_dz)*(dBy_dz)+(dBx_dz)*(dBx_dz));
+    #endif // BFIELD_ON == 1
 
     return rhs;
 }

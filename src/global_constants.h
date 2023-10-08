@@ -3,6 +3,8 @@
 
 #include "global_parameters.h"
 
+#define ETA 0.1 // magnetic diffusivity [cm2 s-1]
+
 #define MU 0.6 // mean molecular weight
 
 #if UNITS == 0
@@ -11,6 +13,7 @@
     #define M_U 1.66053907e-24 // atomic mass constant [g]
     #define R_SUN 6.957e10 // solar radius [cm]
     #define M_SUN 1.989e33 // solar mass [g]
+    
 
     #if GRAVITY_ON == 0
         #define G 0.0 // gravitational constant [cm3 g-1 s-2]

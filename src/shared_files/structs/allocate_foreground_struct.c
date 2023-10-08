@@ -15,6 +15,8 @@ void allocate_foreground_struct(struct ForegroundVariables **fg, struct GridInfo
         allocate_1D_array(&((*fg)->s1), nz_full);
         allocate_1D_array(&((*fg)->vz), nz_full);
         #if BFIELD_ON == 1
+            allocate_1D_array(&((*fg)->Bx), nz_full);
+            allocate_1D_array(&((*fg)->By), nz_full);
             allocate_1D_array(&((*fg)->Bz), nz_full);
         #endif // BFIELD_ON
     #elif DIMENSIONS == 2
@@ -26,8 +28,9 @@ void allocate_foreground_struct(struct ForegroundVariables **fg, struct GridInfo
         allocate_2D_array(&((*fg)->vy), nz_full, ny);
         allocate_2D_array(&((*fg)->vz), nz_full, ny);
         #if BFIELD_ON == 1
-            allocate_2D_array(&((*fg)->Bz), nz_full, ny);
+            allocate_2D_array(&((*fg)->Bx), nz_full, ny);
             allocate_2D_array(&((*fg)->By), nz_full, ny);
+            allocate_2D_array(&((*fg)->Bz), nz_full, ny);
         #endif // BFIELD_ON
     #elif DIMENSIONS == 3
         int nx = grid_info->nx;
