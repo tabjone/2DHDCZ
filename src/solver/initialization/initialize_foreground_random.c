@@ -21,8 +21,8 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
 
     #if MPI_ON == 1
         // Getting mpi info
-        bool has_neighbour_above = mpi_info->has_neighbour_above;
-        bool has_neighbour_below = mpi_info->has_neighbour_below;
+        bool has_neighbor_above = mpi_info->has_neighbor_above;
+        bool has_neighbor_below = mpi_info->has_neighbor_below;
         int rank = mpi_info->rank;
         int size = mpi_info->size;
     #endif // MPI_ON
@@ -42,13 +42,13 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
         }
 
         #if MPI_ON == 1
-            // We first create random numbers for the boundary if there is a neighbour above or below
-            if (has_neighbour_above)
+            // We first create random numbers for the boundary if there is a neighbor above or below
+            if (has_neighbor_above)
             {
                 fg->p1[nz_full-nz_ghost-1] = (2.0 * (rand() / (FLOAT_P)RAND_MAX) - 1.0) * 1e-5;  // random between -1e-5 to 1e-5
                 fg->s1[nz_full-nz_ghost-1] = (2.0 * (rand() / (FLOAT_P)RAND_MAX) - 1.0) * 20000;  // random between -20000 to 20000
             }
-            if (has_neighbour_below)
+            if (has_neighbor_below)
             {
                 fg->p1[nz_ghost] = (2.0 * (rand() / (FLOAT_P)RAND_MAX) - 1.0) * 1e-5;  // random between -1e-5 to 1e-5
                 fg->s1[nz_ghost] = (2.0 * (rand() / (FLOAT_P)RAND_MAX) - 1.0) * 20000;  // random between -20000 to 20000
@@ -79,8 +79,8 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
         }
 
         #if MPI_ON == 1
-            // We first create random numbers for the boundary if there is a neighbour above or below
-            if (has_neighbour_above)
+            // We first create random numbers for the boundary if there is a neighbor above or below
+            if (has_neighbor_above)
             {
                 for (int j = 0; j < ny; j++)
                 {
@@ -88,7 +88,7 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
                     fg->s1[nz_full-nz_ghost-1][j] = (2.0 * (rand() / (FLOAT_P)RAND_MAX) - 1.0) * 20000;  // random between -20000 to 20000
                 }
             }
-            if (has_neighbour_below)
+            if (has_neighbor_below)
             {
                 for (int j = 0; j < ny; j++)
                 {
@@ -121,8 +121,8 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
         }
 
         #if MPI_ON == 1
-            // We first create random numbers for the boundary if there is a neighbour above or below
-            if (has_neighbour_above)
+            // We first create random numbers for the boundary if there is a neighbor above or below
+            if (has_neighbor_above)
             {
                 for (int j = 0; j < ny; j++)
                 {
@@ -133,7 +133,7 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
                     }
                 }
             }
-            if (has_neighbour_below)
+            if (has_neighbor_below)
             {
                 for (int j = 0; j < ny; j++)
                 {

@@ -25,22 +25,22 @@ void communicate_3D_ghost_above_below(float ***array, struct GridInfo *grid_info
 
     // Getting mpi info
     int rank = mpi_info->rank;
-    bool has_neighbour_above = mpi_info->has_neighbour_above;
-    bool has_neighbour_below = mpi_info->has_neighbour_below;
+    bool has_neighbor_above = mpi_info->has_neighbor_above;
+    bool has_neighbor_below = mpi_info->has_neighbor_below;
 
     // Communicating ghost cells with even-odd method
     if (rank % 2 == 0) {
-        if (has_neighbour_above) {
+        if (has_neighbor_above) {
             MPI_Send(&array[nz_full - 2*nz_ghost][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
         }
-        if (has_neighbour_below) {
+        if (has_neighbor_below) {
             MPI_Recv(&array[0][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD, &status);
         }
     } else {
-        if (has_neighbour_below) {
+        if (has_neighbor_below) {
             MPI_Recv(&array[0][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD, &status);
         }
-        if (has_neighbour_above) {
+        if (has_neighbor_above) {
             MPI_Send(&array[nz_full - 2*nz_ghost][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
         }
     }

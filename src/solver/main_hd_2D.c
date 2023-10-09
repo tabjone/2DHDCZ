@@ -15,8 +15,8 @@ int main_hd_2D(int argc, char *argv[])
     struct MpiInfo *mpi_info;
     mpi_info = malloc(sizeof(struct MpiInfo));
 
-    mpi_info->has_neighbour_below = false;
-    mpi_info->has_neighbour_above = false;
+    mpi_info->has_neighbor_below = false;
+    mpi_info->has_neighbor_above = false;
 
     #if LOAD == 1
         // Loading snapshot

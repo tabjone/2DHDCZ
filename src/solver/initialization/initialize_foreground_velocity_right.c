@@ -15,8 +15,8 @@ void initialize_foreground_velocity_right(struct ForegroundVariables *fg, struct
         A pointer to the MpiInfo struct.
     */
 
-    bool has_neighbour_above = mpi_info->has_neighbour_above;
-    bool has_neighbour_below = mpi_info->has_neighbour_below;
+    bool has_neighbor_above = mpi_info->has_neighbor_above;
+    bool has_neighbor_below = mpi_info->has_neighbor_below;
 
     #if DIMENSIONS == 1
         printf("You can't have a right velocity in 1D! Setting foreground to zeros\n");
@@ -38,7 +38,7 @@ void initialize_foreground_velocity_right(struct ForegroundVariables *fg, struct
 
         // Setting velocity to zero at the boundaries
         // Top boundary
-        if (has_neighbour_above)
+        if (has_neighbor_above)
         {
             for (int j = 0; j < ny; j++)
             {
@@ -53,7 +53,7 @@ void initialize_foreground_velocity_right(struct ForegroundVariables *fg, struct
             }
         }
         extrapolate_2D_array_constant_up(fg->vy, grid_info);
-        if (has_neighbour_below)
+        if (has_neighbor_below)
         {
             for (int j = 0; j < ny; j++)
             {
@@ -90,7 +90,7 @@ void initialize_foreground_velocity_right(struct ForegroundVariables *fg, struct
 
         // Setting velocity to zero at the boundaries
         // Top boundary
-        if (has_neighbour_above)
+        if (has_neighbor_above)
         {
             for (int j = 0; j < ny; j++)
             {
@@ -113,7 +113,7 @@ void initialize_foreground_velocity_right(struct ForegroundVariables *fg, struct
         extrapolate_3D_array_constant_up(fg->vy, grid_info);
 
         // Bottom boundary
-        if (has_neighbour_below)
+        if (has_neighbor_below)
         {
             for (int j = 0; j < ny; j++)
             {

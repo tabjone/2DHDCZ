@@ -17,8 +17,8 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         A pointer to the MpiInfo struct.
     */
 
-    bool has_neighbour_above = mpi_info->has_neighbour_above;
-    bool has_neighbour_below = mpi_info->has_neighbour_below;
+    bool has_neighbor_above = mpi_info->has_neighbor_above;
+    bool has_neighbor_below = mpi_info->has_neighbor_below;
 
     initialize_foreground_zeros(fg, grid_info); // Sets everything to zero so boundary and ghost cells are automatically zero
 
@@ -38,14 +38,14 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         }
 
         // Top boundary
-        if (has_neighbour_above) // This is false for MPI_ON = 0
+        if (has_neighbor_above) // This is false for MPI_ON = 0
         {
             // Boundary
             fg->rho1[nz_full-nz_ghost-1] = gaussian_1D((nz_full-nz_ghost-1-nz_ghost)*dz, 0.5*dz*nz, 0.1*dz*nz, 1.0e-5);
             fg->p1[nz_full-nz_ghost-1] = GAMMA*bg->p0[nz_full-nz_ghost-1]*fg->rho1[nz_full-nz_ghost-1]/bg->rho0[nz_full-nz_ghost-1];
             fg->T1[nz_full-nz_ghost-1] = bg->T0[nz_full-nz_ghost-1]*((GAMMA-1)/GAMMA * fg->p1[nz_full-nz_ghost-1]/bg->p0[nz_full-nz_ghost-1]);
 
-            // Calculating ghost cells from neighbour above
+            // Calculating ghost cells from neighbor above
             for (int i = nz_full-nz_ghost; i < nz_full; i++)
             {
                 fg->rho1[i] = gaussian_1D((i-nz_ghost)*dz, 0.5*dz*nz, 0.1*dz*nz, 1.0e-5);
@@ -55,14 +55,14 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         }
 
         // Bottom boundary
-        if (has_neighbour_below) // This is false for MPI_ON = 0
+        if (has_neighbor_below) // This is false for MPI_ON = 0
         {
             // Boundary
             fg->rho1[nz_ghost] = gaussian_1D(0.0, 0.5*dz*nz, 0.1*dz*nz, 1.0e-5);
             fg->p1[nz_ghost] = GAMMA*bg->p0[nz_ghost]*fg->rho1[nz_ghost]/bg->rho0[nz_ghost];
             fg->T1[nz_ghost] = bg->T0[nz_ghost]*((GAMMA-1)/GAMMA * fg->p1[nz_ghost]/bg->p0[nz_ghost]);
 
-            // Calculating ghost cells from neighbour below
+            // Calculating ghost cells from neighbor below
             for (int i = 0; i < nz_ghost; i++)
             {
                 fg->rho1[i] = gaussian_1D((i-nz_ghost)*dz, 0.5*dz*nz, 0.1*dz*nz, 1.0e-5);
@@ -92,7 +92,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         }
 
         // Top boundary
-        if (has_neighbour_above) // This is false for MPI_ON = 0
+        if (has_neighbor_above) // This is false for MPI_ON = 0
         {
             // Boundary
             for (int j = 0; j < ny; j++)
@@ -102,7 +102,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
                 fg->T1[nz_full-nz_ghost-1][j] = bg->T0[nz_full-nz_ghost-1]*((GAMMA-1)/GAMMA * fg->p1[nz_full-nz_ghost-1][j]/bg->p0[nz_full-nz_ghost-1]);
             }
 
-            // Calculating ghost cells from neighbour above
+            // Calculating ghost cells from neighbor above
             for (int i = nz_full-nz_ghost; i < nz_full; i++)
             {
                 for (int j = 0; j < ny; j++)
@@ -115,7 +115,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         }
 
         // Bottom boundary
-        if (has_neighbour_below) // This is false for MPI_ON = 0
+        if (has_neighbor_below) // This is false for MPI_ON = 0
         {
             // Boundary
             for (int j = 0; j < ny; j++)
@@ -125,7 +125,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
                 fg->T1[nz_ghost][j] = bg->T0[nz_ghost]*((GAMMA-1)/GAMMA * fg->p1[nz_ghost][j]/bg->p0[nz_ghost]);
             }
 
-            // Calculating ghost cells from neighbour below
+            // Calculating ghost cells from neighbor below
             for (int i = 0; i < nz_ghost; i++)
             {
                 for (int j = 0; j < ny; j++)
@@ -163,7 +163,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         }
 
         // Top boundary
-        if (has_neighbour_above) // This is false for MPI_ON = 0
+        if (has_neighbor_above) // This is false for MPI_ON = 0
         {
             // Boundary
             for (int j = 0; j < ny; j++)
@@ -176,7 +176,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
                 }
             }
 
-            // Calculating ghost cells from neighbour above
+            // Calculating ghost cells from neighbor above
             for (int i = nz_full-nz_ghost; i < nz_full; i++)
             {
                 for (int j = 0; j < ny; j++)
@@ -192,7 +192,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         }
 
         // Bottom boundary
-        if (has_neighbour_below) // This is false for MPI_ON = 0
+        if (has_neighbor_below) // This is false for MPI_ON = 0
         {
             // Boundary
             for (int j = 0; j < ny; j++)
@@ -205,7 +205,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
                 }
             }
 
-            // Calculating ghost cells from neighbour below
+            // Calculating ghost cells from neighbor below
             for (int i = 0; i < nz_ghost; i++)
             {
                 for (int j = 0; j < ny; j++)
