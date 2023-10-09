@@ -53,46 +53,9 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
                 fg->p1[nz_ghost] = (2.0 * (rand() / (FLOAT_P)RAND_MAX) - 1.0) * 1e-5;  // random between -1e-5 to 1e-5
                 fg->s1[nz_ghost] = (2.0 * (rand() / (FLOAT_P)RAND_MAX) - 1.0) * 20000;  // random between -20000 to 20000
             }
-
-            // Getting mpi info
-            bool has_neighbour_above = mpi_info->has_neighbour_above;
-            bool has_neighbour_below = mpi_info->has_neighbour_below;
-            int rank = mpi_info->rank;
-            int size = mpi_info->size;
-
-            // Then we communicate the boundary values to the neighbouring ranks
-            MPI_Status status;
-            // If rank is even, send first, then receive
-            if (rank % 2 == 0) 
-            {
-                if (has_neighbour_above) 
-                {
-                    // Send to the next rank (above)
-                    MPI_Send(&(fg->p1[nz_full-2*nz_ghost]), nz_ghost, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
-                    MPI_Send(&(fg->s1[nz_full-2*nz_ghost]), nz_ghost, MPI_FLOAT_P, rank + 1, 1, MPI_COMM_WORLD);
-                }
-                if (has_neighbour_below) 
-                {
-                    // Receive from the previous rank (below)
-                    MPI_Recv(&(fg->p1[0]), nz_ghost, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD, &status);
-                    MPI_Recv(&(fg->s1[0]), nz_ghost, MPI_FLOAT_P, rank - 1, 1, MPI_COMM_WORLD, &status);
-                }
-            }
-            // If rank is odd, receive first, then send
-            else 
-            {
-                if (has_neighbour_above) {
-                    // Receive from the previous rank (below)
-                    MPI_Recv(&(fg->p1[0]), nz_ghost, MPI_FLOAT, rank - 1, 0, MPI_COMM_WORLD, &status);
-                    MPI_Recv(&(fg->s1[0]), nz_ghost, MPI_FLOAT, rank - 1, 1, MPI_COMM_WORLD, &status);
-                }
-                if (has_neighbour_below) 
-                {
-                    // Send to the next rank (above)
-                    MPI_Send(&(fg->p1[nz_full-2*nz_ghost]), nz_ghost, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
-                    MPI_Send(&(fg->s1[nz_full-2*nz_ghost]), nz_ghost, MPI_FLOAT_P, rank + 1, 1, MPI_COMM_WORLD);
-                }
-            }
+            // Communicating ghost cells
+            communicate_1D_ghost_above_below(fg->p1, grid_info, mpi_info);
+            communicate_1D_ghost_above_below(fg->s1, grid_info, mpi_info);
         #endif // MPI_ON
 
         // Solving first law of thermodynamics and equation of state to find rho1 and T1
@@ -133,41 +96,10 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
                     fg->s1[nz_ghost][j] = (2.0 * (rand() / (FLOAT_P)RAND_MAX) - 1.0) * 20000;  // random between -20000 to 20000
                 }
             }
-
-            // Then we communicate the boundary values to the neighbouring ranks
-            MPI_Status status;
-            // If rank is even, send first, then receive
-            if (rank % 2 == 0) 
-            {
-                if (has_neighbour_above) 
-                {
-                    // Send to the next rank (above)
-                    MPI_Send(&(fg->p1[nz_full-2*nz_ghost][0]), nz_ghost*ny, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
-                    MPI_Send(&(fg->s1[nz_full-2*nz_ghost][0]), nz_ghost*ny, MPI_FLOAT_P, rank + 1, 1, MPI_COMM_WORLD);
-                }
-                if (has_neighbour_below) 
-                {
-                    // Receive from the previous rank (below)
-                    MPI_Recv(&(fg->p1[0][0]), nz_ghost*ny, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD, &status);
-                    MPI_Recv(&(fg->s1[0][0]), nz_ghost*ny, MPI_FLOAT_P, rank - 1, 1, MPI_COMM_WORLD, &status);
-                }
-            }
-            // If rank is odd, receive first, then send
-            else 
-            {
-                if (has_neighbour_above) 
-                {
-                    // Receive from the previous rank (below)
-                    MPI_Recv(&(fg->p1[0][0]), nz_ghost*ny, MPI_FLOAT, rank - 1, 0, MPI_COMM_WORLD, &status);
-                    MPI_Recv(&(fg->s1[0][0]), nz_ghost*ny, MPI_FLOAT, rank - 1, 1, MPI_COMM_WORLD, &status);
-                }
-                if (has_neighbour_below) 
-                {
-                    // Send to the next rank (above)
-                    MPI_Send(&(fg->p1[nz_full-2*nz_ghost][0]), nz_ghost*ny, MPI_FLOAT, rank + 1, 0, MPI_COMM_WORLD);
-                    MPI_Send(&(fg->s1[nz_full-2*nz_ghost][0]), nz_ghost*ny, MPI_FLOAT, rank + 1, 1, MPI_COMM_WORLD);
-                }
-            }
+            
+            // Communicating ghost cells
+            communicate_2D_ghost_above_below(fg->p1, grid_info, mpi_info);
+            communicate_2D_ghost_above_below(fg->s1, grid_info, mpi_info);
         #endif // MPI_ON
 
         // Solving first law of thermodynamics and equation of state to find rho1 and T1
@@ -175,7 +107,6 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
         equation_of_state(fg, bg, grid_info);
 
     #elif DIMENSIONS == 3
-
         // Inside the grid we pick random values for p1 and s1 and let the boundaries stay zero
         for (int i = nz_ghost; i < nz_full-nz_ghost-1; i++)
         {
@@ -214,46 +145,9 @@ void initialize_foreground_random(struct ForegroundVariables *fg, struct Backgro
                 }
             }
 
-            // Getting mpi info
-            bool has_neighbour_above = mpi_info->has_neighbour_above;
-            bool has_neighbour_below = mpi_info->has_neighbour_below;
-            int rank = mpi_info->rank;
-            int size = mpi_info->size;
-
-            // Then we communicate the boundary values to the neighbouring ranks
-            MPI_Status status;
-            // If rank is even, send first, then receive
-            if (rank % 2 == 0) 
-            {
-                if (has_neighbour_above) 
-                {
-                    // Send to the next rank (above)
-                    MPI_Send(&(fg->p1[nz_full-2*nz_ghost][0][0]), nz_ghost*ny*nx, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
-                    MPI_Send(&(fg->s1[nz_full-2*nz_ghost][0][0]), nz_ghost*ny*nx, MPI_FLOAT_P, rank + 1, 1, MPI_COMM_WORLD);
-                }
-                if (has_neighbour_below) 
-                {
-                    // Receive from the previous rank (below)
-                    MPI_Recv(&(fg->p1[0][0][0]), nz_ghost*ny*nx, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD, &status);
-                    MPI_Recv(&(fg->s1[0][0][0]), nz_ghost*ny*nx, MPI_FLOAT_P, rank - 1, 1, MPI_COMM_WORLD, &status);
-                }
-            }
-            // If rank is odd, receive first, then send
-            else 
-            {
-                if (has_neighbour_above) 
-                {
-                    // Receive from the previous rank (below)
-                    MPI_Recv(&(fg->p1[0][0][0]), nz_ghost*ny*nx, MPI_FLOAT, rank - 1, 0, MPI_COMM_WORLD, &status);
-                    MPI_Recv(&(fg->s1[0][0][0]), nz_ghost*ny*nx, MPI_FLOAT, rank - 1, 1, MPI_COMM_WORLD, &status);
-                }
-                if (has_neighbour_below) 
-                {
-                    // Send to the next rank (above)
-                    MPI_Send(&(fg->p1[nz_full-2*nz_ghost][0][0]), nz_ghost*ny*nx, MPI_FLOAT, rank + 1, 0, MPI_COMM_WORLD);
-                    MPI_Send(&(fg->s1[nz_full-2*nz_ghost][0][0]), nz_ghost*ny*nx, MPI_FLOAT, rank + 1, 1, MPI_COMM_WORLD);
-                }
-            }
+            // Communicating ghost cells
+            communicate_3D_ghost_above_below(fg->p1, grid_info, mpi_info);
+            communicate_3D_ghost_above_below(fg->s1, grid_info, mpi_info);
         #endif // MPI_ON
 
         // Solving first law of thermodynamics and equation of state to find rho1 and T1
