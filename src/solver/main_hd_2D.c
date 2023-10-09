@@ -17,6 +17,7 @@ int main_hd_2D(int argc, char *argv[])
 
     mpi_info->has_neighbor_below = false;
     mpi_info->has_neighbor_above = false;
+    FLOAT_P z_offset = 0.0;
 
     #if LOAD == 1
         // Loading snapshot
@@ -70,7 +71,7 @@ int main_hd_2D(int argc, char *argv[])
         FLOAT_P y0 = 0.0;
         FLOAT_P y1 = R_SUN * Y_SIZE;
 
-        allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NY, dz, dy, z0, z1, y0, y1);
+        allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NY, dz, dy, z0, z1, y0, y1, z_offset);
 
         // Allocating memory for the background and foreground variables
         allocate_background_struct(&bg, grid_info);

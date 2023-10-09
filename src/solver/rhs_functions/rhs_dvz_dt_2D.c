@@ -1,4 +1,5 @@
 #include "rhs_functions.h"
+#include "global_parameters.h"
 
 #if DIMENSIONS == 2
 FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j)

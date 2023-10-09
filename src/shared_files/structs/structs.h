@@ -56,6 +56,7 @@ struct GridInfo
 {
     int nz, nz_ghost, nz_full;
     FLOAT_P dz, z0, z1;
+    FLOAT_P z_offset;
     #if DIMENSIONS == 2
         int ny;
         FLOAT_P dy, y0, y1;
@@ -69,17 +70,18 @@ struct MpiInfo
 {
     int rank, size;
     bool has_neighbor_below, has_neighbor_above;
+    FLOAT_P my_z_offset;
 };
 
 void allocate_background_struct(struct BackgroundVariables **bg, struct GridInfo *grid_info);
 void allocate_foreground_struct(struct ForegroundVariables **fg, struct GridInfo *grid_info);
 
 #if DIMENSIONS == 1
-    void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, FLOAT_P dz, FLOAT_P z0, FLOAT_P z1);
+    void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, FLOAT_P dz, FLOAT_P z0, FLOAT_P z1, FLOAT_P z_offset);
 #elif DIMENSIONS == 2
-    void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int nx, FLOAT_P dz, FLOAT_P dy, FLOAT_P z0, FLOAT_P z1, FLOAT_P y0, FLOAT_P y1);
+    void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int ny, FLOAT_P dz, FLOAT_P dy, FLOAT_P z0, FLOAT_P z1, FLOAT_P y0, FLOAT_P y1 , FLOAT_P z_offset);
 #elif DIMENSIONS == 3
-    void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int ny, int nx, FLOAT_P dz, FLOAT_P dy, FLOAT_P dx, FLOAT_P z0, FLOAT_P z1, FLOAT_P y0, FLOAT_P y1, FLOAT_P x0, FLOAT_P x1);
+    void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int ny, int nx, FLOAT_P dz, FLOAT_P dy, FLOAT_P dx, FLOAT_P z0, FLOAT_P z1, FLOAT_P y0, FLOAT_P y1, FLOAT_P x0, FLOAT_P x1, FLOAT_P z_offset);
 #endif // DIMENSIONS
 
 void deallocate_background_struct(struct BackgroundVariables *bg);
