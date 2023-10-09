@@ -12,6 +12,12 @@ int main_hd_2D(int argc, char *argv[])
     struct ForegroundVariables *fg, *fg_previous, *tmp_ptr;
     struct GridInfo *grid_info;
 
+    struct MpiInfo *mpi_info;
+    mpi_info = malloc(sizeof(struct MpiInfo));
+
+    mpi_info->has_neighbour_below = false;
+    mpi_info->has_neighbour_above = false;
+
     #if LOAD == 1
         // Loading snapshot
 
@@ -75,28 +81,8 @@ int main_hd_2D(int argc, char *argv[])
         solar_s_background_initialization(bg, grid_info);
         save_background(bg, grid_info);
         
-        // Initialize the foreground variables
-        if (false)
-        {
-            initialize_foreground_struct_zeros(fg_previous, grid_info);
-        }
-        if (false)
-        {
-            initialize_foreground_struct_random(fg_previous, bg, grid_info);
-        }
-
-        if (false)
-        {
-            initialize_foreground_struct_ones(fg_previous, grid_info);
-        }
-        if (false)
-        {
-            initialize_velocity_right(fg_previous, grid_info);
-        }
-        if (true)
-        {
-            initialize_foreground_struct_density_pertubation(fg_previous, bg, grid_info);
-        }
+        // Initialize foreground to type set in parameter file
+        initialize_foreground(fg_previous, bg, grid_info, mpi_info);
         
         // Saving the foreground variables to file
         save_foreground(fg_previous, grid_info, 0, 0.0);
@@ -142,6 +128,7 @@ int main_hd_2D(int argc, char *argv[])
     deallocate_background_struct(bg);
     deallocate_foreground_struct(fg_previous);
     deallocate_foreground_struct(fg);
+    free(mpi_info);
 
     return 0;
 }

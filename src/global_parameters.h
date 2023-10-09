@@ -4,6 +4,8 @@
 #include "hdf5.h"
 #include <mpi.h>
 
+#define INITIALIZATION_TYPE 2 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for random
+
 #define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
 #define RUN_NAME "rk1_new_test"

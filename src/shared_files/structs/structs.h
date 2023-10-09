@@ -67,7 +67,8 @@ struct GridInfo
 
 struct MpiInfo
 {
-    int rank, size;  
+    int rank, size;
+    bool has_neighbour_below, has_neighbour_above;
 };
 
 void allocate_background_struct(struct BackgroundVariables **bg, struct GridInfo *grid_info);

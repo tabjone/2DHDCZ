@@ -53,4 +53,5 @@ void equation_of_state(struct ForegroundVariables *fg, struct BackgroundVariable
                 }
             }
         }
+    #endif // DIMENSIONS
 }
