@@ -17,8 +17,4 @@ void gauss_seidel_3D(FLOAT_P ***b, FLOAT_P ***p1, FLOAT_P ***initial_p1, struct 
 
 void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info);
 
-void gauss_seidel(FLOAT_P **A, FLOAT_P *b, FLOAT_P *x, int N, int maxIterations, FLOAT_P tolerance);
-
-void gauss_seidel_fast_second_order(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo *grid_info);
-
 #endif // SOLVE_ELLIPTIC_EQUATION_H__

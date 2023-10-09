@@ -30,12 +30,12 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
     int nz = grid_info->nz;
     FLOAT_P dz = grid_info->dz;
     
-    FLOAT_P amplitude = 1e-5;
+    FLOAT_P amplitude = 1.0;
     FLOAT_P centre_z = 0.5*dz*nz + z_offset;
     FLOAT_P sigma_z = 0.1*dz*nz;
     #if DIMENSIONS > 1
         int ny = grid_info->ny;
-        int dy = grid_info->dy;
+        FLOAT_P dy = grid_info->dy;
         FLOAT_P centre_y = 0.5*dy*ny;
         FLOAT_P sigma_y = 0.1*dy*ny;
     #endif // DIMENSIONS > 1
@@ -61,7 +61,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         if (has_neighbor_above) // This is false for MPI_ON = 0
         {
             // Boundary
-            fg->rho1[nz_full-nz_ghost-1] = gaussian_1D((nz_full-nz_ghost-1-nz_ghost)*dz+z_offset, centre_z, sigma_z, amplitude);
+            fg->rho1[nz_full-nz_ghost-1] = gaussian_1D((nz_full-nz_ghost-1)*dz+z_offset, centre_z, sigma_z, amplitude);
             fg->p1[nz_full-nz_ghost-1] = GAMMA*bg->p0[nz_full-nz_ghost-1]*fg->rho1[nz_full-nz_ghost-1]/bg->rho0[nz_full-nz_ghost-1];
             fg->T1[nz_full-nz_ghost-1] = bg->T0[nz_full-nz_ghost-1]*((GAMMA-1)/GAMMA * fg->p1[nz_full-nz_ghost-1]/bg->p0[nz_full-nz_ghost-1]);
 
@@ -92,17 +92,18 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         }
 
     #elif DIMENSIONS == 2
+        
         // Inside the grid
         for (int i = nz_ghost; i < nz_full-nz_ghost; i++)
         {
             for (int j = 0; j < ny; j++)
             {
-                fg->rho1[i][j] = gaussian_2D((i-nz_ghost)*dz+z_offset, j*dy, centre_z, centre_y, sigma_z, sigma_y, amplitude);
+                fg->rho1[i][j] = gaussian_2D((i-nz_ghost)*dz, j*dy, centre_z, centre_y, sigma_z, sigma_y, amplitude);
                 fg->p1[i][j] = GAMMA*bg->p0[i]*fg->rho1[i][j]/bg->rho0[i];
                 fg->T1[i][j] = bg->T0[i]*((GAMMA-1)/GAMMA * fg->p1[i][j]/bg->p0[i]);
             }
         }
-
+        
         // Top boundary
         if (has_neighbor_above) // This is false for MPI_ON = 0
         {

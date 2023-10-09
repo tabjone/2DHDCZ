@@ -8,7 +8,7 @@
 
 #define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
-#define RUN_NAME "rk1_new_test"
+#define RUN_NAME "rk1_test_test"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
@@ -41,7 +41,7 @@
 #define X_SIZE 0.05 // In units of solar radii
 #define Y_SIZE 0.05 // In units of solar radii
 #define NX 20 // Number of grid points in x-direction
-#define NY 20 // Number of grid points in y-direction
+#define NY 15 // Number of grid points in y-direction
 #define NZ 60 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
