@@ -23,6 +23,7 @@ int main_hd_2D(int argc, char *argv[])
         MPI_Comm_size(MPI_COMM_WORLD, &mpi_info->size);
         MPI_Comm_rank(MPI_COMM_WORLD, &mpi_info->rank);
 
+        // THIS IS A PLACEHOLDER FOR NOW, THIS IS NOT CORRECT
         z_offset = mpi_info->rank * (R_END - R_START)*R_SUN;
 
         // Check if there are neighbors above and below
@@ -140,7 +141,11 @@ int main_hd_2D(int argc, char *argv[])
         {
             save_foreground(fg, grid_info, save_nr, t);
             save_nr++;
-        }        
+        }
+
+        #if MPI_ON == 1
+            // communicate ghost cells
+        #endif // MPI_ON
 
         // pointer swap
         tmp_ptr = fg_previous;
@@ -158,6 +163,10 @@ int main_hd_2D(int argc, char *argv[])
     deallocate_foreground_struct(fg_previous);
     deallocate_foreground_struct(fg);
     free(mpi_info);
+
+    #if MPI_ON == 1
+        MPI_Finalize();
+    #endif // MPI_ON
 
     return 0;
 }

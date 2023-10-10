@@ -28,9 +28,13 @@ FLOAT_P rk1_1D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
 
     // Extrapolating p1 to ghost cells
-    extrapolate_1D_array_constant_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
-    extrapolate_1D_array_constant_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
+    extrapolate_1D_array_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
+    extrapolate_1D_array_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
 
+    #if MPI_ON == 1
+        // Communicate ghost cells
+    #endif // MPI_ON
+    
     // Getting grid info
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
@@ -55,10 +59,14 @@ FLOAT_P rk1_1D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     }
     
     // Extrapolatating s1, vy and vz to ghost cells
-    extrapolate_1D_array_constant_down(fg->s1, grid_info); // Extrapolating s1 to ghost cells below
-    extrapolate_1D_array_constant_up(fg->s1, grid_info); // Extrapolating s1 to ghost cells above
-    extrapolate_1D_array_constant_down(fg->vz, grid_info); // Extrapolating vz to ghost cells below
-    extrapolate_1D_array_constant_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
+    extrapolate_1D_array_down(fg->s1, grid_info); // Extrapolating s1 to ghost cells below
+    extrapolate_1D_array_up(fg->s1, grid_info); // Extrapolating s1 to ghost cells above
+    extrapolate_1D_array_down(fg->vz, grid_info); // Extrapolating vz to ghost cells below
+    extrapolate_1D_array_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
+
+    #if MPI_ON == 1
+        // Communicate ghost cells
+    #endif // MPI_ON
 
     // Solving algebraic equations.
     first_law_thermodynamics(fg, bg, grid_info);

@@ -28,8 +28,12 @@ FLOAT_P rk1_3D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
 
     // Extrapolating p1 to ghost cells
-    extrapolate_3D_array_constant_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
-    extrapolate_3D_array_constant_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
+    extrapolate_3D_array_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
+    extrapolate_3D_array_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
+
+    #if MPI_ON == 1
+        // Communicate ghost cells
+    #endif // MPI_ON
 
     // Getting grid info
     int nx = grid_info->nx;
@@ -64,30 +68,25 @@ FLOAT_P rk1_3D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         }
     }
 
-    // Updating vy for the vertical boundaries
-    for (int j = 0; j < ny; j++)
-    {   
-        for (int k = 0; k < nx; k++)
+    // Bottom boundary
+    if (!mpi_info->has_neighbor_below) // If this process is at the bottom of the grid
+    {
+        for (int j = 0; j < ny; j++)
         {
-            // Bottom boundary
-            if (mpi_info->has_neighbor_below)
-            {
-                fg->vy[nz_ghost][j][k] = rhs_dvy_dt_3D(bg, fg_prev, grid_info, nz_ghost, j, k);
-                fg->vx[nz_ghost][j][k] = rhs_dvx_dt_3D(bg, fg_prev, grid_info, nz_ghost, j, k);
-            }
-            else
+            for (int k = 0; k < nx; k++)
             {
                 fg->vy[nz_ghost][j][k] = rhs_dvy_dt_3D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j, k);
                 fg->vx[nz_ghost][j][k] = rhs_dvx_dt_3D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j, k);
             }
+        }
+    }
 
-            // Top boundary
-            if (mpi_info->has_neighbor_above)
-            {
-                fg->vy[nz_full-nz_ghost-1][j][k] = rhs_dvy_dt_3D(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j, k);
-                fg->vx[nz_full-nz_ghost-1][j][k] = rhs_dvx_dt_3D(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j, k);
-            }
-            else
+    // Top boundary
+    if (!mpi_info->has_neighbor_above) // If this process is at the top of the grid
+    {
+        for (int j = 0; j < ny; j++)
+        {
+            for (int k = 0; k < nx; k++)
             {
                 fg->vy[nz_full-nz_ghost-1][j][k] = rhs_dvy_dt_3D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j, k);
                 fg->vx[nz_full-nz_ghost-1][j][k] = rhs_dvx_dt_3D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j, k);
@@ -96,12 +95,18 @@ FLOAT_P rk1_3D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     }
     
     // Extrapolatating s1, vy and vz to ghost cells
-    extrapolate_3D_array_constant_down(fg->s1, grid_info); // Extrapolating s1 to ghost cells below
-    extrapolate_3D_array_constant_up(fg->s1, grid_info); // Extrapolating s1 to ghost cells above
-    extrapolate_3D_array_constant_down(fg->vy, grid_info); // Extrapolating vy to ghost cells below
-    extrapolate_3D_array_constant_up(fg->vy, grid_info); // Extrapolating vy to ghost cells above
-    extrapolate_3D_array_constant_down(fg->vz, grid_info); // Extrapolating vz to ghost cells below
-    extrapolate_3D_array_constant_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
+    extrapolate_3D_array_down(fg->s1, grid_info); // Extrapolating s1 to ghost cells below
+    extrapolate_3D_array_up(fg->s1, grid_info); // Extrapolating s1 to ghost cells above
+    extrapolate_3D_array_down(fg->vx, grid_info); // Extrapolating vx to ghost cells below
+    extrapolate_3D_array_up(fg->vx, grid_info); // Extrapolating vx to ghost cells above
+    extrapolate_3D_array_down(fg->vy, grid_info); // Extrapolating vy to ghost cells below
+    extrapolate_3D_array_up(fg->vy, grid_info); // Extrapolating vy to ghost cells above
+    extrapolate_3D_array_down(fg->vz, grid_info); // Extrapolating vz to ghost cells below
+    extrapolate_3D_array_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
+
+    #if MPI_ON == 1
+        // Communicate ghost cells
+    #endif // MPI_ON
 
     // Solving algebraic equations.
     first_law_thermodynamics(fg, bg, grid_info);

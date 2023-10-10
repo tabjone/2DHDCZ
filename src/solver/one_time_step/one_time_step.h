@@ -8,8 +8,6 @@
 void calculate_damping(FLOAT_P *damping_factor, struct GridInfo *grid_info, struct MpiInfo *mpi_info);
 FLOAT_P get_dt(struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep);
 
-FLOAT_P rk1(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep);
-
 #if DIMENSIONS == 1
 FLOAT_P rk1_1D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep);
 FLOAT_P rk2_1D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep);
@@ -25,13 +23,5 @@ FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
 #endif
 
 FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep);
-
-
-// OLD FUNCTIONS
-FLOAT_P rk2(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep);
-
-FLOAT_P rk3(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep);
-
-
 
 #endif // ONE_TIME_STEP_H__
