@@ -30,7 +30,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
     int nz = grid_info->nz;
     FLOAT_P dz = grid_info->dz;
     
-    FLOAT_P amplitude = 1.0;
+    FLOAT_P amplitude = 1.0e-5;
     FLOAT_P centre_z = 0.5*dz*nz + z_offset;
     FLOAT_P sigma_z = 0.1*dz*nz;
     #if DIMENSIONS > 1

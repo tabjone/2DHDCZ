@@ -12,9 +12,9 @@
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 1e6 // Simulation time in seconds
-#define MAX_DT 1e3 // Maximum time step in seconds
-#define SAVE_INTERVAL 1e4 // Save interval in seconds
+#define T 1e5 // Simulation time in seconds
+#define MAX_DT 1e2 // Maximum time step in seconds
+#define SAVE_INTERVAL 1e2 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
 
 #define CFL_CUT 0.8 // CFL cut
@@ -22,7 +22,7 @@
 // Order of the scheme (only upwind 1,2, central 2,4, rk1,2 implemented so far)
 #define UPWIND_ORDER 1 // 1 for first order, 2 for second order
 #define CENTRAL_ORDER 2 // 2 for second order, 4 for fourth order
-#define TIME_ORDER 1 // 1,2,3,4 for RK1, RK2, RK3, RK4
+#define TIME_ORDER 1 // 1,2,3 for RK1, RK2, RK3
 
 #define FLOAT_PRECISION 1 // 0 for float, 1 for double, 2 for long double
 
@@ -34,15 +34,17 @@
 // THIS WILL BE CHANGED TO MHD INTEGRATED IN FUNCTIONS BUT BFIELD_ON WILL CHOSE TO INCLUDE OR NOT INCLUDE B-FIELD
 #define MHD 0 // 0 for hydro, 1 for MHD
 
+#define VERTICAL_BOUNDARY_TYPE 1 // 0 for Hard-wall, 1 for spunge
+
 // Grid size
 #define CZ_START 0.7 // In units of solar radii
 #define R_START 0.7 // In units of solar radii
 #define R_END 0.90 // In units of solar radii
 #define X_SIZE 0.05 // In units of solar radii
 #define Y_SIZE 0.05 // In units of solar radii
-#define NX 20 // Number of grid points in x-direction
-#define NY 15 // Number of grid points in y-direction
-#define NZ 60 // Number of grid points in z-direction
+#define NX 40 // Number of grid points in x-direction
+#define NY 40 // Number of grid points in y-direction
+#define NZ 160 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
 #define GS_TOL 1e-6 // Gauss-Seidel tolerance

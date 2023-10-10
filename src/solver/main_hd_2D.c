@@ -97,8 +97,7 @@ int main_hd_2D(int argc, char *argv[])
     dt_last = 0.0;
     while (t < T)
     {
-        break;
-        dt = one_time_step(bg, fg_previous, fg, grid_info, dt_last, first_t == t);
+        dt = one_time_step(bg, fg_previous, fg, grid_info, mpi_info, dt_last, first_t == t);
         t += dt;
         t_since_save += dt;
         dt_last = dt;
