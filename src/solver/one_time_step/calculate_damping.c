@@ -25,8 +25,22 @@ void calculate_damping(FLOAT_P *damping_factor, struct GridInfo *grid_info, stru
             damping_factor[i] = 1.0;
         }
         // But zero boundary
-        damping_factor[nz_ghost] = 0.0;
-        damping_factor[nz_full-nz_ghost-1] = 0.0;
+        if (mpi_info->has_neighbor_below)
+        {
+            damping_factor[nz_ghost] = 1.0;
+        }
+        else
+        {
+            damping_factor[nz_ghost] = 0.0;
+        }
+        if (mpi_info->has_neighbor_above)
+        {
+            damping_factor[nz_full-nz_ghost-1] = 1.0;
+        }
+        else
+        {
+            damping_factor[nz_full-nz_ghost-1] = 0.0;
+        }
 
     #elif VERTICAL_BOUNDARY_TYPE == 1
         // Damping at the top and bottom

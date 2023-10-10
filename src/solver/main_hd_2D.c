@@ -15,9 +15,37 @@ int main_hd_2D(int argc, char *argv[])
     struct MpiInfo *mpi_info;
     mpi_info = malloc(sizeof(struct MpiInfo));
 
-    mpi_info->has_neighbor_below = false;
-    mpi_info->has_neighbor_above = false;
-    FLOAT_P z_offset = 0.0;
+
+    FLOAT_P z_offset;
+    // Initialize MPI
+    #if MPI_ON == 1
+        MPI_Init(&argc, &argv);
+        MPI_Comm_size(MPI_COMM_WORLD, &mpi_info->size);
+        MPI_Comm_rank(MPI_COMM_WORLD, &mpi_info->rank);
+
+        z_offset = mpi_info->rank * (R_END - R_START)*R_SUN;
+
+        // Check if there are neighbors above and below
+        if (mpi_info->rank == 0)
+        {
+            mpi_info->has_neighbor_below = false;
+            mpi_info->has_neighbor_above = true;
+        }
+        else if (mpi_info->rank == mpi_info->size - 1)
+        {
+            mpi_info->has_neighbor_below = true;
+            mpi_info->has_neighbor_above = false;
+        }
+        else
+        {
+            mpi_info->has_neighbor_below = true;
+            mpi_info->has_neighbor_above = true;
+        }
+    #else
+        mpi_info->has_neighbor_below = false;
+        mpi_info->has_neighbor_above = false;
+        z_offset = 0.0;
+    #endif // MPI_ON
 
     #if LOAD == 1
         // Loading snapshot
