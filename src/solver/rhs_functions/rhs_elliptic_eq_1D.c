@@ -53,13 +53,13 @@ FLOAT_P rhs_elliptic_eq_1D(struct BackgroundVariables *bg, struct ForegroundVari
 
     #if GRAVITY_ON == 1
     {
-        rhs -= g[i]*drho1_dz + rho1[i]*grad_g[i];
+        rhs -= g[i]*d_rho1_dz + rho1[i]*grad_g[i];
     }
     #endif // GRAVITY_ON
 
     #if ADVECTION_ON == 1
     {
-        rhs -= rho0[i]*(vz[i]*dd_vz_ddz + (d_vz_dz)*(d_vz_dz)) + vz[i]*d_rho1_dz*d_vz_dz;
+        rhs -= rho0[i]*(vz[i]*dd_vz_ddz + (d_vz_dz)*(d_vz_dz)) + vz[i]*grad_rho0[i]*d_vz_dz;
     }
     #endif // ADVECTION_ON
 

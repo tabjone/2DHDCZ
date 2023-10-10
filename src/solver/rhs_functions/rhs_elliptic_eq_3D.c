@@ -95,7 +95,7 @@ FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVari
     
     #if GRAVITY_ON == 1
     {
-        rhs -= g[i]*drho1_dz + rho1[i][j][k]*grad_g[i];
+        rhs -= g[i]*d_rho1_dz + rho1[i][j][k]*grad_g[i];
     }
     #endif // GRAVITY_ON
 
@@ -103,7 +103,7 @@ FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVari
     {
         rhs -= rho0[i]*(vx[i][j][k]*dd_vx_ddx + vy[i][j][k]*dd_vy_ddy + vz[i][j][k]*dd_vz_ddz + (d_vx_dx)*(d_vx_dx) + (d_vy_dy)*(d_vy_dy) + (d_vz_dz)*(d_vz_dz) + 2*(d_vy_dx*d_vx_dy + d_vz_dx*d_vx_dz + d_vz_dy*d_vy_dz)
         + vx[i][j][k] * dd_vy_dxdy + vx[i][j][k] * dd_vz_dxdz + vy[i][j][k] * dd_vx_dxdy + vy[i][j][k] * dd_vz_dydz + vz[i][j][k] * dd_vx_dxdz + vz[i][j][k] * dd_vy_dydz)
-        - d_rho1_dz* (vx[i][j][k]*d_vx_dz + vy[i][j][k]*d_vy_dz + vz[i][j][k]*d_vz_dz);
+        - grad_rho0[i]* (vx[i][j][k]*d_vx_dz + vy[i][j][k]*d_vy_dz + vz[i][j][k]*d_vz_dz);
     }
     #endif // ADVECTION_ON
 
