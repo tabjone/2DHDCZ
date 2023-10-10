@@ -61,24 +61,28 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
 
     // Calculate the derivatives
     // First derivatives
-    FLOAT_P dvz_dy, dvy_dz, drho1_dz;
+    FLOAT_P d_vy_dy, d_vy_dz, d_vz_dy, d_vz_dz;
+    FLOAT_P d_rho1_dz;
+    // Second derivatives
+    FLOAT_P dd_vy_ddy, dd_vz_ddz;
     // Mixed derivatives
     FLOAT_P dd_vy_dydz, dd_vz_dydz;
-    // Second derivatives
-    FLOAT_P dd_vz_ddz;
 
     #if CENTRAL_ORDER == 2
         // First derivatives
-        dvz_dy = central_first_derivative_second_order(vz[i][j_minus], vz[i][j_plus], dy);
-        dvy_dz = central_first_derivative_second_order(vy[i-1][j], vy[i+1][j], dz);
-        drho1_dz = central_first_derivative_second_order(rho1[i-1][j], rho1[i+1][j], dz);
+        d_vy_dy = central_first_derivative_second_order(vy[i][j_minus], vy[i][j_plus], dy);
+        d_vy_dz = central_first_derivative_second_order(vy[i-1][j], vy[i+1][j], dz);
+        d_vz_dy = central_first_derivative_second_order(vz[i][j_minus], vz[i][j_plus], dy);
+        d_vz_dz = central_first_derivative_second_order(vz[i-1][j], vz[i+1][j], dz);
+        d_rho1_dz = central_first_derivative_second_order(rho1[i-1][j], rho1[i+1][j], dz);
+
+        // Second derivatives
+        dd_vy_ddy = central_second_derivative_second_order(vy[i][j], vy[i][j_minus], vy[i][j_plus], dy);
+        dd_vz_ddz = central_second_derivative_second_order(vz[i][j], vz[i-1][j], vz[i+1][j], dz);
 
         // Mixed derivatives
         dd_vy_dydz = (vy_ur-vy_ul-vy_dr+vy_dl)/(4.0*dy*dz);
         dd_vz_dydz = (vz_ur-vz_ul-vz_dr+vz_dl)/(4.0*dy*dz);
-        
-        // Second derivatives
-        dd_vz_ddz = central_second_derivative_second_order(vz[i][j], vz[i-1][j], vz[i+1][j], dz);
     #endif
 
     #if GRAVITY_ON == 1
@@ -89,8 +93,8 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
 
     #if ADVECTION_ON == 1
     {
-        rhs -= rho0[i]*(2*dvz_dy*dvy_dz + vz[i][j]*dd_vy_dydz + vy[i][j]*dd_vz_dydz+vz[i][j]*dd_vz_ddz)
-            + grad_rho0[i]*vy[i][j]*dvz_dy;
+        rhs -= rho0[i]*(vy[i][j]*dd_vy_ddy + vz[i][j]*dd_vz_ddz + (d_vy_dy)*(d_vy_dy) + (d_vz_dz)*(d_vz_dz) + 2*d_vz_dy*d_vy_dz + vy[i][j]*dd_vz_dydz + vz[i][j]*dd_vy_dydz)
+        + d_rho1_dz * (vy[i][j]*d_vz_dy + vz[i][j]*d_vz_dz);
     }
     #endif // ADVECTION_ON
 

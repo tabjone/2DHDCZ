@@ -38,12 +38,17 @@ FLOAT_P rhs_elliptic_eq_1D(struct BackgroundVariables *bg, struct ForegroundVari
     FLOAT_P *grad_g = bg->grad_g;
     FLOAT_P *g = bg->g;
 
-    // Calculate the derivatives
-    FLOAT_P dd_vz_ddz, drho1_dz;
+    // First derivatives
+    FLOAT_P d_vz_dz, d_rho1_dz;
+
+    // Second derivatives
+    FLOAT_P dd_vz_ddz;
 
     #if CENTRAL_ORDER == 2
+        d_vz_dz = central_first_derivative_second_order(vz[i-1], vz[i+1], dz);
+        d_rho1_dz = central_first_derivative_second_order(rho1[i-1], rho1[i+1], dz);
         dd_vz_ddz = central_second_derivative_second_order(vz[i], vz[i-1], vz[i+1], dz);
-        drho1_dz = central_first_derivative_second_order(rho1[i-1], rho1[i+1], dz);
+        
     #endif // CENTRAL_ORDER
 
     #if GRAVITY_ON == 1
@@ -54,7 +59,7 @@ FLOAT_P rhs_elliptic_eq_1D(struct BackgroundVariables *bg, struct ForegroundVari
 
     #if ADVECTION_ON == 1
     {
-        rhs -= rho0[i]*vz[i]*dd_vz_ddz;
+        rhs -= rho0[i]*(vz[i]*dd_vz_ddz + (d_vz_dz)*(d_vz_dz)) + vz[i]*d_rho1_dz*d_vz_dz;
     }
     #endif // ADVECTION_ON
 

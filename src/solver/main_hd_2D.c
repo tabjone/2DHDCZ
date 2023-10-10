@@ -16,15 +16,12 @@ int main_hd_2D(int argc, char *argv[])
     mpi_info = malloc(sizeof(struct MpiInfo));
 
 
-    FLOAT_P z_offset;
+    FLOAT_P z_offset = 0.0;
     // Initialize MPI
     #if MPI_ON == 1
         MPI_Init(&argc, &argv);
         MPI_Comm_size(MPI_COMM_WORLD, &mpi_info->size);
         MPI_Comm_rank(MPI_COMM_WORLD, &mpi_info->rank);
-
-        // THIS IS A PLACEHOLDER FOR NOW, THIS IS NOT CORRECT
-        z_offset = mpi_info->rank * (R_END - R_START)*R_SUN;
 
         // Check if there are neighbors above and below
         if (mpi_info->rank == 0)
@@ -45,7 +42,6 @@ int main_hd_2D(int argc, char *argv[])
     #else
         mpi_info->has_neighbor_below = false;
         mpi_info->has_neighbor_above = false;
-        z_offset = 0.0;
     #endif // MPI_ON
 
     #if LOAD == 1
@@ -68,6 +64,10 @@ int main_hd_2D(int argc, char *argv[])
 
         printf("time = %f\n", t);
         save_nr = LOAD_SNAP_NUMBER + 1;
+
+        #if MPI_ON == 1
+            // Calculate z_offset
+        #endif // MPI_ON
 
     #elif LOAD == 0
         // Initializing the simulation
@@ -99,6 +99,10 @@ int main_hd_2D(int argc, char *argv[])
         FLOAT_P z1 = R_SUN * R_END;
         FLOAT_P y0 = 0.0;
         FLOAT_P y1 = R_SUN * Y_SIZE;
+
+        #if MPI_ON == 1
+            // Calculate z_offset
+        #endif // MPI_ON
 
         allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NY, dz, dy, z0, z1, y0, y1, z_offset);
 
