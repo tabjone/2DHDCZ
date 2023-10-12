@@ -1,6 +1,5 @@
 #include "extrapolation.h"
 
-#if DIMENSIONS == 1
 void extrapolate_1D_array_constant_down(FLOAT_P *array, struct GridInfo *grid_info)
 {
     /*
@@ -23,4 +22,3 @@ void extrapolate_1D_array_constant_down(FLOAT_P *array, struct GridInfo *grid_in
         array[i] = array[nz_ghost];
     }
 }
-#endif // DIMENSIONS

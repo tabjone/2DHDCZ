@@ -8,13 +8,13 @@
 
 #define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
-#define RUN_NAME "rk1_upw1"
+#define RUN_NAME "mpi_test"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
 #define T 1e5 // Simulation time in seconds
-#define MAX_DT 1e2 // Maximum time step in seconds
-#define SAVE_INTERVAL 1e2 // Save interval in seconds
+#define MAX_DT 1e3 // Maximum time step in seconds
+#define SAVE_INTERVAL 1e3 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
 
 #define CFL_CUT 0.8 // CFL cut
@@ -29,22 +29,22 @@
 // Warning, the units might not be correct in the equations of the system for SI
 #define UNITS 0 // 0 for cgs, 1 for SI
 
-// Dimensions and MHD (only 2D HD implemented so far)
+// Dimensions
 #define DIMENSIONS 2 // 1 for 1D, 2 for 2D, 3 for 3D
 // THIS WILL BE CHANGED TO MHD INTEGRATED IN FUNCTIONS BUT BFIELD_ON WILL CHOSE TO INCLUDE OR NOT INCLUDE B-FIELD
 #define MHD 0 // 0 for hydro, 1 for MHD
 
-#define VERTICAL_BOUNDARY_TYPE 1 // 0 for Hard-wall, 1 for spunge
+#define VERTICAL_BOUNDARY_TYPE 2 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
 
 // Grid size
 #define CZ_START 0.7 // In units of solar radii
 #define R_START 0.7 // In units of solar radii
 #define R_END 0.90 // In units of solar radii
-#define X_SIZE 0.05 // In units of solar radii
-#define Y_SIZE 0.05 // In units of solar radii
-#define NX 40 // Number of grid points in x-direction
-#define NY 20 // Number of grid points in y-direction
-#define NZ 80 // Number of grid points in z-direction
+#define X_SIZE 0.1 // In units of solar radii
+#define Y_SIZE 0.1 // In units of solar radii
+#define NX 3 // Number of grid points in x-direction
+#define NY 30 // Number of grid points in y-direction
+#define NZ 60 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
 #define GS_TOL 1e-6 // Gauss-Seidel tolerance

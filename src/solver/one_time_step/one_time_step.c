@@ -1,6 +1,6 @@
 #include "one_time_step.h"
 
-FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
 {   
     /*
     Calculates the foreground at the next timestep using Runge-Kutta methods.
@@ -31,31 +31,11 @@ FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P dt;
 
     #if TIME_ORDER == 1
-        #if DIMENSIONS == 1
-            dt = rk1_1D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
-        #elif DIMENSIONS == 2
-            dt = rk1_2D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
-        #elif DIMENSIONS == 3
-            dt = rk1_3D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
-        #endif // DIMENSIONS
-
+        dt = rk1_2D(bg, fg_prev, fg, grid_info, dt_last, first_timestep);
     #elif TIME_ORDER == 2
-        #if DIMENSIONS == 1
-            dt = rk2_1D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
-        #elif DIMENSIONS == 2
-            dt = rk2_2D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
-        #elif DIMENSIONS == 3
-            dt = rk2_3D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
-        #endif // DIMENSIONS
-
+        dt = rk2_2D(bg, fg_prev, fg, grid_info, dt_last, first_timestep);
     #elif TIME_ORDER == 3
-        #if DIMENSIONS == 1
-            dt = rk3_1D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
-        #elif DIMENSIONS == 2
-            dt = rk3_2D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
-        #elif DIMENSIONS == 3
-            dt = rk3_3D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
-        #endif // DIMENSIONS    
+        dt = rk3_2D(bg, fg_prev, fg, grid_info, dt_last, first_timestep);
     #endif // TIME_ORDER
 
     return dt;

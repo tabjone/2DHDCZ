@@ -1,6 +1,6 @@
 #include "initialization.h"
 
-void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
+void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info)
 {
     /*
     Initializes the foreground struct.
@@ -20,9 +20,9 @@ void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVari
     #if INITIALIZATION_TYPE == 0
         initialize_foreground_zeros(fg, grid_info);
     #elif INITIALIZATION_TYPE == 1
-        initialize_foreground_velocity_right(fg, grid_info, mpi_info);
+        initialize_foreground_velocity_right(fg, grid_info);
     #elif INITIALIZATION_TYPE == 2
-        initialize_foreground_density_pertubation(fg, bg, grid_info, mpi_info);
+        initialize_foreground_density_pertubation(fg, bg, grid_info);
     #elif INITIALIZATION_TYPE == 3
         initialize_foreground_random(fg, bg, grid_info);
     #endif // INITIALIZATION_TYPE

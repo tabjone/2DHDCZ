@@ -9,6 +9,7 @@
 #include "./rhs_functions/rhs_functions.h"
 #include "./one_time_step/one_time_step.h"
 #include "./equations/equations.h"
+#include "./boundary/boundary.h"
 
 #include "./initialization/initialization.h"
 #include "shared_files.h"

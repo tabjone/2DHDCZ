@@ -45,12 +45,14 @@ void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct Gri
         }
     }
 
-    // Setting boundary conditions
-    for (int j = 0; j < ny; j++)
-    {
-        pnew[0][j] = 0.0;
-        pnew[nz-1][j] = 0.0;
-    }
+    #if VERTICAL_BOUNDARY_TYPE != 2
+        // Setting boundary conditions
+        for (int j = 0; j < ny; j++)
+        {
+            pnew[0][j] = 0.0;
+            pnew[nz-1][j] = 0.0;
+        }
+    #endif // VERTICAL_BOUNDARY_TYPE
 
     // Tolerance parameters
     FLOAT_P max_difference, max_pnew;

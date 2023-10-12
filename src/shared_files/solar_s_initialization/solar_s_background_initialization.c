@@ -188,6 +188,18 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     // Extrapolating background variables to ghost cells
     extrapolate_background(bg, grid_info);
 
+    #if VERTICAL_BOUNDARY_TYPE == 2
+        // Periodic vertical boundary with constant values for background
+        for (int i = 0; i < grid_info->nz_full; i++)
+        {
+            bg->rho0[i] = 1.0e-1;
+            bg->grad_s0[i] = 0.0;
+            bg->T0[i] = 1.0e6;
+            bg->g[i] = 0.0;
+            bg->p0[i] = 1.0e13;
+        }
+    #endif // VERTICAL_BOUNDARY_TYPE
+
     // Pre-calculate 1/rho0 and eta/(4*pi*rho0*T0)
     for (i = 0; i < grid_info->nz_full; i++)
     {

@@ -1,6 +1,5 @@
 #include "rhs_functions.h"
 
-#if DIMENSIONS == 2
 FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j)
 {
     /*
@@ -83,4 +82,3 @@ FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct F
 
     return rhs;
 }
-#endif // DIMENSIONS == 2

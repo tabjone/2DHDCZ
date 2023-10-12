@@ -1,7 +1,6 @@
 #include "one_time_step.h"
 
-#if DIMENSIONS == 2
-FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
 {
     /*
     Calculates the foreground at the next timestep using the RK2 method.
@@ -31,10 +30,6 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     extrapolate_2D_array_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
     extrapolate_2D_array_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
 
-    #if MPI_ON == 1
-        // Communicate ghost cells
-    #endif // MPI_ON
-
     // Getting grid info
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
@@ -42,15 +37,10 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
 
     // Calculating damping factor
     FLOAT_P damping_factor[nz_full];
-    calculate_damping(damping_factor, grid_info, mpi_info);
+    calculate_damping(damping_factor, grid_info);
 
     // Calculating dt
     FLOAT_P dt = get_dt(fg_prev, grid_info, dt_last, first_timestep);
-    
-    #if MPI_ON == 1
-        // Picking smallest dt from all processes
-        MPI_Allreduce(&dt, &dt, 1, MPI_FLOAT_P, MPI_MIN, MPI_COMM_WORLD);
-    #endif // MPI_ON
 
     // Using the fg struct to store mid-calculation variables. Filling these with fg_prev values.
     for (int i = 0; i < nz_full; i++)
@@ -87,22 +77,11 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         }
     }
 
-    // Bottom boundary k1
-    if (!mpi_info->has_neighbor_below) // If this process is at the bottom of the grid
+    // Bottom and top boundary k1
+    for (int j = 0; j < ny; j++)
     {
-        for (int j = 0; j < ny; j++)
-        {
-            k1_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
-        }
-    }
-
-    // Top boundary k1
-    if (!mpi_info->has_neighbor_above) // If this process is at the top of the grid
-    {
-        for (int j = 0; j < ny; j++)
-        {
-            k1_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
-        }
+        k1_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
+        k1_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
     }
 
     // Updating fg to hold mid-calculation variables
@@ -124,10 +103,6 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     extrapolate_2D_array_up(fg->vz, grid_info);
     extrapolate_2D_array_down(fg->vz, grid_info);
 
-    #if MPI_ON == 1
-        // Communicate ghost cells
-    #endif // MPI_ON
-
     // Calculating k2
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
@@ -140,22 +115,11 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         }
     }
 
-    // Bottom boundary k2
-    if (!mpi_info->has_neighbor_below) // If this process is at the bottom of the grid
+    // Boundary
+    for (int j = 0; j < ny; j++)
     {
-        for (int j = 0; j < ny; j++)
-        {
-            k2_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
-        }
-    }
-
-    // Top boundary k2
-    if (!mpi_info->has_neighbor_above) // If this process is at the top of the grid
-    {
-        for (int j = 0; j < ny; j++)
-        {
-            k2_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
-        }
+        k2_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
+        k2_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
     }
 
     // Updating variables for entire grid
@@ -176,10 +140,6 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     extrapolate_2D_array_down(fg->vy, grid_info);
     extrapolate_2D_array_up(fg->vz, grid_info);
     extrapolate_2D_array_down(fg->vz, grid_info);
-
-    #if MPI_ON == 1
-        // Communicate ghost cells
-    #endif // MPI_ON
     
     // Deallocating memory
     deallocate_2D_array(k1_s1);
@@ -195,4 +155,3 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
 
     return dt;
 }
-#endif // DIMENSIONS == 2

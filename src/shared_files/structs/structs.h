@@ -19,70 +19,27 @@ struct BackgroundVariables
 
 struct ForegroundVariables
 {
-    #if DIMENSIONS == 1
-        FLOAT_P *p1;
-        FLOAT_P *rho1;
-        FLOAT_P *T1;
-        FLOAT_P *s1;
-        FLOAT_P *vz;
-        FLOAT_P *Bx;
-        FLOAT_P *By;
-        FLOAT_P *Bz;
-    #elif DIMENSIONS == 2
-        FLOAT_P **p1;
-        FLOAT_P **rho1;
-        FLOAT_P **T1;
-        FLOAT_P **s1;
-        FLOAT_P **vy;
-        FLOAT_P **vz;
-        FLOAT_P **Bx;
-        FLOAT_P **By;
-        FLOAT_P **Bz;
-    #elif DIMENSIONS == 3
-        FLOAT_P ***p1;
-        FLOAT_P ***rho1;
-        FLOAT_P ***T1;
-        FLOAT_P ***s1;
-        FLOAT_P ***vx;
-        FLOAT_P ***vy;
-        FLOAT_P ***vz;
-        FLOAT_P ***Bx;
-        FLOAT_P ***By;
-        FLOAT_P ***Bz;
-    #endif // DIMENSIONS
+    FLOAT_P **p1;
+    FLOAT_P **rho1;
+    FLOAT_P **T1;
+    FLOAT_P **s1;
+    FLOAT_P **vy;
+    FLOAT_P **vz;
 };
 
 struct GridInfo
 {
     int nz, nz_ghost, nz_full;
     FLOAT_P dz, z0, z1;
-    FLOAT_P z_offset;
-    #if DIMENSIONS == 2
-        int ny;
-        FLOAT_P dy, y0, y1;
-    #elif DIMENSIONS == 3
-        int ny, nx;
-        FLOAT_P dy, dx, y0, y1, x0, x1;
-    #endif // DIMENSIONS
-};
 
-struct MpiInfo
-{
-    int rank, size;
-    bool has_neighbor_below, has_neighbor_above;
-    FLOAT_P my_z_offset;
+    int ny;
+    FLOAT_P dy, y0, y1;
 };
 
 void allocate_background_struct(struct BackgroundVariables **bg, struct GridInfo *grid_info);
 void allocate_foreground_struct(struct ForegroundVariables **fg, struct GridInfo *grid_info);
 
-#if DIMENSIONS == 1
-    void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, FLOAT_P dz, FLOAT_P z0, FLOAT_P z1, FLOAT_P z_offset);
-#elif DIMENSIONS == 2
-    void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int ny, FLOAT_P dz, FLOAT_P dy, FLOAT_P z0, FLOAT_P z1, FLOAT_P y0, FLOAT_P y1 , FLOAT_P z_offset);
-#elif DIMENSIONS == 3
-    void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int ny, int nx, FLOAT_P dz, FLOAT_P dy, FLOAT_P dx, FLOAT_P z0, FLOAT_P z1, FLOAT_P y0, FLOAT_P y1, FLOAT_P x0, FLOAT_P x1, FLOAT_P z_offset);
-#endif // DIMENSIONS
+void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int ny, FLOAT_P dz, FLOAT_P dy, FLOAT_P z0, FLOAT_P z1, FLOAT_P y0, FLOAT_P y1);
 
 void deallocate_background_struct(struct BackgroundVariables *bg);
 void deallocate_foreground_struct(struct ForegroundVariables *fg);

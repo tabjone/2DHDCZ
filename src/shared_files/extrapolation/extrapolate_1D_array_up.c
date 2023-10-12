@@ -1,6 +1,5 @@
 #include "extrapolation.h"
 
-#if DIMENSIONS == 1
 void extrapolate_1D_array_up(FLOAT_P *array, struct GridInfo *grid_info)
 {
     /*
@@ -21,4 +20,3 @@ void extrapolate_1D_array_up(FLOAT_P *array, struct GridInfo *grid_info)
         #error "Only constant extrapolation implemented."
     #endif // EXTRAPOLATE_GHOST_CELLS == 0
 }
-#endif // DIMENSIONS == 1

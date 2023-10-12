@@ -12,38 +12,6 @@ int main_hd_2D(int argc, char *argv[])
     struct ForegroundVariables *fg, *fg_previous, *tmp_ptr;
     struct GridInfo *grid_info;
 
-    struct MpiInfo *mpi_info;
-    mpi_info = malloc(sizeof(struct MpiInfo));
-
-
-    FLOAT_P z_offset = 0.0;
-    // Initialize MPI
-    #if MPI_ON == 1
-        MPI_Init(&argc, &argv);
-        MPI_Comm_size(MPI_COMM_WORLD, &mpi_info->size);
-        MPI_Comm_rank(MPI_COMM_WORLD, &mpi_info->rank);
-
-        // Check if there are neighbors above and below
-        if (mpi_info->rank == 0)
-        {
-            mpi_info->has_neighbor_below = false;
-            mpi_info->has_neighbor_above = true;
-        }
-        else if (mpi_info->rank == mpi_info->size - 1)
-        {
-            mpi_info->has_neighbor_below = true;
-            mpi_info->has_neighbor_above = false;
-        }
-        else
-        {
-            mpi_info->has_neighbor_below = true;
-            mpi_info->has_neighbor_above = true;
-        }
-    #else
-        mpi_info->has_neighbor_below = false;
-        mpi_info->has_neighbor_above = false;
-    #endif // MPI_ON
-
     #if LOAD == 1
         // Loading snapshot
 
@@ -64,10 +32,6 @@ int main_hd_2D(int argc, char *argv[])
 
         printf("time = %f\n", t);
         save_nr = LOAD_SNAP_NUMBER + 1;
-
-        #if MPI_ON == 1
-            // Calculate z_offset
-        #endif // MPI_ON
 
     #elif LOAD == 0
         // Initializing the simulation
@@ -95,17 +59,13 @@ int main_hd_2D(int argc, char *argv[])
         // Calculating the number of cells in the full grid
         int nz_full = NZ + 2*nz_ghost;
 
+
         FLOAT_P z0 = R_SUN * R_START;
         FLOAT_P z1 = R_SUN * R_END;
         FLOAT_P y0 = 0.0;
         FLOAT_P y1 = R_SUN * Y_SIZE;
 
-        #if MPI_ON == 1
-            // Calculate z_offset
-        #endif // MPI_ON
-
-        allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NY, dz, dy, z0, z1, y0, y1, z_offset);
-
+        allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NY, dz, dy, z0, z1, y0, y1);
         // Allocating memory for the background and foreground variables
         allocate_background_struct(&bg, grid_info);
         allocate_foreground_struct(&fg, grid_info);
@@ -116,7 +76,7 @@ int main_hd_2D(int argc, char *argv[])
         save_background(bg, grid_info);
         
         // Initialize foreground to type set in parameter file
-        initialize_foreground(fg_previous, bg, grid_info, mpi_info);
+        initialize_foreground(fg_previous, bg, grid_info);
         
         // Saving the foreground variables to file
         save_foreground(fg_previous, grid_info, 0, 0.0);
@@ -130,7 +90,9 @@ int main_hd_2D(int argc, char *argv[])
     dt_last = 0.0;
     while (t < T)
     {
-        dt = one_time_step(bg, fg_previous, fg, grid_info, mpi_info, dt_last, first_t == t);
+        break;
+        dt = one_time_step(bg, fg_previous, fg, grid_info, dt_last, first_t == t);
+
         t += dt;
         t_since_save += dt;
         dt_last = dt;
@@ -147,10 +109,6 @@ int main_hd_2D(int argc, char *argv[])
             save_nr++;
         }
 
-        #if MPI_ON == 1
-            // communicate ghost cells
-        #endif // MPI_ON
-
         // pointer swap
         tmp_ptr = fg_previous;
         fg_previous = fg;
@@ -166,11 +124,6 @@ int main_hd_2D(int argc, char *argv[])
     deallocate_background_struct(bg);
     deallocate_foreground_struct(fg_previous);
     deallocate_foreground_struct(fg);
-    free(mpi_info);
-
-    #if MPI_ON == 1
-        MPI_Finalize();
-    #endif // MPI_ON
 
     return 0;
 }

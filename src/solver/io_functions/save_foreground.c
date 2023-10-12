@@ -2,14 +2,32 @@
 
 void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info, int snap_number, FLOAT_P time)
 {
+    /*
+    Saves the foreground variables to a hdf5 file at the current time step.
+
+    Parameters
+    ----------
+    fg : struct ForegroundVariables
+        Pointer to the foreground variables struct.
+    grid_info : struct GridInfo
+        Pointer to the grid info struct.
+    snap_number : int
+        The current snapshot number.
+    time : FLOAT_P
+        The current time.
+    */
+
+    // Header strings
     const char* root_header = "This is the root header";
     const char* grid_data_header = "This is the grid data header";
     const char* variables_header = "This is the variables header";
 
+    // File path
     char file_path[150];
 
     snprintf(file_path, sizeof(file_path), "data/%s/snap%d.h5", RUN_NAME, snap_number);
-
+  
+    // Getting grid info
     FLOAT_P z0 = grid_info->z0;
     FLOAT_P z1 = grid_info->z1;
     FLOAT_P y0 = grid_info->y0;
@@ -20,6 +38,7 @@ void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info,
     int ny = grid_info->ny;
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
+
 
     hid_t file, group_grid_data, group_variables;
     hid_t dataspace_scalar, dataspace_2d;
