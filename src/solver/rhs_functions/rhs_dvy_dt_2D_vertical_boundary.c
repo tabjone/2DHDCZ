@@ -37,39 +37,9 @@ FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct F
     // Creating pointers to background arrays
     FLOAT_P *one_over_rho0 = bg->one_over_rho0;
 
-    // Periodic boundary conditions
-    int j_minus = periodic_boundary(j-1, ny);
-    int j_plus = periodic_boundary(j+1, ny);
-    #if UPWIND_ORDER > 1
-        int j_minus2 = periodic_boundary(j-2, ny);
-        int j_plus2 = periodic_boundary(j+2, ny);
-    #endif // UPWIND_ORDER
-
     // Calculate the derivatives
-    FLOAT_P dp1_dy, dvy_dy;
-    #if UPWIND_ORDER == 1
-        if (vy[i][j] >= 0)
-        {
-            dvy_dy = backward_first_derivative_first_order(vy[i][j], vy[i][j_minus], dy);
-        }
-        else
-        {
-            dvy_dy = forward_first_derivative_first_order(vy[i][j], vy[i][j_plus], dy);
-        }
-    #elif UPWIND_ORDER == 2
-        if (vy[i][j] >= 0.0)
-        {
-            dvy_dy = backward_first_derivative_second_order(vy[i][j], vy[i][j_minus], vy[i][j_minus2], dy);
-        }
-        else
-        {
-            dvy_dy = forward_first_derivative_second_order(vy[i][j], vy[i][j_plus], vy[i][j_plus2], dy);
-        }
-    #endif // UPWIND_ORDER
-
-    #if CENTRAL_ORDER == 2
-        dp1_dy = central_first_derivative_second_order(p1[i][j_minus], p1[i][j_plus], dy);
-    #endif // CENTRAL_ORDER
+    FLOAT_P dvy_dy = upwind_first_derivative_y(vy, vy, i, j, dy, ny);
+    FLOAT_P dp1_dy = central_first_derivative_y(p1, i, j, dy, ny);
 
     #if GAS_PRESSURE_ON == 1
         rhs -= one_over_rho0[i]* dp1_dy;

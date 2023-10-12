@@ -75,14 +75,21 @@ void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct Gri
         // Copy pnew to p
         copy_2D_array(pnew, p, 0, nz, 0, ny);
         
-        for (int i = 1; i < nz-1; i++)
+        for (int i = 0; i < nz; i++)
         {
             for (int j = 0; j < ny; j++)
             {
+                #if VERTICAL_BOUNDARY_TYPE == 2
+                    int i_plus = periodic_boundary(i+1, nz);
+                    int i_minus = periodic_boundary(i-1, nz);
+                #else
+                    int i_plus = i+1;
+                    int i_minus = i-1;
+                #endif // VERTICAL_BOUNDARY_TYPE
                 j_plus = periodic_boundary(j+1, ny);
                 j_minus = periodic_boundary(j-1, ny);
 
-                pnew[i][j] = (b[i][j] - a*(p[i+1][j] + pnew[i-1][j]) - c*(p[i][j_plus] + pnew[i][j_minus]))/g;
+                pnew[i][j] = (b[i][j] - a*(p[i_plus][j] + pnew[i_minus][j]) - c*(p[i][j_plus] + pnew[i][j_minus]))/g;
                 
                 // Finding maximum absolute value of pnew
                 abs_pnew = fabs(pnew[i][j]);

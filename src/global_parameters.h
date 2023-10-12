@@ -6,16 +6,14 @@
 
 #define INITIALIZATION_TYPE 2 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for random
 
-#define MPI_ON 0 // 0 for MPI off, 1 for MPI on
-
-#define RUN_NAME "mpi_test"
+#define RUN_NAME "test_3"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 1e5 // Simulation time in seconds
+#define T 10 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
 #define SAVE_INTERVAL 1e3 // Save interval in seconds
-#define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
+#define SAVE_ALL 1 // 0 for saving on interval above, 1 for saving all time steps
 
 #define CFL_CUT 0.8 // CFL cut
 
@@ -43,8 +41,8 @@
 #define X_SIZE 0.1 // In units of solar radii
 #define Y_SIZE 0.1 // In units of solar radii
 #define NX 3 // Number of grid points in x-direction
-#define NY 30 // Number of grid points in y-direction
-#define NZ 60 // Number of grid points in z-direction
+#define NY 20 // Number of grid points in y-direction
+#define NZ 40 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
 #define GS_TOL 1e-6 // Gauss-Seidel tolerance

@@ -28,6 +28,7 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P rhs = 0.0; // This is the return value
 
     // Getting the grid info
+    int nz_full = grid_info->nz_full;
     int ny = grid_info->ny;
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
@@ -38,60 +39,10 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P **vy = fg->vy;
     FLOAT_P **vz = fg->vz;
 
-    // Creating pointers to background arrays
-    FLOAT_P *one_over_rho0 = bg->one_over_rho0;
-    FLOAT_P *g = bg->g;
-
-    // Periodic boundary conditions
-    int j_minus = periodic_boundary(j-1, ny);
-    int j_plus = periodic_boundary(j+1, ny);
-    #if UPWIND_ORDER > 1
-        int j_minus2 = periodic_boundary(j-2, ny);
-        int j_plus2 = periodic_boundary(j+2, ny);
-    #endif // UPWIND_ORDER
-
     // Calculate the derivatives
-    FLOAT_P dp1_dz, dvz_dy, dvz_dz;
-    #if UPWIND_ORDER == 1
-        if (vy[i][j] >= 0)
-        {
-            dvz_dy = backward_first_derivative_first_order(vz[i][j], vz[i][j_minus], dy);
-        }
-        else
-        {
-            dvz_dy = forward_first_derivative_first_order(vz[i][j], vz[i][j_plus], dy);
-        }
-        if (vz[i][j] >= 0)
-        {
-            dvz_dz = backward_first_derivative_first_order(vz[i][j], vz[i-1][j], dz);
-        }
-        else
-        {
-            dvz_dz = forward_first_derivative_first_order(vz[i][j], vz[i+1][j], dz);
-        }
-    #elif UPWIND_ORDER == 2
-        if (vy[i][j] >= 0.0)
-        {
-            dvz_dy = backward_first_derivative_second_order(vz[i][j], vz[i][j_minus], vz[i][j_minus2], dy);
-        }
-        else
-        {
-            dvz_dy = forward_first_derivative_second_order(vz[i][j], vz[i][j_plus], vz[i][j_plus2], dy);
-        }
-
-        if (vz[i][j] >= 0)
-        {
-            dvz_dz = backward_first_derivative_second_order(vz[i][j], vz[i-1][j], vz[i-2][j], dz);
-        }
-        else
-        {
-            dvz_dz = forward_first_derivative_second_order(vz[i][j], vz[i+1][j], vz[i+2][j], dz);
-        }
-    #endif // UPWIND_ORDER
-
-    #if CENTRAL_ORDER == 2
-        dp1_dz = central_first_derivative_second_order(p1[i-1][j], p1[i+1][j], dz);
-    #endif // CENTRAL_ORDER
+    FLOAT_P dp1_dz = central_first_derivative_z(p1, i, j, dz, nz_full);
+    FLOAT_P dvz_dy = upwind_first_derivative_y(vz, vy, i, j, dy, ny);
+    FLOAT_P dvz_dz = upwind_first_derivative_z(vz, vz, i, j, dz, nz_full);
 
     #if GAS_PRESSURE_ON == 1
         rhs -= one_over_rho0[i] * dp1_dz;

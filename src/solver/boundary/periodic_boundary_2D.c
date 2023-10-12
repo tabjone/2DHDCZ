@@ -24,7 +24,7 @@ void periodic_boundary_2D(FLOAT_P **array, struct GridInfo *grid_info)
         for (int j = 0; j < ny; j++)
         {
             array[i][j] = array[nz + i][j];
-            array[nz_ghost + nz + i][j] = array[i][j];
+            array[nz_ghost + nz + i][j] = array[i+nz_ghost][j];
         }
     }
 }
