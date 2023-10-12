@@ -1,6 +1,5 @@
 #include "mpi_functions.h"
 
-#if DIMENSIONS == 3
 void communicate_3D_ghost_above_below(float ***array, struct GridInfo *grid_info, struct MpiInfo *mpi_info) 
 {
     /*
@@ -15,6 +14,7 @@ void communicate_3D_ghost_above_below(float ***array, struct GridInfo *grid_info
     mpi_info : struct MpiInfo pointer
         Pointer to the struct containing mpi info.
     */
+   /*
     MPI_Status status;
 
     // Getting grid info
@@ -44,5 +44,5 @@ void communicate_3D_ghost_above_below(float ***array, struct GridInfo *grid_info
             MPI_Send(&array[nz_full - 2*nz_ghost][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
         }
     }
+    */
 }
-#endif // DIMENSIONS == 3

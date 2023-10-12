@@ -1,7 +1,6 @@
 #include "mpi_functions.h"
 
-#if DIMENSIONS == 1
-void communicate_1D_ghost_above_below(float *array, struct GridInfo *grid_info, struct MpiInfo *mpi_info) 
+void communicate_1D_ghost_above_below(FLOAT_P *array, struct GridInfo *grid_info, struct MpiInfo *mpi_info) 
 {
     /*
     Communicates ghost cells above and below the current process for a 1D array.
@@ -46,4 +45,3 @@ void communicate_1D_ghost_above_below(float *array, struct GridInfo *grid_info, 
         }
     }
 }
-#endif // DIMENSIONS == 1
