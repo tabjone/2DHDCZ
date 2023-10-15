@@ -27,6 +27,7 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     FLOAT_P rhs = 0.0; // This is the return value
 
     // Getting the grid info
+    int nz_full = grid_info->nz_full;
     int ny = grid_info->ny;
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
@@ -42,58 +43,41 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     FLOAT_P *grad_g = bg->grad_g;
     FLOAT_P *grad_rho0 = bg->grad_rho0;
 
-
     // Periodic boundary conditions
     int j_minus = periodic_boundary(j-1, ny);
     int j_plus = periodic_boundary(j+1, ny);
 
-    // Write out terms for the mixed derivatives, u for up, d for down, r for right, l for left
-    FLOAT_P vy_ur = vy[i+1][j_plus];
-    FLOAT_P vy_ul = vy[i+1][j_minus];
-    FLOAT_P vy_dr = vy[i-1][j_plus];
-    FLOAT_P vy_dl = vy[i-1][j_minus];
-
-    FLOAT_P vz_ur = vz[i+1][j_plus];
-    FLOAT_P vz_ul = vz[i+1][j_minus];
-    FLOAT_P vz_dr = vz[i-1][j_plus];
-    FLOAT_P vz_dl = vz[i-1][j_minus];
-
     // Calculate the derivatives
     // First derivatives
-    FLOAT_P d_vy_dy, d_vy_dz, d_vz_dy, d_vz_dz;
-    FLOAT_P d_rho1_dz;
+    FLOAT_P dvy_dy = central_first_derivative_y(vy, i, j, dy, ny);
+    FLOAT_P dvy_dz = central_first_derivative_z(vy, i, j, dz, nz_full);
+    FLOAT_P dvz_dy = central_first_derivative_y(vz, i, j, dy, ny);
+    FLOAT_P dvz_dz = central_first_derivative_z(vz, i, j, dz, nz_full);
+
+    FLOAT_P drho1_dz = central_first_derivative_z(rho1, i, j, dz, nz_full);
+
     // Second derivatives
-    FLOAT_P dd_vy_ddy, dd_vz_ddz;
+    FLOAT_P dd_vy_ddy = central_second_derivative_y(vy, i, j, dy, ny);
+    FLOAT_P dd_vz_ddz = central_second_derivative_z(vz, i, j, dz, nz_full);
+
     // Mixed derivatives
-    FLOAT_P dd_vy_dydz, dd_vz_dydz;
-
-    #if CENTRAL_ORDER == 2
-        // First derivatives
-        d_vy_dy = central_first_derivative_second_order(vy[i][j_minus], vy[i][j_plus], dy);
-        d_vy_dz = central_first_derivative_second_order(vy[i-1][j], vy[i+1][j], dz);
-        d_vz_dy = central_first_derivative_second_order(vz[i][j_minus], vz[i][j_plus], dy);
-        d_vz_dz = central_first_derivative_second_order(vz[i-1][j], vz[i+1][j], dz);
-        d_rho1_dz = central_first_derivative_second_order(rho1[i-1][j], rho1[i+1][j], dz);
-
-        // Second derivatives
-        dd_vy_ddy = central_second_derivative_second_order(vy[i][j], vy[i][j_minus], vy[i][j_plus], dy);
-        dd_vz_ddz = central_second_derivative_second_order(vz[i][j], vz[i-1][j], vz[i+1][j], dz);
-
-        // Mixed derivatives
-        dd_vy_dydz = (vy_ur-vy_ul-vy_dr+vy_dl)/(4.0*dy*dz);
-        dd_vz_dydz = (vz_ur-vz_ul-vz_dr+vz_dl)/(4.0*dy*dz);
-    #endif
+    FLOAT_P dd_vy_dydz = (vy[i+1][j_plus] - vy[i+1][j_minus] - vy[i-1][j_plus] + vy[i-1][j_minus])/(4.0*dy*dz);
+    FLOAT_P dd_vz_dydz = (vz[i+1][j_plus] - vz[i+1][j_minus] - vz[i-1][j_plus] + vz[i-1][j_minus])/(4.0*dy*dz);
+    
+    // Squared of derivatives
+    FLOAT_P dvy_dy_sqrd = dvy_dy*dvy_dy;
+    FLOAT_P dvz_dz_sqrd = dvz_dz*dvz_dz;
 
     #if GRAVITY_ON == 1
     {
-        rhs -= g[i]*d_rho1_dz + rho1[i][j]*grad_g[i];
+        rhs -= g[i]*drho1_dz + rho1[i][j]*grad_g[i];
     }
     #endif // GRAVITY_ON
 
     #if ADVECTION_ON == 1
     {
-        rhs -= rho0[i]*(vy[i][j]*dd_vy_ddy + vz[i][j]*dd_vz_ddz + (d_vy_dy)*(d_vy_dy) + (d_vz_dz)*(d_vz_dz) + 2*d_vz_dy*d_vy_dz + vy[i][j]*dd_vz_dydz + vz[i][j]*dd_vy_dydz)
-        + grad_rho0[i] * (vy[i][j]*d_vz_dy + vz[i][j]*d_vz_dz);
+        rhs -= rho0[i]*(vy[i][j]*dd_vy_ddy + vz[i][j]*dd_vz_ddz + dvy_dy_sqrd + dvz_dz_sqrd + 2*dvz_dy*dvy_dz + vy[i][j]*dd_vz_dydz + vz[i][j]*dd_vy_dydz)
+        + grad_rho0[i] * (vy[i][j]*dvz_dy + vz[i][j]*dvz_dz);
     }
     #endif // ADVECTION_ON
 

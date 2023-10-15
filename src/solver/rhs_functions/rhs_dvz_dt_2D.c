@@ -32,6 +32,10 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     int ny = grid_info->ny;
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
+
+    // Creating pointers to background arrays
+    FLOAT_P *one_over_rho0 = bg->one_over_rho0;
+    FLOAT_P *g = bg->g;
     
     // Creating pointers to foreground arrays
     FLOAT_P **rho1 = fg->rho1;

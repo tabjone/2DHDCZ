@@ -1,9 +1,9 @@
 #include "spacial_derivatives.h"
 
-FLOAT_P central_first_derivative_y(FLOAT_P **array, int i, int j, FLOAT_P dy, int ny)
+FLOAT_P central_second_derivative_y(FLOAT_P **array, int i, int j, FLOAT_P dy, int ny)
 {
     /*
-    Calculates the central first derivative of a 2D array at a point (i, j) in the y-direction.
+    Calculates the central second derivative of a 2D array at a point (i, j) in the y-direction.
 
     Parameters
     ----------
@@ -18,10 +18,11 @@ FLOAT_P central_first_derivative_y(FLOAT_P **array, int i, int j, FLOAT_P dy, in
     ny : int
         The number of points in the y-direction.
     */
+
     int j_minus = periodic_boundary(j-1, ny);
     int j_plus = periodic_boundary(j+1, ny);
 
    #if CENTRAL_ORDER == 2
-        central_first_derivative_second_order(array[i][j_minus], array[i][j_plus], dy);
+        return central_second_derivative_second_order(array[i][j], array[i][j_minus], array[i][j_plus], dy);
     #endif // CENTRAL_ORDER
 }

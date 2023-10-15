@@ -1,9 +1,9 @@
 #include "spacial_derivatives.h"
 
-FLOAT_P central_first_derivative_z(FLOAT_P **array, int i, int j, FLOAT_P dz, int nz)
+FLOAT_P central_second_derivative_z(FLOAT_P **array, int i, int j, FLOAT_P dz, int nz)
 {
     /*
-    Calculates the central first derivative of a 2D array at a point (i, j) in the z-direction.
+    Calculates the central second derivative of a 2D array at a point (i, j) in the z-direction.
 
     Parameters
     ----------
@@ -20,6 +20,6 @@ FLOAT_P central_first_derivative_z(FLOAT_P **array, int i, int j, FLOAT_P dz, in
     */
 
    #if CENTRAL_ORDER == 2
-        central_first_derivative_second_order(array[i-1][j], array[i+1][j], dz);
+        return central_second_derivative_second_order(array[i][j], array[i-1][j], array[i+1][j], dz);
     #endif // CENTRAL_ORDER
 }

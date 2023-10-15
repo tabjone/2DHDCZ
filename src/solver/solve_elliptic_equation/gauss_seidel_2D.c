@@ -40,7 +40,7 @@ void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct Gri
     {
         for (int j = 0; j < ny; j++)
         {
-            pnew[i][j] = initial_p1[i][j];
+            pnew[i][j] = initial_p1[i+nz_ghost][j];
             p[i][j] = 0.0;
         }
     }
@@ -77,15 +77,15 @@ void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct Gri
         
         for (int i = 0; i < nz; i++)
         {
+            #if VERTICAL_BOUNDARY_TYPE == 2
+                int i_plus = periodic_boundary(i+1, nz);
+                int i_minus = periodic_boundary(i-1, nz);
+            #else
+                int i_plus = i+1;
+                int i_minus = i-1;
+            #endif // VERTICAL_BOUNDARY_TYPE
             for (int j = 0; j < ny; j++)
             {
-                #if VERTICAL_BOUNDARY_TYPE == 2
-                    int i_plus = periodic_boundary(i+1, nz);
-                    int i_minus = periodic_boundary(i-1, nz);
-                #else
-                    int i_plus = i+1;
-                    int i_minus = i-1;
-                #endif // VERTICAL_BOUNDARY_TYPE
                 j_plus = periodic_boundary(j+1, ny);
                 j_minus = periodic_boundary(j-1, ny);
 

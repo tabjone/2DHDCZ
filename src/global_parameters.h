@@ -6,14 +6,14 @@
 
 #define INITIALIZATION_TYPE 2 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for random
 
-#define RUN_NAME "test_3"
+#define RUN_NAME "test_5"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 10 // Simulation time in seconds
+#define T 1e4 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
-#define SAVE_INTERVAL 1e3 // Save interval in seconds
-#define SAVE_ALL 1 // 0 for saving on interval above, 1 for saving all time steps
+#define SAVE_INTERVAL 1e2 // Save interval in seconds
+#define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
 
 #define CFL_CUT 0.8 // CFL cut
 

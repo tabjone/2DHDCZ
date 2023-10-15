@@ -35,15 +35,6 @@ void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVa
         }
     }
 
-    // Solve boudaries
-    for (int j = 0; j < ny; j++)
-    { 
-        // Bottom boundary
-        rhs[0][j] = 0.0;
-        // Top bundary
-        rhs[nz-1][j] = 0.0;
-    }
-
     gauss_seidel_2D(rhs, fg->p1, fg_prev->p1, grid_info);
     deallocate_2D_array(rhs);
 }
