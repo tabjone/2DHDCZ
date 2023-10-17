@@ -4,16 +4,16 @@
 #include "hdf5.h"
 #include <mpi.h>
 
-#define INITIALIZATION_TYPE 2 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for random
+#define INITIALIZATION_TYPE 2 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for random, 4 for sod shock horizontal
 
-#define RUN_NAME "test_5"
+#define RUN_NAME "gauss_seidel"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 1e4 // Simulation time in seconds
-#define MAX_DT 1e3 // Maximum time step in seconds
-#define SAVE_INTERVAL 1e2 // Save interval in seconds
-#define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
+#define T 1 // Simulation time in seconds
+#define MAX_DT 0.1 // Maximum time step in seconds
+#define SAVE_INTERVAL 50 // Save interval in seconds
+#define SAVE_ALL 1 // 0 for saving on interval above, 1 for saving all time steps
 
 #define CFL_CUT 0.8 // CFL cut
 
@@ -36,16 +36,16 @@
 
 // Grid size
 #define CZ_START 0.7 // In units of solar radii
-#define R_START 0.7 // In units of solar radii
+#define R_START 0.8 // In units of solar radii
 #define R_END 0.90 // In units of solar radii
 #define X_SIZE 0.1 // In units of solar radii
 #define Y_SIZE 0.1 // In units of solar radii
 #define NX 3 // Number of grid points in x-direction
-#define NY 20 // Number of grid points in y-direction
+#define NY 40 // Number of grid points in y-direction
 #define NZ 40 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
-#define GS_TOL 1e-6 // Gauss-Seidel tolerance
+#define GS_TOL 1e-7 // Gauss-Seidel tolerance
 #define GS_MAX_ITER 5e6 // Gauss-Seidel max iterations
 
 // Physical parameters

@@ -66,23 +66,26 @@ FLOAT_P get_dt(struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT
         }
     }
     
+    
     // If this is the first timestep, we set dt to 0.1
-    if (first_timestep && dt > 0.1)
+    if (first_timestep && dt > 0.1 && MAX_DT > 0.1)
     {
         return 0.1;
     }
 
     // Stability condition, dt should be on the interval [0, 3/2]*dt_last
-    if (dt > 1.5*dt_last)
+    if (dt > 1.5*dt_last && dt_last!=0.0)
     {
         dt = 1.5*dt_last;
     }
-
+    
     // Maximum allowed timestep
     if (dt > MAX_DT)
     {
         dt = MAX_DT;
     }
+
+    
 
     return dt;
 }

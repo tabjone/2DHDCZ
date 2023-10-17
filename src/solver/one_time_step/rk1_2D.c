@@ -23,18 +23,6 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         True if this is the first timestep, false otherwise.
     */
 
-    // Solving elliptic equation
-    solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
-
-    #if VERTICAL_BOUNDARY_TYPE == 2
-        // Periodic boundary conditions
-        periodic_boundary_2D(fg->p1, grid_info);
-    // Extrapolating p1 to ghost cells
-    #else
-        extrapolate_2D_array_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
-        extrapolate_2D_array_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
-    #endif // VERTICAL_BOUNDARY_TYPE
-
     // Getting grid info
     int ny = grid_info->ny;
     int nz_ghost = grid_info->nz_ghost;
@@ -79,6 +67,18 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         extrapolate_2D_array_up(fg->vy, grid_info); // Extrapolating vy to ghost cells above
         extrapolate_2D_array_down(fg->vz, grid_info); // Extrapolating vz to ghost cells below
         extrapolate_2D_array_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
+    #endif // VERTICAL_BOUNDARY_TYPE
+
+    // Solving elliptic equation
+    solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
+
+    #if VERTICAL_BOUNDARY_TYPE == 2
+        // Periodic boundary conditions
+        periodic_boundary_2D(fg->p1, grid_info);
+    // Extrapolating p1 to ghost cells
+    #else
+        extrapolate_2D_array_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
+        extrapolate_2D_array_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
     #endif // VERTICAL_BOUNDARY_TYPE
 
     // Solving algebraic equations.

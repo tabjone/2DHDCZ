@@ -25,5 +25,8 @@ void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVari
         initialize_foreground_density_pertubation(fg, bg, grid_info);
     #elif INITIALIZATION_TYPE == 3
         initialize_foreground_random(fg, bg, grid_info);
+    #elif INITIALIZATION_TYPE == 4
+        sod_shock_horizontal(fg, bg, grid_info);
+    
     #endif // INITIALIZATION_TYPE
 }

@@ -60,7 +60,7 @@ void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct Gri
     FLOAT_P tolerance_criteria = DBL_MAX;
 
     // Periodic boundary conditions
-    int j_plus, j_minus;
+    int i_plus, i_minus, j_plus, j_minus;
 
     int iter = 0;
     while (tolerance_criteria > GS_TOL)
@@ -74,22 +74,28 @@ void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct Gri
 
         // Copy pnew to p
         copy_2D_array(pnew, p, 0, nz, 0, ny);
-        
+        #if VERTICAL_BOUNDARY_TYPE == 2
         for (int i = 0; i < nz; i++)
+        #else
+        for (int i = 1; i < nz-1; i++)
+        #endif // VERTICAL_BOUNDARY_TYPE
         {
             #if VERTICAL_BOUNDARY_TYPE == 2
-                int i_plus = periodic_boundary(i+1, nz);
-                int i_minus = periodic_boundary(i-1, nz);
+                i_plus = periodic_boundary(i+1, nz);
+                i_minus = periodic_boundary(i-1, nz);
             #else
-                int i_plus = i+1;
-                int i_minus = i-1;
+                i_plus = i+1;
+                i_minus = i-1;
             #endif // VERTICAL_BOUNDARY_TYPE
             for (int j = 0; j < ny; j++)
             {
                 j_plus = periodic_boundary(j+1, ny);
                 j_minus = periodic_boundary(j-1, ny);
 
-                pnew[i][j] = (b[i][j] - a*(p[i_plus][j] + pnew[i_minus][j]) - c*(p[i][j_plus] + pnew[i][j_minus]))/g;
+                // Gauss-Seidel
+                //pnew[i][j] = (b[i][j] - a*(p[i_plus][j] + pnew[i_minus][j]) - c*(p[i][j_plus] + pnew[i][j_minus]))/g;
+                // Jacobi
+                pnew[i][j] = (b[i][j] - a*p[i_plus][j] - a*p[i_minus][j] - c*p[i][j_plus] - c*p[i][j_minus])/g;
                 
                 // Finding maximum absolute value of pnew
                 abs_pnew = fabs(pnew[i][j]);

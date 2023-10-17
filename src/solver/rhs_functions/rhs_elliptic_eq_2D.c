@@ -80,6 +80,5 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
         + grad_rho0[i] * (vy[i][j]*dvz_dy + vz[i][j]*dvz_dz);
     }
     #endif // ADVECTION_ON
-
     return rhs;
 }

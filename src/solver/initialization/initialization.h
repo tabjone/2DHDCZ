@@ -15,4 +15,6 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
 void initialize_foreground_velocity_right(struct ForegroundVariables *fg, struct GridInfo *grid_info);
 void initialize_foreground_random(struct ForegroundVariables *fg, struct BackgroundVariables *bg , struct GridInfo *grid_info);
 
+void sod_shock_horizontal(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info);
+
 #endif // INITIALIZATION_H

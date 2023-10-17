@@ -56,7 +56,6 @@ void calculate_damping(FLOAT_P *damping_factor, struct GridInfo *grid_info)
         {
             damping_factor[i] = damping_coeffs[i-nz_ghost];
         }
-        }
         
         for (int i = nz_full-nz_ghost; i < nz_full; i++)
         {
