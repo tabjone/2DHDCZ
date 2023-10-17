@@ -32,7 +32,10 @@
 // THIS WILL BE CHANGED TO MHD INTEGRATED IN FUNCTIONS BUT BFIELD_ON WILL CHOSE TO INCLUDE OR NOT INCLUDE B-FIELD
 #define MHD 0 // 0 for hydro, 1 for MHD
 
-#define VERTICAL_BOUNDARY_TYPE 2 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
+// Boundary conditions
+#define VERTICAL_BOUNDARY_TYPE 1 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
+#define ALPHA 0.5 // Soft wall parameter
+#define SOFT_WALL_HEIGHT_PERCENTAGE 0.3 // Percentage of the domain that will be damped at the top and bottom
 
 // Grid size
 #define CZ_START 0.7 // In units of solar radii
@@ -42,7 +45,7 @@
 #define Y_SIZE 0.1 // In units of solar radii
 #define NX 3 // Number of grid points in x-direction
 #define NY 40 // Number of grid points in y-direction
-#define NZ 40 // Number of grid points in z-direction
+#define NZ 20 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
 #define GS_TOL 1e-7 // Gauss-Seidel tolerance

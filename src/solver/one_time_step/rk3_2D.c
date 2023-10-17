@@ -37,7 +37,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
 
     // Calculating damping factor
     FLOAT_P damping_factor[nz_full];
-    calculate_damping(damping_factor, grid_info);
+    calculate_damping(damping_factor, bg, grid_info);
 
     // Calculating dt
     FLOAT_P dt = get_dt(fg_prev, grid_info, dt_last, first_timestep);
