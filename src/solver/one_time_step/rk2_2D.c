@@ -76,13 +76,14 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
             k1_vz[i][j] = damping_factor[i]*rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
         }
     }
-
-    // Bottom and top boundary k1
-    for (int j = 0; j < ny; j++)
-    {
-        k1_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
-        k1_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
-    }
+    #if VERTICAL_BOUNDARY_TYPE != 2
+        // Bottom and top boundary k1
+        for (int j = 0; j < ny; j++)
+        {
+            k1_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
+            k1_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
+        }
+    #endif // VERTICAL_BOUNDARY
 
     // Updating fg to hold mid-calculation variables
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
@@ -95,13 +96,32 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         }
     }
 
-    // Extrapolating mid-calculation variables
-    extrapolate_2D_array_up(fg->s1, grid_info);
-    extrapolate_2D_array_down(fg->s1, grid_info);
-    extrapolate_2D_array_up(fg->vy, grid_info);
-    extrapolate_2D_array_down(fg->vy, grid_info);
-    extrapolate_2D_array_up(fg->vz, grid_info);
-    extrapolate_2D_array_down(fg->vz, grid_info);
+    #if VERTICAL_BOUNDARY_TYPE == 2
+        periodic_boundary_2D(fg->vy, grid_info);
+        periodic_boundary_2D(fg->vz, grid_info);
+        periodic_boundary_2D(fg->s1, grid_info);
+    #else
+        // Extrapolating mid-calculation variables
+        extrapolate_2D_array_up(fg->s1, grid_info);
+        extrapolate_2D_array_down(fg->s1, grid_info);
+        extrapolate_2D_array_up(fg->vy, grid_info);
+        extrapolate_2D_array_down(fg->vy, grid_info);
+        extrapolate_2D_array_up(fg->vz, grid_info);
+        extrapolate_2D_array_down(fg->vz, grid_info);
+    #endif // VERTICAL_BOUNDARY_TYPE
+
+    // Calculating p1
+    solve_elliptic_equation(bg, fg, fg, grid_info);
+    #if VERTICAL_BOUNDARY_TYPE == 2
+        periodic_boundary_2D(fg->p1, grid_info);
+    #else
+        extrapolate_2D_array_constant_up(fg->p1, grid_info);
+        extrapolate_2D_array_constant_down(fg->p1, grid_info);
+    #endif // VERTICAL_BOUNDARY_TYPE
+
+    // Updating mid calculation variables
+    first_law_thermodynamics(fg, bg, grid_info);
+    equation_of_state(fg, bg, grid_info);
 
     // Calculating k2
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
@@ -115,12 +135,14 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         }
     }
 
-    // Boundary
-    for (int j = 0; j < ny; j++)
-    {
-        k2_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
-        k2_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
-    }
+    #if VERTICAL_BOUNDARY_TYPE != 2
+        // Boundary
+        for (int j = 0; j < ny; j++)
+        {
+            k2_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
+            k2_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
+        }
+    #endif // VERTICAL_BOUNDARY_TYPE
 
     // Updating variables for entire grid
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
@@ -133,13 +155,19 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         }
     }
 
-    // Extrapolating variables
-    extrapolate_2D_array_up(fg->s1, grid_info);
-    extrapolate_2D_array_down(fg->s1, grid_info);
-    extrapolate_2D_array_up(fg->vy, grid_info);
-    extrapolate_2D_array_down(fg->vy, grid_info);
-    extrapolate_2D_array_up(fg->vz, grid_info);
-    extrapolate_2D_array_down(fg->vz, grid_info);
+    #if VERTICAL_BOUNDARY_TYPE == 2
+        periodic_boundary_2D(fg->vy, grid_info);
+        periodic_boundary_2D(fg->vz, grid_info);
+        periodic_boundary_2D(fg->s1, grid_info);
+    #else
+        // Extrapolating variables
+        extrapolate_2D_array_up(fg->s1, grid_info);
+        extrapolate_2D_array_down(fg->s1, grid_info);
+        extrapolate_2D_array_up(fg->vy, grid_info);
+        extrapolate_2D_array_down(fg->vy, grid_info);
+        extrapolate_2D_array_up(fg->vz, grid_info);
+        extrapolate_2D_array_down(fg->vz, grid_info);
+    #endif // VERTICAL_BOUNDARY_TYPE
     
     // Deallocating memory
     deallocate_2D_array(k1_s1);

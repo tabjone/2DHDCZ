@@ -75,10 +75,13 @@ void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct Gri
         // Copy pnew to p
         copy_2D_array(pnew, p, 0, nz, 0, ny);
         #if VERTICAL_BOUNDARY_TYPE == 2
-        for (int i = 0; i < nz; i++)
+            int i_start = 0;
+            int i_end = nz;
         #else
-        for (int i = 1; i < nz-1; i++)
+            int i_start = 1;
+            int i_end = nz-1;
         #endif // VERTICAL_BOUNDARY_TYPE
+        for (int i = i_start; i < i_end; i++)
         {
             #if VERTICAL_BOUNDARY_TYPE == 2
                 i_plus = periodic_boundary(i+1, nz);

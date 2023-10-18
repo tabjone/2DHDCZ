@@ -107,6 +107,15 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     extrapolate_2D_array_down(fg->vz, grid_info); // Extrapolating vz to ghost cells below
     extrapolate_2D_array_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
 
+    // Calculating pressure
+    solve_elliptic_equation(bg, fg, fg, grid_info);
+    extrapolate_2D_array_constant_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
+    extrapolate_2D_array_constant_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
+
+    // Updating mid-calculation variables
+    first_law_thermodynamics(fg, bg, grid_info);
+    equation_of_state(fg, bg, grid_info);
+
     // Calculating k2 inside the grid
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
@@ -144,6 +153,15 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     extrapolate_2D_array_up(fg->vy, grid_info); // Extrapolating vy to ghost cells above
     extrapolate_2D_array_down(fg->vz, grid_info); // Extrapolating vz to ghost cells below
     extrapolate_2D_array_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
+
+    // Calculating pressure
+    solve_elliptic_equation(bg, fg, fg, grid_info);
+    extrapolate_2D_array_constant_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
+    extrapolate_2D_array_constant_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
+
+    // Updating mid-calculation variables
+    first_law_thermodynamics(fg, bg, grid_info);
+    equation_of_state(fg, bg, grid_info);
 
     // Calculating k3 inside the grid
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)

@@ -12,6 +12,7 @@ void initialize_foreground_zeros(struct ForegroundVariables *fg, struct GridInfo
 FLOAT_P gaussian_2D(FLOAT_P x, FLOAT_P y, FLOAT_P x0, FLOAT_P y0, FLOAT_P sigma_x, FLOAT_P sigma_y, FLOAT_P A);
 
 void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info);
+void initialize_foreground_entropy_pertubation(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info);
 void initialize_foreground_velocity_right(struct ForegroundVariables *fg, struct GridInfo *grid_info);
 void initialize_foreground_random(struct ForegroundVariables *fg, struct BackgroundVariables *bg , struct GridInfo *grid_info);
 

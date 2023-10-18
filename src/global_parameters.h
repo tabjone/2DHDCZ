@@ -4,23 +4,23 @@
 #include "hdf5.h"
 #include <mpi.h>
 
-#define INITIALIZATION_TYPE 2 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for random, 4 for sod shock horizontal
+#define INITIALIZATION_TYPE 5 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for entropy pertubation, 4 for random, 5 for sod shock
 
-#define RUN_NAME "gauss_seidel"
+#define RUN_NAME "viscosity_test"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 1 // Simulation time in seconds
-#define MAX_DT 0.1 // Maximum time step in seconds
-#define SAVE_INTERVAL 50 // Save interval in seconds
-#define SAVE_ALL 1 // 0 for saving on interval above, 1 for saving all time steps
+#define T 1e7 // Simulation time in seconds
+#define MAX_DT 1e2 // Maximum time step in seconds
+#define SAVE_INTERVAL 1e4 // Save interval in seconds
+#define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
 
 #define CFL_CUT 0.8 // CFL cut
 
 // Order of the scheme (only upwind 1,2, central 2,4, rk1,2 implemented so far)
 #define UPWIND_ORDER 1 // 1 for first order, 2 for second order
 #define CENTRAL_ORDER 2 // 2 for second order, 4 for fourth order
-#define TIME_ORDER 1 // 1,2,3 for RK1, RK2, RK3
+#define TIME_ORDER 2 // 1,2,3 for RK1, RK2, RK3
 
 #define FLOAT_PRECISION 1 // 0 for float, 1 for double, 2 for long double
 
@@ -33,23 +33,23 @@
 #define MHD 0 // 0 for hydro, 1 for MHD
 
 // Boundary conditions
-#define VERTICAL_BOUNDARY_TYPE 1 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
-#define ALPHA 0.5 // Soft wall parameter
-#define SOFT_WALL_HEIGHT_PERCENTAGE 0.3 // Percentage of the domain that will be damped at the top and bottom
+#define VERTICAL_BOUNDARY_TYPE 2 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
+#define ALPHA 0.5 // Soft wall parameter, 0 is no damping, 1 is linear damping, everything in between is exponential damping
+#define SOFT_WALL_HEIGHT_PERCENTAGE 0.1 // Percentage of the domain that will be damped at the top and bottom
 
 // Grid size
 #define CZ_START 0.7 // In units of solar radii
-#define R_START 0.8 // In units of solar radii
+#define R_START 0.70 // In units of solar radii
 #define R_END 0.90 // In units of solar radii
-#define X_SIZE 0.1 // In units of solar radii
-#define Y_SIZE 0.1 // In units of solar radii
-#define NX 3 // Number of grid points in x-direction
+#define X_SIZE 0.2 // In units of solar radii
+#define Y_SIZE 0.2 // In units of solar radii
+#define NX 100 // Number of grid points in x-direction
 #define NY 40 // Number of grid points in y-direction
-#define NZ 20 // Number of grid points in z-direction
+#define NZ 40 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
-#define GS_TOL 1e-7 // Gauss-Seidel tolerance
-#define GS_MAX_ITER 5e6 // Gauss-Seidel max iterations
+#define GS_TOL 1e-6 // Gauss-Seidel tolerance
+#define GS_MAX_ITER 5e7 // Gauss-Seidel max iterations
 
 // Physical parameters
 #define DEL_AD 0.4 // Adiabatic temperature gradient
@@ -70,6 +70,7 @@
 #define GRAVITY_ON 1 // 0 for gravity off, 1 for gravity on
 #define ADVECTION_ON 1 // 0 for advection off, 1 for advection on
 #define GAS_PRESSURE_ON 1 // 0 for gas pressure off, 1 for gas pressure on
+#define VISCOSITY_ON 1 // 0 for viscosity off, 1 for viscosity on
 #define THERMAL_DIFFUSIVITY_ON 1 // 0 for thermal diffusivity off, 1 for thermal diffusivity on
 #define BFIELD_ON 0 // 0 for B-field off, 1 for B-field on
 

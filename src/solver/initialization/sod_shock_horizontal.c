@@ -32,20 +32,20 @@ void sod_shock_horizontal(struct ForegroundVariables *fg, struct BackgroundVaria
             fg->vz[i][j] = 0.0;
             if (j < ny/2)
             {
-                fg->p1[i][j] = 1e2;
-                fg->rho1[i][j] = fg->p1[i][j]/(GAMMA);
-                // Getting T1 from equation of state
-                fg->T1[i][j] = bg->T0[i] * (fg->p1[i][j]/bg->p0[i] - fg->rho1[i][j]/bg->rho0[i]);
-                // Getting entropy from first law of thermodynamics
-                fg->s1[i][j] = c_p * (fg->T1[i][j]/bg->T0[i] - fg->p1[i][j]/bg->p0[i]);
+                fg->p1[i][j] = bg->p0[nz_full/2]/10.0;
+                fg->rho1[i][j] = bg->rho0[nz_full/2]/10.0;
             }
             else
             {
-                fg->p1[i][j] = 0.0;
-                fg->rho1[i][j] = 0.0;
+                fg->p1[i][j] = bg->p0[nz_full/2]/100.0;
+                fg->rho1[i][j] = fg->rho1[i][j] = bg->rho0[nz_full/2]/100.0;;
                 fg->T1[i][j] = 0.0;
                 fg->s1[i][j] = 0.0;
             }
+            // Getting T1 from equation of state
+            fg->T1[i][j] = bg->T0[i] * (fg->p1[i][j]/bg->p0[i] - fg->rho1[i][j]/bg->rho0[i]);
+            // Getting entropy from first law of thermodynamics
+            fg->s1[i][j] = c_p * (fg->T1[i][j]/bg->T0[i] - fg->p1[i][j]/bg->p0[i]);
         }
     }
     periodic_boundary_2D(fg->p1, grid_info);

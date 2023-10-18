@@ -3,7 +3,7 @@
 void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info)
 {
     /*
-    Initializes the foreground struct with a density pertubation.
+    Initializes the foreground struct with a density pertubation with entropy set to zero.
 
     Parameters
     ----------
@@ -25,6 +25,7 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
     int ny = grid_info->ny;
     FLOAT_P dy = grid_info->dy;
     
+    // Gaussian parameters
     FLOAT_P amplitude = 1.0e-5;
     FLOAT_P centre_z = 0.5*dz*nz;
     FLOAT_P sigma_z = 0.1*dz*nz;

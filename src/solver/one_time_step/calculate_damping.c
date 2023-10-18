@@ -96,7 +96,7 @@ void calculate_damping(FLOAT_P *damping_factor, struct BackgroundVariables *bg, 
     #if DEBUG == 1
         for (int i = 0; i < nz_full; i++)
         {
-            printf("damping_factor[%d] = %f\n", i, damping_factor[i]);
+            //printf("damping_factor[%d] = %f\n", i, damping_factor[i]);
         }
     #endif // DEBUG
 }

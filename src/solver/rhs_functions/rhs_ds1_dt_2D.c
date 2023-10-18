@@ -42,10 +42,16 @@ FLOAT_P rhs_ds1_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
 
     FLOAT_P ds1_dy = upwind_first_derivative_y(s1, vy, i, j, dy, ny);
     FLOAT_P ds1_dz = upwind_first_derivative_z(s1, vz, i, j, dz, nz_full);
+    FLOAT_P dvy_dz = central_first_derivative_z(vy, i, j, dz, nz_full);
+    FLOAT_P dvz_dy = central_first_derivative_y(vz, i, j, dy, ny);
 
     #if ADVECTION_ON == 1
         rhs -= vy[i][j]*ds1_dy + vz[i][j]*ds1_dz + vz[i][j]*grad_s0[i];
     #endif // ADVECTION_ON == 1
 
+    #if VISCOSITY_ON == 1
+        rhs += VISCOSITY_COEFF/(bg->T0[i]*bg->rho0[i]) * (dvy_dz + dvz_dy)*(dvy_dz + dvz_dy);
+    #endif // VISCOSITY_ON == 1
+    
     return rhs;
 }

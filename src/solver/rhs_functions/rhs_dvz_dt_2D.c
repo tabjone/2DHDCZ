@@ -43,10 +43,16 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P **vy = fg->vy;
     FLOAT_P **vz = fg->vz;
 
+    // Periodic boundary conditions
+    int j_minus = periodic_boundary(j-1, ny);
+    int j_plus = periodic_boundary(j+1, ny);
+
     // Calculate the derivatives
     FLOAT_P dp1_dz = central_first_derivative_z(p1, i, j, dz, nz_full);
     FLOAT_P dvz_dy = upwind_first_derivative_y(vz, vy, i, j, dy, ny);
     FLOAT_P dvz_dz = upwind_first_derivative_z(vz, vz, i, j, dz, nz_full);
+    FLOAT_P dd_vz_dy = central_second_derivative_y(vz, i, j, dy, ny);
+    FLOAT_P dd_vy_dydz = (vy[i+1][j_plus] - vy[i+1][j_minus] - vy[i-1][j_plus] + vy[i-1][j_minus])/(4.0*dy*dz);
 
     #if GAS_PRESSURE_ON == 1
         rhs -= one_over_rho0[i] * dp1_dz;
@@ -60,6 +66,10 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     #if ADVECTION_ON == 1
         rhs -= vy[i][j]*dvz_dy + vz[i][j]*dvz_dz;
     #endif // ADVECTION_ON
+
+    #if VISCOSITY_ON == 1
+        rhs += VISCOSITY_COEFF*one_over_rho0[i]*(dd_vz_dy + dd_vy_dydz);
+    #endif // VISCOSITY_ON
 
     return rhs;
 }

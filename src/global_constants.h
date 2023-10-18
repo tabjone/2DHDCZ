@@ -2,6 +2,7 @@
 #define GLOBAL_CONSTANTS_H__
 
 #include "global_parameters.h"
+#include "stdio.h"
 
 #define ETA 0.1 // magnetic diffusivity [cm2 s-1]
 
@@ -13,6 +14,8 @@
     #define M_U 1.66053907e-24 // atomic mass constant [g]
     #define R_SUN 6.957e10 // solar radius [cm]
     #define M_SUN 1.989e33 // solar mass [g]
+
+    #define VISCOSITY_COEFF 1.0e15 // viscosity coefficient [P] (Poise)
     
 
     #if GRAVITY_ON == 0
