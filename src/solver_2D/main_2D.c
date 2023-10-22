@@ -1,7 +1,7 @@
 #include "functions.h"
 #include <mpi.h>
 
-int main_hd_2D(int argc, char *argv[])
+int main_2D(int argc, char *argv[])
 {
     FLOAT_P t, dt, dt_last, t_since_save;
     FLOAT_P first_t;

@@ -21,21 +21,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    #if MHD == 0
-        #if DIMENSIONS == 1
-            printf("Not implemented yet\n");
-        #elif DIMENSIONS == 2
-            main_hd_2D(argc, argv);
-        #elif DIMENSIONS == 3
-            printf("Not implemented yet\n");
-        #endif // DIMENSIONS
-    #elif MHD == 1
-        #if DIMENSIONS == 1
-            printf("Not implemented yet\n");
-        #elif DIMENSIONS == 2
-            printf("Not implemented yet\n");
-        #elif DIMENSIONS == 3
-            printf("Not implemented yet\n");
-        #endif // DIMENSIONS
-    #endif // MHD
+    #if DIMENSIONS == 1
+        printf("Not implemented yet\n");
+    #elif DIMENSIONS == 2
+        main_2D(argc, argv);
+    #elif DIMENSIONS == 3
+        printf("Not implemented yet\n");
+    #endif // DIMENSIONS
 }

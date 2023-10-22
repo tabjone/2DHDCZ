@@ -4,11 +4,11 @@
 #include "hdf5.h"
 #include <mpi.h>
 
-#define MPI_ON 1 // 0 for MPI off, 1 for MPI on
+#define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
 #define INITIALIZATION_TYPE 3 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for entropy pertubation, 4 for random, 5 for sod shock
 
-#define RUN_NAME "mpi_test"
+#define RUN_NAME "off"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
@@ -31,8 +31,6 @@
 
 // Dimensions
 #define DIMENSIONS 2 // 1 for 1D, 2 for 2D, 3 for 3D
-// THIS WILL BE CHANGED TO MHD INTEGRATED IN FUNCTIONS BUT BFIELD_ON WILL CHOSE TO INCLUDE OR NOT INCLUDE B-FIELD
-#define MHD 0 // 0 for hydro, 1 for MHD
 
 // Boundary conditions
 #define VERTICAL_BOUNDARY_TYPE 1 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
@@ -109,9 +107,6 @@
 #if DIMENSIONS != 2
     #error "Only 2D implemented."
 #endif // DIMENSIONS != 2
-#if MHD != 0
-    #error "Only hydrodynamics implemented."
-#endif // MHD != 0
 #if BFIELD_ON != 0
     #error "Only hydrodynamics implemented."
 #endif // BFIELD_ON != 0
