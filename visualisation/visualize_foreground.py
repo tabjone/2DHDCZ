@@ -8,6 +8,7 @@ from matplotlib.animation import FuncAnimation
 import matplotlib.gridspec as gridspec
 from matplotlib.ticker import ScalarFormatter, FormatStrFormatter
 from IPython.display import HTML
+from matplotlib.colors import TwoSlopeNorm, NoNorm
 
 from astropy import units as u
 
@@ -83,7 +84,7 @@ class Visualize_Foreground:
         self.folder = folder + "snap{}.h5"
         self.num_snaps = len(os.listdir(folder))-1
         self.cmap = "RdBu"
-        #self.cmap = "viridis"
+        self.norm = TwoSlopeNorm
         self.set_plot_params()
         
     def set_plot_params(self):
@@ -166,12 +167,18 @@ class Visualize_Foreground:
         t = t.to(self.t_end.unit)
         
         ax.set_title(format_title(key))
-        ax.set_xlabel("z [Solar radii]", fontsize=self.font_size)
-        ax.set_ylabel("x [Solar radii]", fontsize=self.font_size)
+        ax.set_xlabel("x [Solar radii]", fontsize=self.font_size)
+        ax.set_ylabel("z [Solar radii]", fontsize=self.font_size)
         
         vmin = self.plot_params[key][1]
         vmax = self.plot_params[key][2]
-        im =ax.imshow(d, origin="lower", extent=[self.x_0,self.x_1,self.z_0,self.z_1], aspect=self.aspect,vmin=vmin, vmax=vmax, cmap=self.cmap)
+        if self.norm == TwoSlopeNorm:
+            norm = self.norm(vcenter=0, vmin=vmin, vmax=vmax)
+            im =ax.imshow(d, origin="lower", extent=[self.x_0,self.x_1,self.z_0,self.z_1], aspect=self.aspect,norm=norm, cmap=self.cmap)
+        else:
+            im =ax.imshow(d, origin="lower", extent=[self.x_0,self.x_1,self.z_0,self.z_1], aspect=self.aspect,vmin=vmin, vmax=vmax, cmap=self.cmap)
+        
+        
         return im, t
 
     def plot_all(self, fig, snap_nr):
@@ -320,18 +327,22 @@ class Visualize_Foreground:
         plt.ylabel("Max Entropy [erg/K]")
         plt.show()
 
-
-
 if __name__ == "__main__":
-    vf = Visualize_Foreground("../data/rk3_new_test/")
+    directory = "../data/soft_wall_rk2_upw2_bigger/"
+    save_name = directory.split("/")[-2] + ".mp4"
 
-    #vf.plot_params['T1'] = (True, -1e3, 1e3, vf.plot_params['T1'][3])
-    #vf.plot_params['rho1'] = (True, -1e-4, 1e-4, vf.plot_params['rho1'][3])
-    #vf.plot_params['s1'] = (True, -1e5, 1e5, vf.plot_params['s1'][3])
-    #vf.plot_params['p1'] = (True, -1e10, 1e10, vf.plot_params['p1'][3])
-    #vf.plot_params['vx'] = (True, -1e4, 1e4, vf.plot_params['vx'][3])
-    #vf.plot_params['vz'] = (True, -1e4, 1e4, vf.plot_params['vz'][3])
+    vf = Visualize_Foreground(directory)
+    #vf.plot_all(plt.figure(figsize=(16,9)), 1)
+    #plt.show()
+    if True:
+        vf.plot_params['T1'] = (True, None, None, vf.plot_params['T1'][3])
+        vf.plot_params['rho1'] = (True, None, None, vf.plot_params['rho1'][3])
+        vf.plot_params['s1'] = (True, None, None, vf.plot_params['s1'][3])
+        vf.plot_params['p1'] = (True, None, None, vf.plot_params['p1'][3])
+        vf.plot_params['vx'] = (False, None, None, vf.plot_params['vx'][3])
+        vf.plot_params['vz'] = (False, None, None, vf.plot_params['vz'][3])
 
-    vf.plot_v_of_t()
-    vf.animate_all_no_vmin_vmax(save=True, save_name="rk3_new_test.mp4", fps=4, save_interval=1)
-    
+        #vf.norm = NoNorm
+        vf.animate_all(save=True, save_name=save_name, fps=6, save_interval=1)
+    if False:
+        vf.animate_all_no_vmin_vmax(save=True, save_name=save_name, fps=4, save_interval=1)
