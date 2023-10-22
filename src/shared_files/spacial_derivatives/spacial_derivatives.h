@@ -4,15 +4,6 @@
 #include "global_parameters.h"
 #include "shared_files.h"
 
-FLOAT_P backward_first_derivative_first_order(FLOAT_P centre, FLOAT_P left, FLOAT_P dx_);
-FLOAT_P backward_first_derivative_second_order(FLOAT_P centre, FLOAT_P left, FLOAT_P left2, FLOAT_P dx_);
-
-FLOAT_P central_first_derivative_second_order(FLOAT_P left, FLOAT_P right, FLOAT_P dx_);
-FLOAT_P central_second_derivative_second_order(FLOAT_P centre, FLOAT_P left, FLOAT_P right, FLOAT_P dx_);
-
-FLOAT_P forward_first_derivative_first_order(FLOAT_P centre, FLOAT_P right, FLOAT_P dx_);
-FLOAT_P forward_first_derivative_second_order(FLOAT_P centre, FLOAT_P right, FLOAT_P right2, FLOAT_P dx_);
-
 FLOAT_P upwind_first_derivative_y(FLOAT_P **array, FLOAT_P **velocity, int i, int j, FLOAT_P dy, int ny);
 FLOAT_P upwind_first_derivative_z(FLOAT_P **array, FLOAT_P **velocity, int i, int j, FLOAT_P dz, int nz);
 
@@ -21,5 +12,21 @@ FLOAT_P central_first_derivative_z(FLOAT_P **array, int i, int j, FLOAT_P dz, in
 
 FLOAT_P central_second_derivative_y(FLOAT_P **array, int i, int j, FLOAT_P dy, int ny);
 FLOAT_P central_second_derivative_z(FLOAT_P **array, int i, int j, FLOAT_P dz, int nz);
+
+struct CommonCentralDerivatives
+{
+    FLOAT_P dvy_dy;
+    FLOAT_P dvy_dz;
+    FLOAT_P dvz_dy;
+    FLOAT_P dvz_dz;
+    FLOAT_P dd_vy_dy;
+    FLOAT_P dd_vy_dz;
+    FLOAT_P dd_vz_dy;
+    FLOAT_P dd_vz_dz;
+    FLOAT_P dd_vy_dydz;
+    FLOAT_P dd_vz_dydz;
+};
+
+void calculate_common_central_derivatives(struct ForegroundVariables *fg, struct GridInfo *grid_info, struct CommonCentralDerivatives *central_derivatives, int i, int j);
 
 #endif // SPACIAL_DERIVATIVES_H__

@@ -1,6 +1,6 @@
 #include "solar_s_initialization.h"
 
-void solar_s_background_initialization(struct BackgroundVariables *bg, struct GridInfo *grid_info)
+void solar_s_background_initialization(struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
 {
     // Creating arrays for solar_s data and allocating memory
     int solar_s_size = 2482;
@@ -144,7 +144,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     // Initialize background radius array
     for (i = 0; i < grid_info->nz_full-grid_info->nz_ghost; i++)
     {
-        bg->r[i+grid_info->nz_ghost] = R_SUN * R_START + i * R_SUN * (R_END - R_START) / (grid_info->nz-1.0);
+        bg->r[i+grid_info->nz_ghost] = grid_info->z0 + i * (grid_info->z1 - grid_info->z0) / (grid_info->nz-1.0);
     }
 
     // Interpolating the background variables to the grid

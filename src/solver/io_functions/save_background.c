@@ -1,6 +1,6 @@
 #include "io_functions.h"
 
-void save_background(struct BackgroundVariables *bg, struct GridInfo *grid_info)
+void save_background(struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
 {
     const char* root_header = "This is the root header";
     const char* grid_data_header = "This is the grid data header";
@@ -10,7 +10,11 @@ void save_background(struct BackgroundVariables *bg, struct GridInfo *grid_info)
     char file_path[150];
 
     // Construct the full path for the snapshot file inside the new directory
-    snprintf(file_path, sizeof(file_path), "data/%s/background.h5", RUN_NAME);
+    #if MPI_ON == 0
+        snprintf(file_path, sizeof(file_path), "data/%s/background.h5", RUN_NAME);
+    #elif MPI_ON == 1
+        snprintf(file_path, sizeof(file_path), "data/%s/background_%d.h5", RUN_NAME, mpi_info->rank);
+    #endif // MPI_ON
 
     int nz_full = grid_info->nz_full;
     int nz_ghost = grid_info->nz_ghost;

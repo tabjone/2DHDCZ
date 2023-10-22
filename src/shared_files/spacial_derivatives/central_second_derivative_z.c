@@ -18,8 +18,5 @@ FLOAT_P central_second_derivative_z(FLOAT_P **array, int i, int j, FLOAT_P dz, i
     nz : int
         The number of points in the z-direction.
     */
-
-   #if CENTRAL_ORDER == 2
-        return central_second_derivative_second_order(array[i][j], array[i-1][j], array[i+1][j], dz);
-    #endif // CENTRAL_ORDER
+    return (array[i+1][j] - 2.0*array[i][j] + array[i-1][j]) / (dz * dz);
 }

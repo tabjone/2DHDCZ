@@ -31,6 +31,6 @@ void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown);
 
 void read_solar_s_data(const char* filename, FLOAT_P* r_over_R, FLOAT_P* rho0, FLOAT_P* p0, FLOAT_P* T0, hsize_t size);
 
-void solar_s_background_initialization(struct BackgroundVariables *bg, struct GridInfo *grid_info);
+void solar_s_background_initialization(struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info);
 
 #endif // SOLAR_S_INITIALIZATION_SOLAR_S_INITIALIZATION_H_

@@ -1,7 +1,7 @@
 #include "solve_elliptic_equation.h"
 #include "global_parameters.h"
 
-void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info)
+void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Solves the elliptic equation for the pressure field
@@ -34,7 +34,10 @@ void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVa
             rhs[i][j] = rhs_elliptic_eq_2D(bg, fg_prev, grid_info, i+nz_ghost, j);
         }
     }
-
-    gauss_seidel_2D(rhs, fg->p1, fg_prev->p1, grid_info);
+    #if MPI_ON == 0
+        gauss_seidel_2D(rhs, fg->p1, fg_prev->p1, grid_info);
+    #elif MPI_ON == 1
+        gauss_seidel_2D_mpi(rhs, fg->p1, fg_prev->p1, grid_info, mpi_info);
+    #endif // MPI_ON
     deallocate_2D_array(rhs);
 }

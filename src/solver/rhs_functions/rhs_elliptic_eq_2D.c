@@ -59,12 +59,10 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     // Second derivatives
     FLOAT_P dd_vy_ddy = central_second_derivative_y(vy, i, j, dy, ny);
     FLOAT_P dd_vz_ddz = central_second_derivative_z(vz, i, j, dz, nz_full);
-    FLOAT_P dd_vz_ddy = central_second_derivative_y(vz, i, j, dy, ny);
 
     // Mixed derivatives
     FLOAT_P dd_vy_dydz = (vy[i+1][j_plus] - vy[i+1][j_minus] - vy[i-1][j_plus] + vy[i-1][j_minus])/(4.0*dy*dz);
     FLOAT_P dd_vz_dydz = (vz[i+1][j_plus] - vz[i+1][j_minus] - vz[i-1][j_plus] + vz[i-1][j_minus])/(4.0*dy*dz);
-    FLOAT_P ddd_vy_dyddz = (vy[i+1][j_plus] - vy[i+1][j_minus] - 2.0*vy[i][j_plus] + 2.0*vy[i][j_minus] + vy[i-1][j_plus] - vy[i-1][j_minus])/(2.0*dy*dz*dz);
     
     // Squared of derivatives
     FLOAT_P dvy_dy_sqrd = dvy_dy*dvy_dy;
@@ -83,9 +81,14 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     }
     #endif // ADVECTION_ON
 
-    #if VISCOSITY_ON == 1
+    #if VISCOSITY_ON == 2
+        FLOAT_P dd_vz_ddy = central_second_derivative_y(vz, i, j, dy, ny);
+
+        FLOAT_P ddd_vy_dyddz = (vy[i+1][j_plus] - vy[i+1][j_minus] - 2.0*vy[i][j_plus] + 2.0*vy[i][j_minus] + vy[i-1][j_plus] - vy[i-1][j_minus])/(2.0*dy*dz*dz);
+
+
         rhs += 2*VISCOSITY_COEFF*(ddd_vy_dyddz + dd_vz_ddy);
     #endif // VISCOSITY_ON
-
+    
     return rhs;
 }

@@ -10,6 +10,8 @@ void load_grid_info(struct GridInfo **grid_info, const char *file_path)
     int nz, nz_ghost, nz_full, ny;
     FLOAT_P dz, dy, z0, z1, y0, y1;
 
+    FLOAT_P z_offset = 0.0;
+
     herr_t status;
 
     // Open the file
@@ -41,7 +43,7 @@ void load_grid_info(struct GridInfo **grid_info, const char *file_path)
     }
 
     // Load the numbers into the grid_info struct
-    allocate_grid_info_struct(grid_info, nz, nz_ghost, nz_full, ny, dz, dy, z0, z1, y0, y1);
+    allocate_grid_info_struct(grid_info, nz, nz_ghost, nz_full, ny, dz, dy, z0, z1, z_offset, y0, y1);
 
     // Close the file
     status = H5Fclose(file);

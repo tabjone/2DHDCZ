@@ -22,7 +22,5 @@ FLOAT_P central_second_derivative_y(FLOAT_P **array, int i, int j, FLOAT_P dy, i
     int j_minus = periodic_boundary(j-1, ny);
     int j_plus = periodic_boundary(j+1, ny);
 
-   #if CENTRAL_ORDER == 2
-        return central_second_derivative_second_order(array[i][j], array[i][j_minus], array[i][j_plus], dy);
-    #endif // CENTRAL_ORDER
+    return (array[i][j_plus] - 2.0*array[i][j] + array[i][j_minus]) / (dy * dy);
 }

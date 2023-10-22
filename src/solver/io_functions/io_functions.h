@@ -9,9 +9,9 @@
 #include "shared_files.h"
 #include "global_parameters.h"
 
-void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info, int snap_number, FLOAT_P time);
-void save_background(struct BackgroundVariables *bg, struct GridInfo *grid_info);
-
+void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, int snap_number, FLOAT_P time);
+void save_background(struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info);
+void save_mpi_info(struct MpiInfo *mpi_info);
 
 void load_grid_info(struct GridInfo **grid_info, const char *file_path);
 void load_background(struct BackgroundVariables *bg, struct GridInfo *grid_info, const char *file_path);

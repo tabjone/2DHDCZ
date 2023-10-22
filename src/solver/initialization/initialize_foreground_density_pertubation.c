@@ -49,5 +49,12 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         periodic_boundary_2D(fg->rho1, grid_info);
         periodic_boundary_2D(fg->p1, grid_info);
         periodic_boundary_2D(fg->T1, grid_info);
+    #else 
+        extrapolate_2D_array_down(fg->rho1, grid_info);
+        extrapolate_2D_array_up(fg->rho1, grid_info);
+        extrapolate_2D_array_down(fg->p1, grid_info);
+        extrapolate_2D_array_up(fg->p1, grid_info);
+        extrapolate_2D_array_down(fg->T1, grid_info);
+        extrapolate_2D_array_up(fg->T1, grid_info);
     #endif // VERTICAL_BOUNDARY_TYPE == 2
 }

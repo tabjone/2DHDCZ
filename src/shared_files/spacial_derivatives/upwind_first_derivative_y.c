@@ -22,27 +22,28 @@ FLOAT_P upwind_first_derivative_y(FLOAT_P **array, FLOAT_P **velocity, int i, in
     */
 
     int j_minus = periodic_boundary(j-1, ny);
-    int j_minus2 = periodic_boundary(j-2, ny);
     int j_plus = periodic_boundary(j+1, ny);
-    int j_plus2 = periodic_boundary(j+2, ny);
 
     #if UPWIND_ORDER == 1
         if (velocity[i][j] >= 0)
         {
-            return backward_first_derivative_first_order(array[i][j], array[i][j_minus], dy);
+            return (array[i][j] - array[i][j_minus])/dy;
         }
         else
         {
-            return forward_first_derivative_first_order(array[i][j], array[i][j_plus], dy);
+            return (array[i][j_plus] - array[i][j])/dy;
         }
     #elif UPWIND_ORDER == 2
+        int j_minus2 = periodic_boundary(j-2, ny);
+        int j_plus2 = periodic_boundary(j+2, ny);
+
         if (velocity[i][j] >= 0)
         {
-            return backward_first_derivative_second_order(array[i][j], array[i][j_minus], array[i][j_minus2], dy);
+            return (3.0*array[i][j] -4.0*array[i][j_minus] + array[i][j_minus2])/(2.0*dy);
         }
         else
         {
-            return forward_first_derivative_second_order(array[i][j], array[i][j_plus], array[i][j_plus2], dy);
+            return (-3.0*array[i][j] + 4.0*array[i][j_plus] - array[i][j_plus2])/(2.0*dy);
         }
     #endif // UPWIND_ORDER
 }

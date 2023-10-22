@@ -18,8 +18,6 @@ void sod_shock_horizontal(struct ForegroundVariables *fg, struct BackgroundVaria
     // Getting grid info
     int nz_full = grid_info->nz_full;
     int nz_ghost = grid_info->nz_ghost;
-    int nz = grid_info->nz;
-    FLOAT_P dz = grid_info->dz;
     int ny = grid_info->ny;
 
     FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);

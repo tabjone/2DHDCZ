@@ -1,6 +1,6 @@
 #include "one_time_step.h"
 
-FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
 {
     /*
     Calculates the foreground at the next timestep using the RK2 method.
@@ -24,7 +24,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     */
 
     // Solving elliptic equation
-    solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
+    solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
 
     // Extrapolating p1 to ghost cells
     extrapolate_2D_array_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
@@ -111,7 +111,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     #endif // VERTICAL_BOUNDARY_TYPE
 
     // Calculating p1
-    solve_elliptic_equation(bg, fg, fg, grid_info);
+    solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info);
     #if VERTICAL_BOUNDARY_TYPE == 2
         periodic_boundary_2D(fg->p1, grid_info);
     #else

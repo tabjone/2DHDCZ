@@ -49,6 +49,6 @@ FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct F
     #if ADVECTION_ON == 1
         rhs -= vy[i][j]*dvy_dy;
     #endif // ADVECTION_ON
-
+    
     return rhs;
 }

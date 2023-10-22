@@ -18,5 +18,7 @@
 
 #include "io_functions/io_functions.h"
 
+void calculate_grid_info(struct GridInfo *grid_info, struct MpiInfo *mpi_info);
+void calculate_grid_info_mpi(struct MpiInfo *mpi_info, struct GridInfo *grid_info);
 
 #endif // FUNCTIONS_H__

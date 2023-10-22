@@ -1,6 +1,6 @@
 #include "initialization.h"
 
-void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info)
+void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Initializes the foreground struct.
@@ -16,19 +16,33 @@ void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVari
     mpi_info : MpiInfo
         A pointer to the MpiInfo struct.
     */
-
-    #if INITIALIZATION_TYPE == 0
-        initialize_foreground_zeros(fg, grid_info);
-    #elif INITIALIZATION_TYPE == 1
-        initialize_foreground_velocity_right(fg, grid_info);
-    #elif INITIALIZATION_TYPE == 2
-        initialize_foreground_density_pertubation(fg, bg, grid_info);
-    #elif INITIALIZATION_TYPE == 3
-        initialize_foreground_entropy_pertubation(fg, bg, grid_info);
-    #elif INITIALIZATION_TYPE == 4
-        initialize_foreground_random(fg, bg, grid_info);
-    #elif INITIALIZATION_TYPE == 5
-        sod_shock_horizontal(fg, bg, grid_info);
-    
-    #endif // INITIALIZATION_TYPE
+    #if MPI_ON == 0
+        #if INITIALIZATION_TYPE == 0
+            initialize_foreground_zeros(fg, grid_info);
+        #elif INITIALIZATION_TYPE == 1
+            initialize_foreground_velocity_right(fg, grid_info);
+        #elif INITIALIZATION_TYPE == 2
+            initialize_foreground_density_pertubation(fg, bg, grid_info);
+        #elif INITIALIZATION_TYPE == 3
+            initialize_foreground_entropy_pertubation(fg, bg, grid_info);
+        #elif INITIALIZATION_TYPE == 4
+            initialize_foreground_random(fg, bg, grid_info);
+        #elif INITIALIZATION_TYPE == 5
+            sod_shock_horizontal(fg, bg, grid_info);
+        #endif // INITIALIZATION_TYPE
+    #elif MPI_ON == 1
+        #if INITIALIZATION_TYPE == 0
+            //initialize_foreground_zeros_mpi(fg, grid_info, mpi_info);
+        #elif INITIALIZATION_TYPE == 1
+            //initialize_foreground_velocity_right_mpi(fg, grid_info, mpi_info);
+        #elif INITIALIZATION_TYPE == 2
+            //initialize_foreground_density_pertubation_mpi(fg, bg, grid_info, mpi_info);
+        #elif INITIALIZATION_TYPE == 3
+            initialize_foreground_entropy_pertubation_mpi(fg, bg, grid_info, mpi_info);
+        #elif INITIALIZATION_TYPE == 4
+            //initialize_foreground_random_mpi(fg, bg, grid_info, mpi_info);
+        #elif INITIALIZATION_TYPE == 5
+            //sod_shock_horizontal_mpi(fg, bg, grid_info, mpi_info);
+        #endif // INITIALIZATION_TYPE
+    #endif // MPI_ON
 }

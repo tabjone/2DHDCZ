@@ -24,20 +24,20 @@ FLOAT_P upwind_first_derivative_z(FLOAT_P **array, FLOAT_P **velocity, int i, in
     #if UPWIND_ORDER == 1
         if (velocity[i][j] >= 0)
         {
-            return backward_first_derivative_first_order(array[i][j], array[i-1][j], dz);
+            return (array[i][j] - array[i-1][j])/dz;
         }
         else
         {
-            return forward_first_derivative_first_order(array[i][j], array[i+1][j], dz);
+            return (array[i+1][j] - array[i][j])/dz;
         }
     #elif UPWIND_ORDER == 2
         if (velocity[i][j] >= 0)
         {
-            return backward_first_derivative_second_order(array[i][j], array[i-1][j], array[i-2][j], dz);
+            return (3.0*array[i][j] -4.0*array[i-1][j] + array[i-2][j])/(2.0*dz);
         }
         else
         {
-            return forward_first_derivative_second_order(array[i][j], array[i+1][j], array[i+2][j], dz);
+            return (-3.0*array[i][j] + 4.0*array[i+1][j] - array[i+2][j])/(2.0*dz);
         }
     #endif // UPWIND_ORDER
 }

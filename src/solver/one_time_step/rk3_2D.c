@@ -1,6 +1,6 @@
 #include "one_time_step.h"
 
-FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
 {
     /*
     Calculates the foreground at the next timestep using the RK3 method.
@@ -24,7 +24,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     */
 
     // Solving elliptic equation
-    solve_elliptic_equation(bg, fg_prev, fg, grid_info); // Getting p1
+    solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
 
     // Extrapolating p1 to ghost cells
     extrapolate_2D_array_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
@@ -108,7 +108,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     extrapolate_2D_array_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
 
     // Calculating pressure
-    solve_elliptic_equation(bg, fg, fg, grid_info);
+    solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info);
     extrapolate_2D_array_constant_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
     extrapolate_2D_array_constant_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
 
@@ -155,7 +155,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     extrapolate_2D_array_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
 
     // Calculating pressure
-    solve_elliptic_equation(bg, fg, fg, grid_info);
+    solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info);
     extrapolate_2D_array_constant_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
     extrapolate_2D_array_constant_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
 

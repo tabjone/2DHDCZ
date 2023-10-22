@@ -1,6 +1,6 @@
 #include "io_functions.h"
 
-void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info, int snap_number, FLOAT_P time)
+void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, int snap_number, FLOAT_P time)
 {
     /*
     Saves the foreground variables to a hdf5 file at the current time step.
@@ -25,7 +25,11 @@ void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info,
     // File path
     char file_path[150];
 
-    snprintf(file_path, sizeof(file_path), "data/%s/snap%d.h5", RUN_NAME, snap_number);
+    #if MPI_ON == 0
+        snprintf(file_path, sizeof(file_path), "data/%s/snap%d.h5", RUN_NAME, snap_number);
+    #elif MPI_ON == 1
+        snprintf(file_path, sizeof(file_path), "data/%s/snap%d_%d.h5", RUN_NAME, snap_number, mpi_info->rank);
+    #endif // MPI_ON
   
     // Getting grid info
     FLOAT_P z0 = grid_info->z0;

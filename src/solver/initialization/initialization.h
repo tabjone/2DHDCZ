@@ -5,7 +5,7 @@
 #include "../functions.h"
 #include "global_parameters.h"
 
-void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info);
+void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info);
 
 void initialize_foreground_zeros(struct ForegroundVariables *fg, struct GridInfo *grid_info);
 
@@ -17,5 +17,7 @@ void initialize_foreground_velocity_right(struct ForegroundVariables *fg, struct
 void initialize_foreground_random(struct ForegroundVariables *fg, struct BackgroundVariables *bg , struct GridInfo *grid_info);
 
 void sod_shock_horizontal(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info);
+
+void initialize_foreground_entropy_pertubation_mpi(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info);
 
 #endif // INITIALIZATION_H

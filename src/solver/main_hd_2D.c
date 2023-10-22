@@ -12,6 +12,36 @@ int main_hd_2D(int argc, char *argv[])
     struct ForegroundVariables *fg, *fg_previous, *tmp_ptr;
     struct GridInfo *grid_info;
 
+    struct MpiInfo *mpi_info;
+    mpi_info = malloc(sizeof(struct MpiInfo));
+
+    // Initialize MPI
+    #if MPI_ON == 1
+        MPI_Init(&argc, &argv);
+        MPI_Comm_size(MPI_COMM_WORLD, &mpi_info->size);
+        MPI_Comm_rank(MPI_COMM_WORLD, &mpi_info->rank);
+
+        // Check if there are neighbors above and below
+        if (mpi_info->rank == 0)
+        {
+            mpi_info->has_neighbor_below = false;
+            mpi_info->has_neighbor_above = true;
+        }
+        else if (mpi_info->rank == mpi_info->size - 1)
+        {
+            mpi_info->has_neighbor_below = true;
+            mpi_info->has_neighbor_above = false;
+        }
+        else
+        {
+            mpi_info->has_neighbor_below = true;
+            mpi_info->has_neighbor_above = true;
+        }
+        #else
+            mpi_info->has_neighbor_below = false;
+            mpi_info->has_neighbor_above = false;
+    #endif // MPI_ON
+    
     #if LOAD == 1
         // Loading snapshot
 
@@ -37,49 +67,32 @@ int main_hd_2D(int argc, char *argv[])
         // Initializing the simulation
         save_nr = 0;
 
-        // Calculating the size of the grid
-        FLOAT_P L_z = (R_END - R_START)*R_SUN;
-        FLOAT_P L_y = Y_SIZE*R_SUN;
+        
+        #if MPI_ON == 0
+            calculate_grid_info(&grid_info, mpi_info);
+        #elif MPI_ON == 1
+            calculate_grid_info_mpi(mpi_info, &grid_info);
+        #endif // MPI_ON
 
-        // Calculating the size of the grid cells
-        FLOAT_P dy = L_y/(NY - 1);
-        FLOAT_P dz = L_z/(NZ - 1);
-
-        // Calculating the number of ghost cells
-        int nz_ghost;
-        if (UPWIND_ORDER >= CENTRAL_ORDER)
-        {
-            nz_ghost = UPWIND_ORDER;
-        }
-        else
-        {
-            nz_ghost = CENTRAL_ORDER;
-        }
-
-        // Calculating the number of cells in the full grid
-        int nz_full = NZ + 2*nz_ghost;
-
-
-        FLOAT_P z0 = R_SUN * R_START;
-        FLOAT_P z1 = R_SUN * R_END;
-        FLOAT_P y0 = 0.0;
-        FLOAT_P y1 = R_SUN * Y_SIZE;
-
-        allocate_grid_info_struct(&grid_info, NZ, nz_ghost, nz_full, NY, dz, dy, z0, z1, y0, y1);
         // Allocating memory for the background and foreground variables
         allocate_background_struct(&bg, grid_info);
         allocate_foreground_struct(&fg, grid_info);
         allocate_foreground_struct(&fg_previous, grid_info);
 
         // Initialize the background variables and saving it to file
-        solar_s_background_initialization(bg, grid_info);
-        save_background(bg, grid_info);
+        solar_s_background_initialization(bg, grid_info, mpi_info);
+        communicate_background_ghost_above_below(bg, grid_info, mpi_info);
+        save_background(bg, grid_info, mpi_info);
+        save_mpi_info(mpi_info);
+
+        
+
         
         // Initialize foreground to type set in parameter file
-        initialize_foreground(fg_previous, bg, grid_info);
+        initialize_foreground(fg_previous, bg, grid_info, mpi_info);
         
         // Saving the foreground variables to file
-        save_foreground(fg_previous, grid_info, 0, 0.0);
+        save_foreground(fg_previous, grid_info, mpi_info, 0, 0.0);
         save_nr ++;
     
         t = 0.0;
@@ -89,21 +102,22 @@ int main_hd_2D(int argc, char *argv[])
     t_since_save = 0.0;
     dt_last = 0.0;
     while (t < T)
-    {
-        dt = one_time_step(bg, fg_previous, fg, grid_info, dt_last, first_t == t);
+    { 
+        dt = one_time_step(bg, fg_previous, fg, grid_info, mpi_info, dt_last, first_t == t);
         t += dt;
+
         t_since_save += dt;
         dt_last = dt;
         
         if (t_since_save > SAVE_INTERVAL && SAVE_ALL == 0)
         {
-            save_foreground(fg, grid_info, save_nr, t);
+            save_foreground(fg, grid_info, mpi_info, save_nr, t);
             save_nr++;
             t_since_save = 0.0;
         }
         else if (SAVE_ALL == 1)
         {
-            save_foreground(fg, grid_info, save_nr, t);
+            save_foreground(fg, grid_info, mpi_info, save_nr, t);
             save_nr++;
         }
 
@@ -111,17 +125,22 @@ int main_hd_2D(int argc, char *argv[])
         tmp_ptr = fg_previous;
         fg_previous = fg;
         fg = tmp_ptr;
-        
-        printf("t = %.2f\n", t);
+        if (mpi_info->rank == 0)
+            printf("t = %.2f\n", t);
+        break;
     }
 
     // Save last time step
-    save_foreground(fg_previous, grid_info, save_nr, t);
+    save_foreground(fg_previous, grid_info, mpi_info, save_nr, t);
     
     deallocate_grid_info_struct(grid_info);
     deallocate_background_struct(bg);
     deallocate_foreground_struct(fg_previous);
     deallocate_foreground_struct(fg);
+    free(mpi_info);
 
+    #if MPI_ON == 1
+        MPI_Finalize();
+    #endif // MPI_ON
     return 0;
 }

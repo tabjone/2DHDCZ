@@ -13,5 +13,6 @@ int periodic_boundary(int i, int limit);
 #include "./interpolation/interpolation.h"
 #include "./extrapolation/extrapolation.h"
 #include "./array_copy/array_copy.h"
+#include "./mpi_functions/mpi_functions.h"
 
 #endif // SHARED_FILES_SHARED_FILES_H_
