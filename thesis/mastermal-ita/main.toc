@@ -6,19 +6,18 @@
 \contentsline {chapter}{\numberline {2}Theory}{3}{}%
 \contentsline {section}{\numberline {2.1}Background Theory}{3}{}%
 \contentsline {subsection}{\numberline {2.1.1}Theory about the Sun}{3}{}%
-\contentsline {subsection}{\numberline {2.1.2}Mixing length theory}{3}{}%
-\contentsline {subsection}{\numberline {2.1.3}Perturbation theory}{3}{}%
 \contentsline {section}{\numberline {2.2}Anelastic MHD}{3}{}%
-\contentsline {subsection}{\numberline {2.2.1}General anelastic MHD}{3}{}%
-\contentsline {subsection}{\numberline {2.2.2}Ideal anelastic HD}{4}{}%
-\contentsline {subsection}{\numberline {2.2.3}Adding thermal diffusivity}{5}{}%
-\contentsline {subsection}{\numberline {2.2.4}Adding viscous stress}{5}{}%
-\contentsline {subsection}{\numberline {2.2.5}Adding the magnetic field}{5}{}%
-\contentsline {section}{\numberline {2.3}Numerical Methods}{5}{}%
-\contentsline {subsection}{\numberline {2.3.1}Discretization and derivatives}{5}{}%
-\contentsline {subsection}{\numberline {2.3.2}The Elliptic Equation}{6}{}%
-\contentsline {subsection}{\numberline {2.3.3}Stability Analysis}{7}{}%
+\contentsline {subsection}{\numberline {2.2.1}Anelastic model background}{3}{}%
+\contentsline {subsection}{\numberline {2.2.2}General anelastic MHD}{3}{}%
+\contentsline {subsection}{\numberline {2.2.3}2D Ideal anelastic HD}{6}{}%
+\contentsline {subsection}{\numberline {2.2.4}Adding thermal diffusivity}{6}{}%
+\contentsline {subsection}{\numberline {2.2.5}Adding viscous stress}{6}{}%
+\contentsline {subsection}{\numberline {2.2.6}Adding the magnetic field}{7}{}%
+\contentsline {section}{\numberline {2.3}Numerical Methods}{7}{}%
+\contentsline {subsection}{\numberline {2.3.1}Discretization and derivatives}{7}{}%
+\contentsline {subsection}{\numberline {2.3.2}The Elliptic Equation}{8}{}%
+\contentsline {subsection}{\numberline {2.3.3}Stability Analysis}{8}{}%
 \contentsline {subsection}{\numberline {2.3.4}Background Initialization}{11}{}%
-\contentsline {subsection}{\numberline {2.3.5}Code testing, maybe not in theory}{13}{}%
-\contentsline {part}{\hbox to\@tempdima {\hfil }Appendicies}{18}{}%
-\contentsline {chapter}{\hbox to\@tempdima {\hfil }Bibliography}{21}{}%
+\contentsline {subsection}{\numberline {2.3.5}Code testing, maybe not in theory}{15}{}%
+\contentsline {part}{\hbox to\@tempdima {\hfil }Appendicies}{20}{}%
+\contentsline {chapter}{\hbox to\@tempdima {\hfil }Bibliography}{23}{}%

@@ -1,6 +1,15 @@
 \chapter{Theory}
 \section{Background Theory}
 \subsection{Theory about the Sun}
+In the current state of solar modeling it is believed that the sun is composed stratified layers. The solar core, a hot and dense region that provides most of the energy produced by the sun by fusion
+
+\citep{1996Sci...272.1286C}
+
+
+where fusion produces energy
+of a solar core, a radiative zone, a convective zone and an atmosphere
+
+
 Statification
 Radiative zone, superadiabaticity
 Convection zone
@@ -8,60 +17,130 @@ Convective cells, granule size
 Pressure scale height
 Time scales
 
-\subsection{Mixing length theory}
-\subsection{Perturbation theory}
 
 \section{Anelastic MHD}
+\subsection{Anelastic model background}
+Some of the MLT and pertubation theory here. Maybe derivation of continuity eq.
 \subsection{General anelastic MHD}
-!!!!
-!!!!
-The anelastic model is an extention of MLT which includes stratification by including a first order pertubed field upon a static background. It is based on the assumption that convective flow is carried by the foreground field. This approach filters out sound waves 
 
-... DERIVATION LIKE SONDRE ON THE BLACKBOARD ...
+In Mixing Length Theory (MLT) one looks at the characteristic mixing length $l_m$. This is the distance a parcel of fluid with thermodynamical properties different than the thermodynamical properties of the background will rise or fall before mixing with it's enviroments \citep{1925ZaMM....5..136P}. This model gives us the dominant balance for the lowest order equations and the relative sizes of pertubations to the first order \citep{1999ApJS..121..247L} and has been tested against fully-compressibile models, supporting it's validity \citep{1989ApJ...336.1022C}. 
 
+This can be used to set up a thermodynamic background state on which you can use pertubation theory to set up a first order foreground which carries convection, under the assumption that we can describe convection as a pertubation upon a static background. In pertubation theory we say that an $\epsilon$-expanded variable can be written as $f=f_0+\epsilon f_1+\epsilon^2 f_2+...$, where $f_0$ is the zero-order term, $f_1$ is the first order and so on, and $\epsilon$ is a small pertubation parameter. From MLT we have that the velocity should be $\epsilon^{1/2}$-expanded, while the other thermodynamical variables should be $\epsilon$-expanded. Then the velocity $\mathbf{v}=\mathbf{v}_0 + \epsilon^{1/2}\mathbf{v}_1+\epsilon^{3/2}\mathbf{v}_2+...$ and the density $\rho=\rho_0+\epsilon\rho_1+\epsilon^2\rho_2+...$. We only look at the the zero- and first-order pertubations for the anelastic model. This expansion can be done for all the other thermodynamical variables but are shown here for velocity and density to derive the anelastic continuity equation. Since we will be working with a static background model in hydrostatic equilibrium we will set the background velocity to zero. We have that the continuity equation is 
 
-The anelastic approximation is motivated by Mixing-Length Theory (MLT), which is a model where we look at how energy is transported over a characteristic mixing length before being dissapated. This model gives us the dominant balance for the lowest order equations and the relative sizes of pertubations to the first order \citep{1999ApJS..121..247L}. The MLT model has been verified against fully-compressible simulations which appear to support it's validity \citep{1989ApJ...336.1022C}, but needs modification around the bottom and top of a convective layer \citep{1996ApJ...466..372C}. This is where the anelastic approximation comes in, which is a an extention of MLT which includes stratification. 
-
-In the anelastic approximation we separate the thermodynamical quantities upon a background reference state and an overlaying pertubation. The background state can be set up with a non-trivial depth stratification without full compressibility, filtering out fast-moving sound waves \citep{1999ApJS..121..247L}. This has the effect of lowering the required time-resolution due to not having to consider the acoustic time scale. Instead we only have to consider the much lower dynamic time scale, which is determined by the flow velocity and Alfvén speed. 
-
-The background state can be time dependent \citep{1976ApJ...207..545T} or time independent. The problem with a time dependent background state is that the entropy gradient can be strongly superadiabatic in an upper thermal boundary layer, resulting a high Mach flow number, making this layer supersonically unstable \citep{1975JFM....68..695G}. It is therefore prefered that the entropy background is constant in time.
-
-% TODO: CHECK THIS
-(HERE: ADIABATIC PARAMETERS. PLASMA BETA. WHERE DOES THE ANELASTIC APPRXIMATION HOLD. EQUATION OF STATE (IDEAL GAS LAW WITH FIRST ORDER PERTUBATION?))
-
-We will now show a simple example of how to use pertubation theory on the hydrodynamical equations. Assume that we are in one dimension with a constant flow and that the continuity equation has no sinks or sources. This gives us that the flux of the mass density $\rho$ is $\rho u$, where $u$ is the fluid velocity, and we get that the continuity equation becomes
-!!!!
-!!!!
-
-
-
-\subsection{Ideal anelastic HD}
-We start by looking at the ideal case where the thermal diffusivity $K=0$, the viscous stress $\mu=0\rightarrow\Pi=0$, no magnetic field and no geometrical effects $\mathbf{g}=-g\mathbf{\hat{k}}$, where ${\hat{k}}$ is the unit vector in the upward direction (z-direction). This gives us the momentum equation
-
-\begin{equation}\label{eq:momentum_ideal}
-    \rho_0\left[\frac{\partial\mathbf{v}}{\partial t}+(\mathbf{v}\cdot\nabla)\mathbf{v}\right]=-\nabla p_1 - \rho_1g\mathbf{\hat{k}}
-\end{equation}
-and the conservation of entropy
-\begin{equation}\label{eq:entropy_ideal}
-    \rho_0 T_0 \left[\frac{\partial s_1}{\partial t} + (\mathbf{v}\cdot \nabla)(s_0+s_1) \right]
-    = 0
-\end{equation}
-in the ideal case. The other equations are unchanged. To solve this we start by writing the momentum equation w.r.t the time derivative
-\begin{equation}\label{eq:momentum_wrt_t}
-    \frac{\partial\mathbf{v}}{\partial t} = -\frac{1}{\rho_0}\nabla p_1 - (\mathbf{v}\cdot\nabla)\mathbf{v} - \frac{\rho_1}{\rho_0}g\mathbf{\hat{k}},
-\end{equation}
-Then we split this up into it's two components for the horizontal (x-direction) $\mathbf{\hat{i}}$ and the vertical direction $\mathbf{\hat{k}}$ giving us 
-\begin{align}
-    \mathbf{\hat{i}}&:\ \partial_t v_x = -\frac{1}{\rho_0}\partial_x p_1 - (v_x\partial_x + v_z\partial_z)v_x, \label{eq:momentum_wrt_i}\\
-    \mathbf{\hat{k}}&:\ \partial_t v_z = -\frac{1}{\rho_0}\partial_z p_1 - (v_x\partial_x + v_z\partial_z)v_z - \frac{\rho_1}{\rho_0}g(z). \label{eq:momentum_wrt_k}
-\end{align}
-We then write the entropy equation w.r.t. the time derivative, giving us
 \begin{equation}
-    \partial_t s_1 = - (v_x\partial_x+v_z\partial_z)s_1 - v_z\partial_z s_0.
+    \frac{\partial\rho}{\partial t} = -\nabla\cdot (\rho\mathbf{v}).
 \end{equation}
+Plugging in the pertubed variables we get
+
+\begin{equation}
+    \epsilon\frac{\partial\rho_1}{\partial t} = -\nabla\cdot (\epsilon^{1/2}\rho_0\mathbf{v}_1+\epsilon^{3/2}\rho_1\mathbf{v}_1),
+\end{equation}
+where we used the fact that $\rho_0$ is not time-dependent. We look at the lowest non-vanishing velocity term and get the \textbf{continuity equation} for the anelastic model
+\begin{equation}\label{eq:continuity}
+    O(\epsilon^{1/2}):\ \nabla\cdot(\rho_0\mathbf{v})=0,
+\end{equation}
+setting $\mathbf{v}\equiv\mathbf{v}_1$ since the only velocity we look at is the first order pertubation. In a similar fashion one can derive all other MHD equations as have been done in \citep{1999ApJS..121..247L}. We will show the $\epsilon$-order as in this paper, but follow the notation of \citep{2021LRSP...18....5F} since we are not using scaled variables. In the following we let $x$ and $y$ be the horizontal directions and $z$ be the vertical upward direction so that the gravity $\mathbf{g}=-g\mathbf{\hat{k}}$. The pertubed entropy $s_1$, pressure $p_1$, temperature $T_1$, velocity $\mathbf{v}$ and density $\rho_1$ are functions of $(x,y,z,t)$ while the background entropy $s_0$, $p_0$, $T_0$ and $\rho_0$ are variables of only $z$. We then get that the \textbf{conservation of momentum} is
+\begin{align}\label{eq:momentum}
+    O(1):\ \frac{d\rho_0}{dz}=-\rho_0 g,\\
+    O(\epsilon):\ \rho_0\left[\frac{\partial\mathbf{v}}{\partial t}+(\mathbf{v}\cdot\nabla)\mathbf{v}\right]=-\nabla p_1 + \rho_1\mathbf{g}+\frac{1}{4\pi}(\nabla\times\mathbf{B})\times\mathbf{B}+\nabla\cdot\mathbf{\Pi},
+\end{align}
+where $\mathbf{B}$ is the magnetic field and $\mathbf{\Pi}$ is the viscous stress tensor. The \textbf{conservation of entropy}
+\begin{align}\label{eq:entropy_full}
+    O(\epsilon^{1/2}):\ s_0=\text{const},\\
+    O(\epsilon^{3/2}):\ \rho_0 T_0 \left[\frac{\partial s_1}{\partial t} + (\mathbf{v}\cdot \nabla)(s_0+s_1) \right]
+    = \nabla\cdot(K\rho_0T_0\nabla s_1) + \frac{1}{4\pi}\eta \left| \nabla\times\mathbf{B} \right|^2+\left(\mathbf{\Pi}\cdot\nabla \right)\cdot\mathbf{v},
+\end{align}
+where $K$ and $\eta$ are the magnetic and thermal diffusivty respectively. The MHD \textbf{Ohm's law}
+\begin{equation}\label{eq:ohms_law}
+    O(\epsilon):\ \frac{\partial\mathbf{B}}{\partial t} = \nabla\times(\mathbf{v}\times\mathbf{B})-\nabla\times(\eta\nabla\times\mathbf{B}),
+\end{equation}
+with initial conditions
+\begin{equation}
+    \nabla\cdot\mathbf{B}=0
+\end{equation}
+For the \textbf{equation of state} we will assume an ideal gas and get
+\begin{align}\label{eq:equation_of_state}
+    O(1):\ p_0=r_*\rho_0T_0,\\
+    O(\epsilon):\ \frac{\rho_1}{\rho_0}=\frac{p_1}{p_0}-\frac{T_1}{T_0},
+\end{align}
+where the spesific gas constant
+\begin{equation}
+    r_* = \frac{k_B}{\mu m_u},
+\end{equation}
+where $k_B$ is Boltzmanns constant, $\mu$ is the mean molecular weight and $m_u$ is the atomic mass unit. Lastly we get the \textbf{first law of thermodynamics}
+\begin{align}\label{eq:first_law_thermodynamics}
+    O(1):\ \frac{dT_0}{dz} = \frac{g}{c_p},\\
+    O(\epsilon):\ \frac{s_1}{c_p} = \frac{T_1}{T_0}-\frac{p_1}{p_0},
+\end{align}
+where the spesific heat at constant pressure is
+\begin{equation}
+    c_p = \frac{r_*}{1-1/\gamma},
+\end{equation}
+and $\gamma$ is the adiabatic gas parameter ($5/3$ for a monoatomic ideal gas).
+
+The main benefit of the anelastic approximation is that it filters out fast moving sound waves. This means that we can have a higher temporal resolution because we dont have to consider acoustic time scales, but instead only having to consider the much lower dynamic time scale, which is determined by the flow velocity and Alfvén speed. The reason the fast moving sound waves are filtered out will be shown in the following derivation.....
+
+We now have equations for entropy \ref{eq:equation_of_state} \ref{eq:entropy_full}, velocity, temperature \ref{eq:first_law_thermodynamics}, density \ref{eq:equation_of_state} and the magnetic field \ref{eq:ohms_law}. To get an equation for the pressure we will take the the divergence of the momentum equation \ref{eq:momentum} and solve w.r.t. pressure. This gives an elliptic equation which can be solved by various numerical methods such as direct inversion or iterative methods.
+\begin{equation*}
+    \nabla^2 p_1 = \nabla\cdot(\rho_1\mathbf{g}) + \frac{1}{4\pi}\nabla\cdot\left[(\nabla\times\mathbf{B})\times\mathbf{B} \right]+\nabla^2\mathbf{\Pi}-\nabla\cdot\left[\frac{\partial(\rho_0\mathbf{v})}{\partial t} +\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}\right].
+\end{equation*}
+By Clairaut's theorem and the continuity equation \ref{eq:continuity} we get that $\nabla\cdot\partial_t(\rho_0\mathbf{v})=\partial_t\left[\nabla\cdot(\rho_0\mathbf{v})\right]=0$, giving us the \textbf{elliptic equation}
+
+\begin{equation}\label{eq:elliptic}
+    \nabla^2 p_1 = \nabla\cdot(\rho_1\mathbf{g}) + \frac{1}{4\pi}\nabla\cdot\left[(\nabla\times\mathbf{B})\times\mathbf{B} \right]+\nabla^2\mathbf{\Pi}-\nabla\cdot\left[\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}\right].
+\end{equation}
+
+\subsection{2D Ideal anelastic HD}
+We start by looking at the simple problem where we have no magnetic field ($\mathbf{B}=0$), no viscous stress ($\mathbf{\Pi}=0$), no thermal diffusivty ($K=0$) and no $y$-dimension. This gives us the ideal form of our equations
+
+\begin{align}
+    \rho_0\left[\frac{\partial\mathbf{v}}{\partial t}+(\mathbf{v}\cdot\nabla)\mathbf{v}\right]=-\nabla p_1 + \rho_1\mathbf{g}\ &\text{(Momentum)},\\
+    \left[\frac{\partial s_1}{\partial t} + (\mathbf{v}\cdot \nabla)(s_0+s_1) \right]
+    = 0\ &\text{(Entropy)},\\
+    \nabla^2 p_1 = \nabla\cdot(\rho_1\mathbf{g})-\nabla\cdot\left[\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}\right]\ &\text{(Elliptic)},
+\end{align}
+where $\mathbf{v}=v_x\mathbf{\hat{i}}+v_z\mathbf{\hat{k}}$. We can now write the conservation of momentum and entropy equations out w.r.t. the temporal derivatives, splitting the momentum equation into two equations for each direction. We start with the entropy equation and get
+
+\begin{equation}\label{eq:ideal_entropy_wrt_t}
+    \frac{\partial s_1}{\partial t} = - \left[ v_x \partial_x s_1 + v_z \partial_z s_1 + v_z\partial_z s_0 \right],
+\end{equation}
+where we used that $s_0$ is a variable of only $z$. Now the momentum equation
+
+\begin{align}
+    \mathbf{\hat{i}} &: \partial_t v_x = - \left[ v_x\partial_x v_x + v_z\partial_z v_y \right] - \frac{1}{\rho_0} \partial_x p_1,\\
+    \mathbf{\hat{k}} &: \partial_t v_z = - \left[ v_x\partial_x v_z + v_z\partial_z v_z \right] - \frac{1}{\rho_0}\partial_z p_1 - \frac{\rho_1}{\rho_0} g.
+\end{align}
+And finally the elliptic equation
+
+\begin{align*}
+    \nabla^2 p_1 =&- \rho_0 [ v_x\partial_x^2 v_x + v_z\partial_z^2 v_z + \left( \partial_x v_x \right)^2 + \left( \partial_z v_z\right)^2\\
+                   &+ 2\partial_x(v_z)\partial_z(v_x) + v_x\partial_x\partial_z v_z + v_z\partial_x\partial_z v_x]\\
+                    &- \partial_z \left(\rho_0\right)\left[ v_x\partial_x v_z + v_z\partial_z v_z \right]
+\end{align*}
+
+
 
 \subsection{Adding thermal diffusivity}
 \subsection{Adding viscous stress}
+
+chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://arxiv.org/pdf/1408.3677.pdf
+
+Single ion plasma:
+\begin{equation}
+    \mu_{ZZ} = 0.96 \frac{3}{4\sqrt{\pi}}\frac{\sqrt{M_Z} T_Z^{5/2}}{Z^4 e^4 \ln\Lambda_Z}
+\end{equation}
+
+where $\ln\Lambda_Z$ is the Columb logarithm. 
+\href{chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://www.nrl.navy.mil/Portals/38/PDF%20Files/NRL_Plasma_Formulary_2019.pdf?ver=lSvX72q0HmFwRWJWBzaI6A%3d%3d&timestamp=1612555310291}{...}
+
+Typically 10-20. We pick 10.
+
+
+, $M_Z=m_u$ for Hydrogen, $Z=1$ for Hydrogen.
+
+
+
+
 \subsection{Adding the magnetic field}
 
 \section{Numerical Methods}
@@ -102,34 +181,30 @@ In the following we will write out the momentum- and entropy-equations using the
 
 \subsection{The Elliptic Equation}
 
-To find the pressure we take the divergence of the momentum equation \ref{eq:momentum}
-\begin{equation*}
-    \nabla\cdot\frac{\partial\left(\rho_0\mathbf{v}\right)}{\partial t}+\nabla\cdot\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}=-\nabla^2 p_1 - \partial_z\left(\rho_1 g\right).
-\end{equation*}
-We use Clairaut's theorem on the first term 
-\begin{equation*}
-    \frac{\partial\left[\nabla\cdot\left(\rho_0\mathbf{v}\right)\right]}{\partial t}+\nabla\cdot\rho_0(\mathbf{v}\cdot\nabla)\mathbf{v}=-\nabla^2 p_1 - \partial_z\left(\rho_1 g\right)
-\end{equation*}
-and get that the first term is zero due to the continuity equation. After simplification we end up with the expression
-\begin{equation}\label{eq:elliptic}
-    \nabla^2 p_1 = - \partial_z\left(\rho_1 g\right)
-    -\rho_0\left[\partial_x\partial_z(v_x v_z)+v_z\partial^2_z v_z+2\partial_z(v_x)\partial_x(v_z)\right]
-    -v_x \partial_x(v_z)\partial_z(\rho_0).
-\end{equation}
-We call the right hand side $F(z,x,t)$ and write the equation on discretized form
+We call the right hand side of the elliptic equation \ref{eq:elliptic} for $F(t,z,x)$ and write the equation on discretized form
 \begin{equation}
     \left[\nabla^2 p \right]_{i,j}^n = F_{i,j}^n.
 \end{equation}
-We remove the sub- and super-script, keeping in mind that this is the pertubed pressure at timestep $n$. Using the second order central second derivative we get that
+We remove the superscript, keeping in mind that this is the pertubed pressure at timestep $n$. Using the second order central second derivative we get that
 \begin{equation}
-    \frac{p_{i-1,j}-2p_{i,j}+p_{i+1,j}}{\Delta z^2} + \frac{p_{i,j-1}-2p_{i,j}+p_{i,j-1}}{\Delta x^2} = F_{i,j}.
+    \frac{p_{i+1,j}-2p_{i,j}+p_{i-1,j}}{\Delta z^2} + \frac{p_{i,j+1}-2p_{i,j}+p_{i,j-1}}{\Delta x^2} = F_{i,j}.
 \end{equation}
-We call $a=1/\Delta z^2$, $b=1/\Delta x^2$ and $c=-2(a+b)$. This gives us that
-\begin{equation}
-    ap_{i-1,j}+ap_{i+1,j}+cp_{i,j}+bp_{i,j-1}+bp_{i,j-1}=F_{i,j}
-\end{equation}
+We call $a\equiv1/\Delta z^2$, $b\equiv1/\Delta x^2$ and $c\equiv-2(a+b)$. This gives us that
 
-TODO: SET UP AS MATRIX WITH FLAT F, p. TALK ABOUT THE STENCIL FOR THIS MATRIX AND HOW TO SOLVE USING JACOBI METHOD. THEN GAUSS-SEIDEL BUT NEED TO FIGURE OUT HOW TO HANDLE BOUNDARY.
+\begin{equation}
+    ap_{i+1,j}+ap_{i-1,j}+cp_{i,j}+bp_{i,j+1}+bp_{i,j-1}=F_{i,j}
+\end{equation}
+This can then be solved for the pressure at $(i,j)$, giving
+
+\begin{equation}
+    p_{i,j} = \frac{F_{i,j} - a(p_{i+1,j} + p_{i-1,j}) - b(p_{i,j+1}+p_{j-1})}{c}
+\end{equation}
+To solve this we will use an iterative method....k+1, k. Show algo. Jacobi or Gauss-Seidel if we figure that out....
+.....
+
+.....
+
+.....
 
 \subsection{Stability Analysis}
 \label{subsec:von_neumann}
@@ -263,7 +338,7 @@ For an ideal gas we have $\nabla_{ad}=0.4$ and we can then integrate our variabl
 
 \textbf{Hydrostatic equilibrium condition}
     \begin{equation}\label{eq:hydrostatic_equilibrium}
-        \frac{ p_0}{ r} = -\frac{G m(r)}{r^2}\rho_0(r),
+        \frac{dp_0}{dr} = -\frac{G m(r)}{r^2}\rho_0(r),
     \end{equation}
 where $G$ is Newtons gravitational constant.
 
