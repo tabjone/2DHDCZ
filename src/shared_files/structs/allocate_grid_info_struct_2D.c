@@ -1,10 +1,10 @@
 #include "structs.h"
 #include <stdlib.h>
 
-void allocate_grid_info_struct(struct GridInfo **grid_info, int nz, int nz_ghost, int nz_full, int ny, FLOAT_P dz, FLOAT_P dy, FLOAT_P z0, FLOAT_P z1, FLOAT_P z_offset, FLOAT_P y0, FLOAT_P y1)
+void allocate_grid_info_struct_2D(struct GridInfo2D **grid_info, int nz, int nz_ghost, int nz_full, int ny, FLOAT_P dz, FLOAT_P dy, FLOAT_P z0, FLOAT_P z1, FLOAT_P z_offset, FLOAT_P y0, FLOAT_P y1)
 {
     // Allocate grid_info
-    *grid_info = (struct GridInfo *)malloc(sizeof(struct GridInfo));
+    *grid_info = (struct GridInfo2D *)malloc(sizeof(struct GridInfo2D));
 
     (*grid_info)->z0 = z0;
     (*grid_info)->z1 = z1;

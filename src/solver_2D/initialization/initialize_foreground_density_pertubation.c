@@ -1,18 +1,18 @@
 #include "initialization.h"
 
-void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info)
+void initialize_foreground_density_pertubation(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
 {
     /*
     Initializes the foreground struct with a density pertubation with entropy set to zero.
 
     Parameters
     ----------
-    fg : ForegroundVariables
-        A pointer to the ForegroundVariables struct.
+    fg : ForegroundVariables2D
+        A pointer to the ForegroundVariables2D struct.
     bg : BackgroundVariables
         A pointer to the BackgroundVariables struct.
-    grid_info : GridInfo
-        A pointer to the GridInfo struct.
+    grid_info : GridInfo2D
+        A pointer to the GridInfo2D struct.
     mpi_info : MpiInfo
         A pointer to the MpiInfo struct.
     */
@@ -50,11 +50,11 @@ void initialize_foreground_density_pertubation(struct ForegroundVariables *fg, s
         periodic_boundary_2D(fg->p1, grid_info);
         periodic_boundary_2D(fg->T1, grid_info);
     #else 
-        extrapolate_2D_array_down(fg->rho1, grid_info);
-        extrapolate_2D_array_up(fg->rho1, grid_info);
-        extrapolate_2D_array_down(fg->p1, grid_info);
-        extrapolate_2D_array_up(fg->p1, grid_info);
-        extrapolate_2D_array_down(fg->T1, grid_info);
-        extrapolate_2D_array_up(fg->T1, grid_info);
+        extrapolate_2D_array_down(fg->rho1, nz_ghost, ny);
+        extrapolate_2D_array_up(fg->rho1, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_down(fg->p1, nz_ghost, ny);
+        extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_down(fg->T1, nz_ghost, ny);
+        extrapolate_2D_array_up(fg->T1, nz_full, nz_ghost, ny);
     #endif // VERTICAL_BOUNDARY_TYPE == 2
 }

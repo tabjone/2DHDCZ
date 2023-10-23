@@ -1,6 +1,6 @@
 #include "rhs_functions.h"
 
-FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables *fg, struct GridInfo *grid_info, int i, int j)
+FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, int i, int j)
 {
     /*
     Calculates the right hands side of the momentum equation for the vertical boundary for the y-direction in 2D.
@@ -10,9 +10,9 @@ FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct F
     bg : struct
         A pointer to the BackgroundVariables struct.
     fg : struct
-        A pointer to the ForegroundVariables struct.
+        A pointer to the ForegroundVariables2D struct.
     grid_info : struct
-        A pointer to the GridInfo struct.
+        A pointer to the GridInfo2D struct.
     i : int
         The index of the current cell in the z-direction.
     j : int

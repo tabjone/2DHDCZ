@@ -1,18 +1,18 @@
 #include "initialization.h"
 
-void initialize_foreground_entropy_pertubation_mpi(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
+void initialize_foreground_entropy_pertubation_mpi(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Initializes the grid with a small entropy pertubation and setting T1=0.
 
     Parameters
     ----------
-    fg : ForegroundVariables
-        A pointer to the ForegroundVariables struct.
+    fg : ForegroundVariables2D
+        A pointer to the ForegroundVariables2D struct.
     bg : BackgroundVariables
         A pointer to the BackgroundVariables struct.
-    grid_info : GridInfo
-        A pointer to the GridInfo struct.
+    grid_info : GridInfo2D
+        A pointer to the GridInfo2D struct.
     */
 
     // Getting grid info
@@ -50,10 +50,10 @@ void initialize_foreground_entropy_pertubation_mpi(struct ForegroundVariables *f
         periodic_boundary_2D(fg->p1, grid_info);
         periodic_boundary_2D(fg->s1, grid_info);
     #else
-        extrapolate_2D_array_down(fg->p1, grid_info);
-        extrapolate_2D_array_up(fg->p1, grid_info);
-        extrapolate_2D_array_down(fg->s1, grid_info);
-        extrapolate_2D_array_up(fg->s1, grid_info);
+        extrapolate_2D_array_down(fg->p1, nz_ghost, ny);
+        extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_down(fg->s1, nz_ghost, ny);
+        extrapolate_2D_array_up(fg->s1, nz_full, nz_ghost, ny);
     #endif // VERTICAL_BOUNDARY_TYPE == 2
 
     equation_of_state(fg, bg, grid_info); // Getting rho1 from equation of state

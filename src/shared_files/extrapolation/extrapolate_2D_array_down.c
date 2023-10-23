@@ -1,6 +1,6 @@
 #include "extrapolation.h"
 
-void extrapolate_2D_array_down(FLOAT_P **array, struct GridInfo *grid_info)
+void extrapolate_2D_array_down(FLOAT_P **array, int nz_ghost, int ny)
 {
     /*
     Extrapolates the ghost cells of a 2D array in the downward direction.
@@ -15,7 +15,7 @@ void extrapolate_2D_array_down(FLOAT_P **array, struct GridInfo *grid_info)
 
     #if EXTRAPOLATE_GHOST_CELLS == 0
         // Constant extrapolation
-        extrapolate_2D_array_constant_down(array, grid_info);
+        extrapolate_2D_array_constant_down(array, nz_ghost, ny);
     #else
         #error "Only constant extrapolation implemented."
     #endif // EXTRAPOLATE_GHOST_CELLS == 0

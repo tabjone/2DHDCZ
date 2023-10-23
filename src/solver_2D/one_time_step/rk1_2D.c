@@ -1,6 +1,6 @@
 #include "one_time_step.h"
 
-FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
 {
     /*
     Calculates the foreground at the next timestep using the RK1 method.
@@ -10,11 +10,11 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     bg : struct
         A pointer to the BackgroundVariables struct.
     fg_prev : struct
-        A pointer to the ForegroundVariables struct at the previous timestep.
+        A pointer to the ForegroundVariables2D struct at the previous timestep.
     fg : struct
-        A pointer to the ForegroundVariables struct at the current timestep.
+        A pointer to the ForegroundVariables2D struct at the current timestep.
     grid_info : struct
-        A pointer to the GridInfo struct.
+        A pointer to the GridInfo2D struct.
     mpi_info : struct
         A pointer to the MpiInfo struct.
     dt_last : FLOAT_P
@@ -80,12 +80,12 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
 
     #else
         // Extrapolatating s1, vy and vz to ghost cells
-        extrapolate_2D_array_down(fg->s1, grid_info); // Extrapolating s1 to ghost cells below
-        extrapolate_2D_array_up(fg->s1, grid_info); // Extrapolating s1 to ghost cells above
-        extrapolate_2D_array_down(fg->vy, grid_info); // Extrapolating vy to ghost cells below
-        extrapolate_2D_array_up(fg->vy, grid_info); // Extrapolating vy to ghost cells above
-        extrapolate_2D_array_down(fg->vz, grid_info); // Extrapolating vz to ghost cells below
-        extrapolate_2D_array_up(fg->vz, grid_info); // Extrapolating vz to ghost cells above
+        extrapolate_2D_array_down(fg->s1, nz_ghost, ny); // Extrapolating s1 to ghost cells below
+        extrapolate_2D_array_up(fg->s1, nz_full, nz_ghost, ny); // Extrapolating s1 to ghost cells above
+        extrapolate_2D_array_down(fg->vy, nz_ghost, ny); // Extrapolating vy to ghost cells below
+        extrapolate_2D_array_up(fg->vy, nz_full, nz_ghost, ny); // Extrapolating vy to ghost cells above
+        extrapolate_2D_array_down(fg->vz, nz_ghost, ny); // Extrapolating vz to ghost cells below
+        extrapolate_2D_array_up(fg->vz, nz_full, nz_ghost, ny); // Extrapolating vz to ghost cells above
     #endif // VERTICAL_BOUNDARY_TYPE
 
     #if MPI_ON == 1
@@ -103,8 +103,8 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         periodic_boundary_2D(fg->p1, grid_info);
     // Extrapolating p1 to ghost cells
     #else
-        extrapolate_2D_array_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
-        extrapolate_2D_array_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
+        extrapolate_2D_array_down(fg->p1, nz_ghost, ny); // Extrapolating p1 to ghost cells below
+        extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny); // Extrapolating p1 to ghost cells above
     #endif // VERTICAL_BOUNDARY_TYPE
 
     #if MPI_ON == 1

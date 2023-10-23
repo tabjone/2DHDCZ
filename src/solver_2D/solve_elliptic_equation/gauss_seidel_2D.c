@@ -1,8 +1,7 @@
 #include "solve_elliptic_equation.h"
 #include <float.h>
 
-#if DIMENSIONS == 2
-void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo *grid_info)
+void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo2D *grid_info)
 {
     /*
     Solves the elliptic equation for the pressure field using Gauss-Seidel method
@@ -15,7 +14,7 @@ void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct Gri
         Pressure field at current time step
     initial_p1 : FLOAT_P **
         Pressure field at previous time step
-    grid_info : struct GridInfo
+    grid_info : struct GridInfo2D
         Grid parameters
     */
 
@@ -136,4 +135,3 @@ void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct Gri
     deallocate_2D_array(p);
     deallocate_2D_array(pnew);
 }
-#endif // DIMENSIONS == 2

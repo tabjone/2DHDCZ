@@ -1,6 +1,6 @@
 #include "boundary.h"
 
-void periodic_boundary_2D(FLOAT_P **array, struct GridInfo *grid_info)
+void periodic_boundary_2D(FLOAT_P **array, struct GridInfo2D *grid_info)
 {
     /*
     Applies periodic boundary conditions to a 2D array.
@@ -10,7 +10,7 @@ void periodic_boundary_2D(FLOAT_P **array, struct GridInfo *grid_info)
     array : FLOAT_P**
         A pointer to the 2D array.
     grid_info : struct
-        A pointer to the GridInfo struct.
+        A pointer to the GridInfo2D struct.
     */
 
     // Getting grid info

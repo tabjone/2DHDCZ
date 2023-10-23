@@ -1,6 +1,6 @@
 #include "mpi_functions.h"
 
-void communicate_2D_ghost_above_below(FLOAT_P **array, struct GridInfo *grid_info, struct MpiInfo *mpi_info) 
+void communicate_2D_ghost_above_below(FLOAT_P **array, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info) 
 {
     /*
     Communicates ghost cells above and below the current process for a 2D array.
@@ -17,7 +17,6 @@ void communicate_2D_ghost_above_below(FLOAT_P **array, struct GridInfo *grid_inf
     MPI_Status status;
     
     // Getting grid info
-    int nz_full = grid_info->nz_full;
     int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;

@@ -1,15 +1,11 @@
 #include "extrapolation.h"
 #include <stdio.h>
 
-void extrapolate_background(struct BackgroundVariables *bg, struct GridInfo *grid_info)
+void extrapolate_background(struct BackgroundVariables *bg, int nz_full, int nz_ghost, FLOAT_P dz)
 {
     /* 
     Extrapolates all background variables to the ghost cells. MPI is not taken into account.
     */
-
-    int nz_full = grid_info->nz_full;
-    int nz_ghost = grid_info->nz_ghost;
-    FLOAT_P dz = grid_info->dz;
 
     // Constant extrapolation
     #if EXTAPOLATE_GHOST_CELLS == 0

@@ -1,14 +1,13 @@
 #include "structs.h"
-#include "../array_memory_management/array_memory_management.h"
 #include <stdlib.h>
 
-void allocate_foreground_struct(struct ForegroundVariables **fg, struct GridInfo *grid_info)
+void allocate_foreground_struct_2D(struct ForegroundVariables2D **fg, struct GridInfo2D *grid_info)
 {
     int nz_full = grid_info->nz_full;
     int ny = grid_info->ny;
 
     
-    *fg = (struct ForegroundVariables *)malloc(sizeof(struct ForegroundVariables));
+    *fg = (struct ForegroundVariables2D *)malloc(sizeof(struct ForegroundVariables2D));
 
     allocate_2D_array(&((*fg)->p1), nz_full, ny);
     allocate_2D_array(&((*fg)->T1), nz_full, ny);

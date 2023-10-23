@@ -1,6 +1,6 @@
 #include "solar_s_initialization.h"
 
-void solar_s_background_initialization(struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
+void solar_s_background_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_info, int grid_nz_full, int grid_nz_ghost, FLOAT_P grid_dz, FLOAT_P grid_z0, FLOAT_P grid_z1, FLOAT_P grid_nz)
 {
     // Creating arrays for solar_s data and allocating memory
     int solar_s_size = 2482;
@@ -142,14 +142,14 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     deallocate_integration_variables(&i_var_down);
 
     // Initialize background radius array
-    for (i = 0; i < grid_info->nz_full-grid_info->nz_ghost; i++)
+    for (i = 0; i < grid_nz_full-grid_nz_ghost; i++)
     {
-        bg->r[i+grid_info->nz_ghost] = grid_info->z0 + i * (grid_info->z1 - grid_info->z0) / (grid_info->nz-1.0);
+        bg->r[i+grid_nz_ghost] = grid_z0 + i * (grid_z1 - grid_z0) / (grid_nz-1.0);
     }
 
     // Interpolating the background variables to the grid
     FLOAT_P x0, x1;
-    for (i = grid_info->nz_ghost; i < grid_info->nz_full-grid_info->nz_ghost; i++)
+    for (i = grid_nz_ghost; i < grid_nz_full-grid_nz_ghost; i++)
     {
         // Handle edge cases
         if (bg->r[i] < r[0])
@@ -186,11 +186,11 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     }
 
     // Extrapolating background variables to ghost cells
-    extrapolate_background(bg, grid_info);
+    extrapolate_background(bg, grid_nz_full, grid_nz_ghost, grid_dz);
 
     #if VERTICAL_BOUNDARY_TYPE == 2
         // Periodic vertical boundary with constant values for background
-        for (int i = 0; i < grid_info->nz_full; i++)
+        for (int i = 0; i < grid_nz_full; i++)
         {
             bg->rho0[i] = 1.0e-1;
             bg->grad_s0[i] = 0.0;
@@ -201,15 +201,15 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Gr
     #endif // VERTICAL_BOUNDARY_TYPE
 
     // Pre-calculate 1/rho0 and eta/(4*pi*rho0*T0)
-    for (i = 0; i < grid_info->nz_full; i++)
+    for (i = 0; i < grid_nz_full; i++)
     {
         bg->one_over_rho0[i] = 1.0/bg->rho0[i];
         bg->eta_over_four_pi_rho0_T0[i] = ETA/(4*M_PI*bg->rho0[i]*bg->T0[i]);
 
     }
 
-    int nz_ghost = grid_info->nz_ghost;
-    int nz_full = grid_info->nz_full;
+    int nz_ghost = grid_nz_ghost;
+    int nz_full = grid_nz_full;
 
     // Pre-calculate grad_g and grad_rho0
     // First for endpoints

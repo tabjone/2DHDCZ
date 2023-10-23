@@ -1,11 +1,9 @@
 #include "structs.h"
-#include "../array_memory_management/array_memory_management.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-void allocate_background_struct(struct BackgroundVariables **bg, struct GridInfo *grid_info)
+void allocate_background_struct(struct BackgroundVariables **bg, int nz_full)
 {
-    int nz_full = grid_info->nz_full;
     *bg = (struct BackgroundVariables *)malloc(sizeof(struct BackgroundVariables));
 
     allocate_1D_array(&(*bg)->r, nz_full);

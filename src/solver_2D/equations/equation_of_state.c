@@ -1,18 +1,18 @@
 #include "equations.h"
 
-void equation_of_state(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info)
+void equation_of_state(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
 {
     /*
     Calculates the foreground density from the equation of state.
 
     Parameters
     ----------
-    fg : ForegroundVariables
-        A pointer to the ForegroundVariables struct.
+    fg : ForegroundVariables2D
+        A pointer to the ForegroundVariables2D struct.
     bg : BackgroundVariables
         A pointer to the BackgroundVariables struct.
-    grid_info : GridInfo
-        A pointer to the GridInfo struct.
+    grid_info : GridInfo2D
+        A pointer to the GridInfo2D struct.
     */
 
     // Getting grid info

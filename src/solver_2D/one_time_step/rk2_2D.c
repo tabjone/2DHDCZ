@@ -1,6 +1,6 @@
 #include "one_time_step.h"
 
-FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
 {
     /*
     Calculates the foreground at the next timestep using the RK2 method.
@@ -10,11 +10,11 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     bg : struct
         A pointer to the BackgroundVariables struct.
     fg_prev : struct
-        A pointer to the ForegroundVariables struct at the previous timestep.
+        A pointer to the ForegroundVariables2D struct at the previous timestep.
     fg : struct
-        A pointer to the ForegroundVariables struct at the current timestep.
+        A pointer to the ForegroundVariables2D struct at the current timestep.
     grid_info : struct
-        A pointer to the GridInfo struct.
+        A pointer to the GridInfo2D struct.
     mpi_info : struct
         A pointer to the MpiInfo struct.
     dt_last : FLOAT_P
@@ -23,17 +23,17 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         True if this is the first timestep, false otherwise.
     */
 
-    // Solving elliptic equation
-    solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
-
-    // Extrapolating p1 to ghost cells
-    extrapolate_2D_array_down(fg->p1, grid_info); // Extrapolating p1 to ghost cells below
-    extrapolate_2D_array_up(fg->p1, grid_info); // Extrapolating p1 to ghost cells above
-
     // Getting grid info
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
     int ny = grid_info->ny;
+
+    // Solving elliptic equation
+    solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
+
+    // Extrapolating p1 to ghost cells
+    extrapolate_2D_array_down(fg->p1, nz_ghost, ny); // Extrapolating p1 to ghost cells below
+    extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny); // Extrapolating p1 to ghost cells above
 
     // Calculating damping factor
     FLOAT_P damping_factor[nz_full];
@@ -102,12 +102,12 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         periodic_boundary_2D(fg->s1, grid_info);
     #else
         // Extrapolating mid-calculation variables
-        extrapolate_2D_array_up(fg->s1, grid_info);
-        extrapolate_2D_array_down(fg->s1, grid_info);
-        extrapolate_2D_array_up(fg->vy, grid_info);
-        extrapolate_2D_array_down(fg->vy, grid_info);
-        extrapolate_2D_array_up(fg->vz, grid_info);
-        extrapolate_2D_array_down(fg->vz, grid_info);
+        extrapolate_2D_array_up(fg->s1, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_down(fg->s1, nz_ghost, ny);
+        extrapolate_2D_array_up(fg->vy, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_down(fg->vy, nz_ghost, ny);
+        extrapolate_2D_array_up(fg->vz, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_down(fg->vz, nz_ghost, ny);
     #endif // VERTICAL_BOUNDARY_TYPE
 
     // Calculating p1
@@ -115,8 +115,8 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
     #if VERTICAL_BOUNDARY_TYPE == 2
         periodic_boundary_2D(fg->p1, grid_info);
     #else
-        extrapolate_2D_array_constant_up(fg->p1, grid_info);
-        extrapolate_2D_array_constant_down(fg->p1, grid_info);
+        extrapolate_2D_array_constant_up(fg->p1, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_constant_down(fg->p1, nz_ghost, ny);
     #endif // VERTICAL_BOUNDARY_TYPE
 
     // Updating mid calculation variables
@@ -161,12 +161,12 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables *fg_pr
         periodic_boundary_2D(fg->s1, grid_info);
     #else
         // Extrapolating variables
-        extrapolate_2D_array_up(fg->s1, grid_info);
-        extrapolate_2D_array_down(fg->s1, grid_info);
-        extrapolate_2D_array_up(fg->vy, grid_info);
-        extrapolate_2D_array_down(fg->vy, grid_info);
-        extrapolate_2D_array_up(fg->vz, grid_info);
-        extrapolate_2D_array_down(fg->vz, grid_info);
+        extrapolate_2D_array_up(fg->s1, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_down(fg->s1, nz_ghost, ny);
+        extrapolate_2D_array_up(fg->vy, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_down(fg->vy, nz_ghost, ny);
+        extrapolate_2D_array_up(fg->vz, nz_full, nz_ghost, ny);
+        extrapolate_2D_array_down(fg->vz, nz_ghost, ny);
     #endif // VERTICAL_BOUNDARY_TYPE
     
     // Deallocating memory

@@ -1,6 +1,6 @@
 #include "extrapolation.h"
 
-void extrapolate_1D_array_constant_down(FLOAT_P *array, struct GridInfo *grid_info)
+void extrapolate_1D_array_constant_down(FLOAT_P *array, int nz_ghost)
 {
     /*
     Extrapolates the ghost cells of a 1D array using constant extrapolation in the downward direction.
@@ -12,9 +12,6 @@ void extrapolate_1D_array_constant_down(FLOAT_P *array, struct GridInfo *grid_in
     grid_info : GridInfo
         A pointer to the GridInfo struct.
     */
-
-    // Getting grid info
-    int nz_ghost = grid_info->nz_ghost;
 
     // Extrapolating
     for (int i = 0; i < nz_ghost; i++)

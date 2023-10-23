@@ -8,7 +8,7 @@
 
 #define INITIALIZATION_TYPE 3 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for entropy pertubation, 4 for random, 5 for sod shock
 
-#define RUN_NAME "off"
+#define RUN_NAME "struct_test"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
@@ -30,7 +30,7 @@
 #define UNITS 0 // 0 for cgs, 1 for SI
 
 // Dimensions
-#define DIMENSIONS 2 // 1 for 1D, 2 for 2D, 3 for 3D
+#define DIMENSIONS 3 // 1 for 1D, 2 for 2D, 3 for 3D
 
 // Boundary conditions
 #define VERTICAL_BOUNDARY_TYPE 1 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
@@ -104,9 +104,6 @@
 #if CENTRAL_ORDER > 4
     #error "Central order > 4 not implemented."
 #endif // CENTRAL_ORDER > 4
-#if DIMENSIONS != 2
-    #error "Only 2D implemented."
-#endif // DIMENSIONS != 2
 #if BFIELD_ON != 0
     #error "Only hydrodynamics implemented."
 #endif // BFIELD_ON != 0

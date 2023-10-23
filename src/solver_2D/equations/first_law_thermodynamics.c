@@ -1,18 +1,18 @@
 #include "equations.h"
 
-void first_law_thermodynamics(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info)
+void first_law_thermodynamics(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
 {
     /*
     Calculates the foreground temperature from the first law of thermodynamics.
 
     Parameters
     ----------
-    fg : ForegroundVariables
-        A pointer to the ForegroundVariables struct.
+    fg : ForegroundVariables2D
+        A pointer to the ForegroundVariables2D struct.
     bg : BackgroundVariables
         A pointer to the BackgroundVariables struct.
-    grid_info : GridInfo
-        A pointer to the GridInfo struct.
+    grid_info : GridInfo2D
+        A pointer to the GridInfo2D struct.
     */
 
     // Calculating spesific gas constant

@@ -1,6 +1,6 @@
 #include "one_time_step.h"
  
-void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
+void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Calculates the damping factor for the given boundary conditions.
@@ -10,7 +10,7 @@ void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *
     damping_factor : FLOAT_P*
         A pointer to the array where the damping factor will be stored.
     grid_info : struct
-        A pointer to the GridInfo struct.
+        A pointer to the GridInfo2D struct.
     mpi_info : struct
         A pointer to the MpiInfo struct.
     */
@@ -42,7 +42,6 @@ void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *
         // Soft wall
         // Getting grid info
         int nz_ghost = grid_info->nz_ghost;
-        int nz_grid = grid_info->nz;
         // Calculate what SOFT_WALL_HEIGHT_PERCENTAGE of the domain is
         // Bottom r
         FLOAT_P bottom_r;

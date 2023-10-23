@@ -1,7 +1,7 @@
 #include "solve_elliptic_equation.h"
 #include <float.h>
 
-void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
+void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Solves the elliptic equation for the pressure field using Gauss-Seidel method
@@ -14,7 +14,7 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
         Pressure field at current time step
     initial_p1 : FLOAT_P **
         Pressure field at previous time step
-    grid_info : struct GridInfo
+    grid_info : struct GridInfo2D
         Grid parameters
     */
 

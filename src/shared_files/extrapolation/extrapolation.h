@@ -4,16 +4,16 @@
 #include "shared_files.h"
 #include "global_parameters.h"
 
-void extrapolate_background(struct BackgroundVariables *bg, struct GridInfo *grid_info);
+void extrapolate_background(struct BackgroundVariables *bg, int nz_full, int nz_ghost, FLOAT_P dz);
 
-void extrapolate_1D_array_up(FLOAT_P *array, struct GridInfo *grid_info);
-void extrapolate_1D_array_down(FLOAT_P *array, struct GridInfo *grid_info);
-void extrapolate_1D_array_constant_down(FLOAT_P *array, struct GridInfo *grid_info);
-void extrapolate_1D_array_constant_up(FLOAT_P *array, struct GridInfo *grid_info);
+void extrapolate_1D_array_up(FLOAT_P *array, int nz_full, int nz_ghost);
+void extrapolate_1D_array_down(FLOAT_P *array, int nz_ghost);
+void extrapolate_1D_array_constant_down(FLOAT_P *array, int nz_ghost);
+void extrapolate_1D_array_constant_up(FLOAT_P *array, int nz_full, int nz_ghost);
 
-void extrapolate_2D_array_up(FLOAT_P **array, struct GridInfo *grid_info);
-void extrapolate_2D_array_down(FLOAT_P **array, struct GridInfo *grid_info);
-void extrapolate_2D_array_constant_down(FLOAT_P **array, struct GridInfo *grid_info);
-void extrapolate_2D_array_constant_up(FLOAT_P **array, struct GridInfo *grid_info);
+void extrapolate_2D_array_up(FLOAT_P **array, int nz_full, int nz_ghost, int ny);
+void extrapolate_2D_array_down(FLOAT_P **array, int nz_ghost, int ny);
+void extrapolate_2D_array_constant_down(FLOAT_P **array, int nz_ghost, int ny);
+void extrapolate_2D_array_constant_up(FLOAT_P **array, int nz_full, int nz_ghost, int ny);
 
 #endif // EXTRAPOLATION_H

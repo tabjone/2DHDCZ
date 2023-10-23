@@ -1,6 +1,6 @@
 #include "io_functions.h"
 
-void save_background(struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
+void save_background(struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     const char* root_header = "This is the root header";
     const char* grid_data_header = "This is the grid data header";

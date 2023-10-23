@@ -1,7 +1,7 @@
 #include "one_time_step.h"
 #include <float.h>
 
-FLOAT_P get_dt(struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P get_dt(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, FLOAT_P dt_last, bool first_timestep)
 {
     /*
     Calulates the timestep by the CLF condition and the stability condition.
@@ -9,9 +9,9 @@ FLOAT_P get_dt(struct ForegroundVariables *fg, struct GridInfo *grid_info, FLOAT
     Parameters
     ----------
     fg : struct
-        A pointer to the ForegroundVariables struct.
+        A pointer to the ForegroundVariables2D struct.
     grid_info : struct
-        A pointer to the GridInfo struct.
+        A pointer to the GridInfo2D struct.
     dt_last : FLOAT_P
         The timestep used at the previous timestep.
     first_timestep : bool

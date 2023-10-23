@@ -1,18 +1,18 @@
 #include "initialization.h"
 
-void initialize_foreground(struct ForegroundVariables *fg, struct BackgroundVariables *bg, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
+void initialize_foreground(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Initializes the foreground struct.
 
     Parameters
     ----------
-    fg : ForegroundVariables
-        A pointer to the ForegroundVariables struct.
+    fg : ForegroundVariables2D
+        A pointer to the ForegroundVariables2D struct.
     bg : BackgroundVariables
         A pointer to the BackgroundVariables struct.
-    grid_info : GridInfo
-        A pointer to the GridInfo struct.
+    grid_info : GridInfo2D
+        A pointer to the GridInfo2D struct.
     mpi_info : MpiInfo
         A pointer to the MpiInfo struct.
     */

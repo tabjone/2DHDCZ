@@ -1,6 +1,6 @@
 #include "io_functions.h"
 
-void load_background(struct BackgroundVariables *bg, struct GridInfo *grid_info, const char *file_path) 
+void load_background(struct BackgroundVariables *bg, struct GridInfo2D *grid_info, const char *file_path) 
 {
     // Open the file
     hid_t file = H5Fopen(file_path, H5F_ACC_RDONLY, H5P_DEFAULT);

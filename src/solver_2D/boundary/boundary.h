@@ -4,6 +4,6 @@
 #include "shared_files.h"
 #include "global_parameters.h"
 
-void periodic_boundary_2D(FLOAT_P **array, struct GridInfo *grid_info);
+void periodic_boundary_2D(FLOAT_P **array, struct GridInfo2D *grid_info);
 
 #endif // BOUNDARY_H__

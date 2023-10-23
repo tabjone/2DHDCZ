@@ -1,15 +1,15 @@
 #include "io_functions.h"
 
-void save_foreground(struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, int snap_number, FLOAT_P time)
+void save_foreground(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, int snap_number, FLOAT_P time)
 {
     /*
     Saves the foreground variables to a hdf5 file at the current time step.
 
     Parameters
     ----------
-    fg : struct ForegroundVariables
+    fg : struct ForegroundVariables2D
         Pointer to the foreground variables struct.
-    grid_info : struct GridInfo
+    grid_info : struct GridInfo2D
         Pointer to the grid info struct.
     snap_number : int
         The current snapshot number.

@@ -3,6 +3,7 @@
 
 #include "global_parameters.h"
 #include "shared_files.h"
+#include "../functions.h"
 
 FLOAT_P upwind_first_derivative_y(FLOAT_P **array, FLOAT_P **velocity, int i, int j, FLOAT_P dy, int ny);
 FLOAT_P upwind_first_derivative_z(FLOAT_P **array, FLOAT_P **velocity, int i, int j, FLOAT_P dz, int nz);
@@ -27,6 +28,6 @@ struct CommonCentralDerivatives
     FLOAT_P dd_vz_dydz;
 };
 
-void calculate_common_central_derivatives(struct ForegroundVariables *fg, struct GridInfo *grid_info, struct CommonCentralDerivatives *central_derivatives, int i, int j);
+void calculate_common_central_derivatives(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct CommonCentralDerivatives *central_derivatives, int i, int j);
 
 #endif // SPACIAL_DERIVATIVES_H__

@@ -1,7 +1,7 @@
 #include "solve_elliptic_equation.h"
 #include <mpi.h>
 
-void communicate_p_gauss_seidel(FLOAT_P **array, struct GridInfo *grid_info, struct MpiInfo *mpi_info)
+void communicate_p_gauss_seidel(FLOAT_P **array, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Communicates the boundary of the below and above processes to our ghost cells
@@ -10,7 +10,7 @@ void communicate_p_gauss_seidel(FLOAT_P **array, struct GridInfo *grid_info, str
     ----------
     array : FLOAT_P **
         Pressure field
-    grid_info : struct GridInfo
+    grid_info : struct GridInfo2D
         Grid parameters
     mpi_info : struct MpiInfo
         MPI parameters
@@ -20,7 +20,6 @@ void communicate_p_gauss_seidel(FLOAT_P **array, struct GridInfo *grid_info, str
     
     // Getting grid info
     int nz = grid_info->nz;
-    int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;
 
     // Getting mpi info

@@ -1,6 +1,6 @@
 #include "one_time_step.h"
 
-FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables *fg_prev, struct ForegroundVariables *fg, struct GridInfo *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
 {   
     /*
     Calculates the foreground at the next timestep using Runge-Kutta methods.
@@ -10,11 +10,11 @@ FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables
     bg : struct
         A pointer to the BackgroundVariables struct.
     fg_prev : struct
-        A pointer to the ForegroundVariables struct at the previous timestep.
+        A pointer to the ForegroundVariables2D struct at the previous timestep.
     fg : struct
-        A pointer to the ForegroundVariables struct at the current timestep.
+        A pointer to the ForegroundVariables2D struct at the current timestep.
     grid_info : struct
-        A pointer to the GridInfo struct.
+        A pointer to the GridInfo2D struct.
     mpi_info : struct
         A pointer to the MpiInfo struct.
     dt_last : FLOAT_P

@@ -1,6 +1,6 @@
 #include "mpi_functions.h"
 
-void communicate_3D_ghost_above_below(float ***array, struct GridInfo *grid_info, struct MpiInfo *mpi_info) 
+void communicate_3D_ghost_above_below(float ***array, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info) 
 {
     /*
     Communicates ghost cells above and below the current process for a 3D array.
