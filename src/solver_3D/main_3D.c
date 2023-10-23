@@ -1,13 +1,13 @@
-#include "functions.h"
+#include "functions_3D.h"
 #include <mpi.h>
 
 int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
 {
-    
+    /*
     FLOAT_P t, dt, dt_last, t_since_save;
-    FLOAT_P first_t;
+    FLOAT_P first_t;*/
     int save_nr;
-
+    
     // Declare the background variables, foreground variables and grid info
     struct BackgroundVariables *bg;
     struct ForegroundVariables3D *fg, *fg_previous, *tmp_ptr;
@@ -18,22 +18,17 @@ int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
         // Initializing the simulation
         save_nr = 0;
 
-        
-        #if MPI_ON == 0
-            calculate_grid_info(&grid_info, mpi_info);
-        #elif MPI_ON == 1
-            calculate_grid_info_mpi(mpi_info, &grid_info);
-        #endif // MPI_ON
-
+        calculate_grid_info_3D(&grid_info, mpi_info);
         // Allocating memory for the background and foreground variables
-        allocate_background_struct(&bg, grid_info);
+        allocate_background_struct(&bg, grid_info->nz_full);
         allocate_foreground_struct_3D(&fg, grid_info);
         allocate_foreground_struct_3D(&fg_previous, grid_info);
-
+        
         // Initialize the background variables and saving it to file
         solar_s_background_initialization(bg, mpi_info, grid_info->nz_full, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1, grid_info->nz);
-        communicate_background_ghost_above_below(bg, grid_info, mpi_info);
-        save_background(bg, grid_info, mpi_info);
+        
+        save_background(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1);
+        /*
         save_mpi_info(mpi_info);
 
         
@@ -45,7 +40,7 @@ int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
         save_nr ++;
     
         t = 0.0;
-        first_t = 0.0;
+        first_t = 0.0;*/
     #endif // LOAD
     /*
     t_since_save = 0.0;
@@ -81,11 +76,11 @@ int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
 
     // Save last time step
     save_foreground(fg_previous, grid_info, mpi_info, save_nr, t);
-    
-    deallocate_grid_info_struct(grid_info);
-    deallocate_background_struct(bg);
-    deallocate_foreground_struct(fg_previous);
-    deallocate_foreground_struct(fg);
     */
+    deallocate_grid_info_struct_3D(grid_info);
+    deallocate_background_struct(bg);
+    deallocate_foreground_struct_3D(fg_previous);
+    deallocate_foreground_struct_3D(fg);
+    
     return 1;
 }

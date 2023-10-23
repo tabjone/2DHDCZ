@@ -27,6 +27,17 @@ struct ForegroundVariables2D
     FLOAT_P **vz;
 };
 
+struct ForegroundVariables3D
+{
+    FLOAT_P ***p1;
+    FLOAT_P ***rho1;
+    FLOAT_P ***T1;
+    FLOAT_P ***s1;
+    FLOAT_P ***vx;
+    FLOAT_P ***vy;
+    FLOAT_P ***vz;
+};
+
 struct GridInfo2D
 {
     FLOAT_P z_offset;
@@ -60,12 +71,18 @@ struct MpiInfo
 #include "../array_memory_management/array_memory_management.h"
 
 void allocate_background_struct(struct BackgroundVariables **bg, int nz_full);
+void deallocate_background_struct(struct BackgroundVariables *bg);
+
 void allocate_foreground_struct_2D(struct ForegroundVariables2D **fg, struct GridInfo2D *grid_info);
+void allocate_foreground_struct_3D(struct ForegroundVariables3D **fg, struct GridInfo3D *grid_info);
+
+void deallocate_foreground_struct_2D(struct ForegroundVariables2D *fg);
+void deallocate_foreground_struct_3D(struct ForegroundVariables3D *fg);
 
 void allocate_grid_info_struct_2D(struct GridInfo2D **grid_info, int nz, int nz_ghost, int nz_full, int ny, FLOAT_P dz, FLOAT_P dy, FLOAT_P z0, FLOAT_P z1, FLOAT_P z_offset, FLOAT_P y0, FLOAT_P y1);
+void allocate_grid_info_struct_3D(struct GridInfo3D **grid_info, int nz, int nz_ghost, int nz_full, int ny, int nx, FLOAT_P dz, FLOAT_P dy, FLOAT_P dx, FLOAT_P z0, FLOAT_P z1, FLOAT_P z_offset, FLOAT_P y0, FLOAT_P y1, FLOAT_P x0, FLOAT_P x1);
 
-void deallocate_background_struct(struct BackgroundVariables *bg);
-void deallocate_foreground_struct_2D(struct ForegroundVariables2D *fg);
 void deallocate_grid_info_struct_2D(struct GridInfo2D *grid_info);
+void deallocate_grid_info_struct_3D(struct GridInfo3D *grid_info);
 
 #endif // STRUCTS_H__

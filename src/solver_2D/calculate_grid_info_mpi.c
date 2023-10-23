@@ -1,7 +1,7 @@
 #include "functions.h"
 #include <mpi.h>
 
-void calculate_grid_info_mpi(struct MpiInfo *mpi_info, struct GridInfo2D *grid_info)
+void calculate_grid_info_mpi(struct MpiInfo *mpi_info, struct GridInfo2D **grid_info)
 {
     // Calculating the size of the grid
     FLOAT_P L_z = (R_END - R_START)*R_SUN;

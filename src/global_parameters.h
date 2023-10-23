@@ -8,7 +8,7 @@
 
 #define INITIALIZATION_TYPE 3 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for entropy pertubation, 4 for random, 5 for sod shock
 
-#define RUN_NAME "struct_test"
+#define RUN_NAME "3d_test"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
