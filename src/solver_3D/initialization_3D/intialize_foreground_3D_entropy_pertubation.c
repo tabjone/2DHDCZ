@@ -61,18 +61,18 @@ void initialize_foreground_3D_entropy_pertubation(struct ForegroundVariables3D *
             for (int k = 0; k < nx; k++)
             {
                 // Entropy pertubation
-                fg->s1[i][j][k] = gaussian_3D((i-nz_ghost)*dz, j*dy, k*dz, centre_z, centre_y, centre_x, sigma_z, sigma_y, sigma_x, amplitude);
+                //fg->s1[i][j][k] = gaussian_3D((i-nz_ghost)*dz, j*dy, k*dz, centre_z, centre_y, centre_x, sigma_z, sigma_y, sigma_x, amplitude);
                 // Calculating p1 from first law of thermodynamics
-                fg->p1[i][j][k] = -bg->p0[i] * fg->s1[i][j][k]/c_p;
+                //fg->p1[i][j][k] = -bg->p0[i] * fg->s1[i][j][k]/c_p;
             }
             
         }
     }
 
-    extrapolate_3D_array_down(fg->p1, nz_ghost, ny, nx);
-    extrapolate_3D_array_up(fg->p1, nz_full, nz_ghost, ny, nx);
-    extrapolate_3D_array_down(fg->s1, nz_ghost, ny, nx);
-    extrapolate_3D_array_up(fg->s1, nz_full, nz_ghost, ny, nx);
+    //extrapolate_3D_array_down(fg->p1, nz_ghost, ny, nx);
+    //extrapolate_3D_array_up(fg->p1, nz_full, nz_ghost, ny, nx);
+    //extrapolate_3D_array_down(fg->s1, nz_ghost, ny, nx);
+    //extrapolate_3D_array_up(fg->s1, nz_full, nz_ghost, ny, nx);
 
-    equation_of_state_3D(fg, bg, grid_info); // Getting rho1 from equation of state
+    //equation_of_state_3D(fg, bg, grid_info); // Getting rho1 from equation of state
 }
