@@ -31,10 +31,9 @@ int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
         
         save_mpi_info(mpi_info);
 
-        /*
         // Initialize foreground to type set in parameter file
-        initialize_foreground(fg_previous, bg, grid_info, mpi_info);
-        
+        initialize_foreground_3D_entropy_pertubation(fg_previous, bg, grid_info);
+        /*
         // Saving the foreground variables to file
         save_foreground(fg_previous, grid_info, mpi_info, 0, 0.0);
         save_nr ++;
