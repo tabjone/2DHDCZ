@@ -81,7 +81,7 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     }
     #endif // ADVECTION_ON
 
-    #if VISCOSITY_ON == 2
+    #if VISCOSITY_ON == 1
         FLOAT_P dd_vz_ddy = central_second_derivative_y(vz, i, j, dy, ny);
 
         FLOAT_P ddd_vy_dyddz = (vy[i+1][j_plus] - vy[i+1][j_minus] - 2.0*vy[i][j_plus] + 2.0*vy[i][j_minus] + vy[i-1][j_plus] - vy[i-1][j_minus])/(2.0*dy*dz*dz);
