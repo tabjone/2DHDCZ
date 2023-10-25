@@ -15,8 +15,7 @@
     #define R_SUN 6.957e10 // solar radius [cm]
     #define M_SUN 1.989e33 // solar mass [g]
 
-    #define VISCOSITY_COEFF 1.0e-4 // viscosity coefficient [P] (Poise)
-    
+    #define VISCOSITY_COEFF 1.0e7/5.37 // viscosity coefficient [P] (Poise)
 
     #if GRAVITY_ON == 0
         #define G 0.0 // gravitational constant [cm3 g-1 s-2]

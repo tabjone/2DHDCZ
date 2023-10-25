@@ -188,8 +188,8 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
     // Extrapolating background variables to ghost cells
     extrapolate_background(bg, grid_nz_full, grid_nz_ghost, grid_dz);
 
-    #if VERTICAL_BOUNDARY_TYPE == 2
-        // Periodic vertical boundary with constant values for background
+    #if CONSTANT_BACKGROUND == 1
+        // Constant background
         for (int i = 0; i < grid_nz_full; i++)
         {
             bg->rho0[i] = 1.0e-1;
@@ -198,7 +198,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
             bg->g[i] = 0.0;
             bg->p0[i] = 1.0e13;
         }
-    #endif // VERTICAL_BOUNDARY_TYPE
+    #endif // CONSTANT_BACKGROUND
 
     // Pre-calculate 1/rho0 and eta/(4*pi*rho0*T0)
     for (i = 0; i < grid_nz_full; i++)

@@ -29,6 +29,8 @@ void initialize_foreground(struct ForegroundVariables2D *fg, struct BackgroundVa
             initialize_foreground_random(fg, bg, grid_info);
         #elif INITIALIZATION_TYPE == 5
             sod_shock_horizontal(fg, bg, grid_info);
+        #elif INITIALIZATION_TYPE == 6
+            sod_shock_vertical(fg, bg, grid_info);
         #endif // INITIALIZATION_TYPE
     #elif MPI_ON == 1
         #if INITIALIZATION_TYPE == 0

@@ -17,6 +17,7 @@ void initialize_foreground_velocity_right(struct ForegroundVariables2D *fg, stru
 void initialize_foreground_random(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg , struct GridInfo2D *grid_info);
 
 void sod_shock_horizontal(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info);
+void sod_shock_vertical(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info);
 
 void initialize_foreground_entropy_pertubation_mpi(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
 

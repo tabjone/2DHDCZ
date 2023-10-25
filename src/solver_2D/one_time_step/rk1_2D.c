@@ -49,9 +49,9 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[i][j] = fg_prev->s1[i][j] + dt * damping_factor[i]*rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j);
-            fg->vy[i][j] = fg_prev->vy[i][j] + dt * rhs_dvy_dt_2D(bg, fg_prev, grid_info, i, j);
-            fg->vz[i][j] = fg_prev->vz[i][j] + dt * damping_factor[i]*rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
+            fg->s1[i][j] = (fg_prev->s1[i][j] + dt*rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j))* damping_factor[i];
+            fg->vy[i][j] = fg_prev->vy[i][j] + dt*rhs_dvy_dt_2D(bg, fg_prev, grid_info, i, j);
+            fg->vz[i][j] = (fg_prev->vz[i][j] + dt*rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j))* damping_factor[i];
         }
     }
     #if VERTICAL_BOUNDARY_TYPE != 2
@@ -59,7 +59,9 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         {
             for (int j = 0; j < ny; j++)
             {
-                fg->vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
+                fg->vy[nz_ghost][j] = fg_prev->vy[nz_ghost][j] + dt*rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
+                fg->vz[nz_ghost][j] = 0.0;
+                fg->s1[nz_ghost][j] = 0.0;
             }
             
         }
@@ -67,7 +69,9 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         {
             for (int j = 0; j < ny; j++)
             {
-                fg->vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
+                fg->vy[nz_full-nz_ghost-1][j] = fg_prev->vy[nz_full-nz_ghost-1][j] + dt*rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
+                fg->vz[nz_full-nz_ghost-1][j] = 0.0;
+                fg->s1[nz_full-nz_ghost-1][j] = 0.0;
             }
         }
     #endif // VERTICAL_BOUNDARY_TYPE

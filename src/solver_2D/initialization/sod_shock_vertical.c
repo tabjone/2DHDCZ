@@ -1,6 +1,6 @@
 #include "initialization.h"
 
-void sod_shock_horizontal(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
+void sod_shock_vertical(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
 {
     /*
     Initializes the foreground struct with a Sod Shock Tube test.
@@ -28,9 +28,9 @@ void sod_shock_horizontal(struct ForegroundVariables2D *fg, struct BackgroundVar
         {
             fg->vy[i][j] = 0.0;
             fg->vz[i][j] = 0.0;
-            if (j < ny/2)
+            if (i < nz_full/2)
             {
-                fg->p1[i][j] = bg->p0[nz_full/2]*0.01;
+                fg->p1[i][j] = bg->p0[nz_full/2]*0.01;;
                 fg->rho1[i][j] = bg->rho0[nz_full/2]*0.01;
             }
             else
@@ -54,7 +54,7 @@ void sod_shock_horizontal(struct ForegroundVariables2D *fg, struct BackgroundVar
         periodic_boundary_2D(fg->s1, grid_info);
         periodic_boundary_2D(fg->vy, grid_info);
         periodic_boundary_2D(fg->vz, grid_info);
-    #else
+    #else 
         // Setting top and bottom boundaries to zero
         for (int j = 0; j < ny; j++)
         {

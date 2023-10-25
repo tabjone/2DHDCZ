@@ -28,13 +28,6 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
 
-    // Solving elliptic equation
-    solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
-
-    // Extrapolating p1 to ghost cells
-    extrapolate_2D_array_down(fg->p1, nz_ghost, ny); // Extrapolating p1 to ghost cells below
-    extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny); // Extrapolating p1 to ghost cells above
-
     // Calculating damping factor
     FLOAT_P damping_factor[nz_full];
     calculate_damping(damping_factor, bg, grid_info);
@@ -74,9 +67,9 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         for (int j = 0; j < ny; j++)
         {
             // Calculating k1 for the grid
-            k1_s1[i][j] = damping_factor[i] * rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j);
+            k1_s1[i][j] = rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j);
             k1_vy[i][j] = rhs_dvy_dt_2D(bg, fg_prev, grid_info, i, j);
-            k1_vz[i][j] = damping_factor[i] * rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
+            k1_vz[i][j] = rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
         }
     }
 
@@ -85,6 +78,10 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         k1_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
         k1_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
+        k1_vz[nz_ghost][j] = 0.0;
+        k1_vz[nz_full-nz_ghost-1][j] = 0.0;
+        k1_s1[nz_ghost][j] = 0.0;
+        k1_s1[nz_full-nz_ghost-1][j] = 0.0;
     }
 
     // Updating fg to hold mid-calculation variables
@@ -121,9 +118,9 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
-            k2_s1[i][j] = damping_factor[i] * rhs_ds1_dt_2D(bg, fg, grid_info, i, j);
+            k2_s1[i][j] = rhs_ds1_dt_2D(bg, fg, grid_info, i, j);
             k2_vy[i][j] = rhs_dvy_dt_2D(bg, fg, grid_info, i, j);
-            k2_vz[i][j] = damping_factor[i] * rhs_dvz_dt_2D(bg, fg, grid_info, i, j);
+            k2_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, i, j);
         }
     }
 
@@ -132,7 +129,10 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         k2_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
         k2_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
-
+        k2_vz[nz_ghost][j] = 0.0;
+        k2_vz[nz_full-nz_ghost-1][j] = 0.0;
+        k2_s1[nz_ghost][j] = 0.0;
+        k2_s1[nz_full-nz_ghost-1][j] = 0.0;
     }
 
     // Updating fg to hold mid-calculation variables
@@ -168,9 +168,9 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
-            k3_s1[i][j] = damping_factor[i] * rhs_ds1_dt_2D(bg, fg, grid_info, i, j);
+            k3_s1[i][j] = rhs_ds1_dt_2D(bg, fg, grid_info, i, j);
             k3_vy[i][j] = rhs_dvy_dt_2D(bg, fg, grid_info, i, j);
-            k3_vz[i][j] = damping_factor[i] * rhs_dvz_dt_2D(bg, fg, grid_info, i, j);
+            k3_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, i, j);
         }
     }
 
@@ -179,6 +179,10 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         k3_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
         k3_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
+        k3_vz[nz_ghost][j] = 0.0;
+        k3_vz[nz_full-nz_ghost-1][j] = 0.0;
+        k3_s1[nz_ghost][j] = 0.0;
+        k3_s1[nz_full-nz_ghost-1][j] = 0.0;
     }
 
     // Updating variables
@@ -186,9 +190,9 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[i][j] = fg_prev->s1[i][j] + damping_factor[i] * dt/6.0 * (k1_s1[i][j] + 4.0*k2_s1[i][j] + k3_s1[i][j]);
-            fg->vy[i][j] = fg_prev->vy[i][j] + dt/6.0 * (k1_vy[i][j] + 4.0*k2_vy[i][j] + k3_vy[i][j]);
-            fg->vz[i][j] = fg_prev->vz[i][j] + damping_factor[i] * dt/6.0 * (k1_vz[i][j] + 4.0*k2_vz[i][j] + k3_vz[i][j]);
+            fg->s1[i][j] = damping_factor[i]*(fg_prev->s1[i][j] + dt/6.0 * (k1_s1[i][j] + 4.0*k2_s1[i][j] + k3_s1[i][j]));
+            fg->vy[i][j] = damping_factor[i]*(fg_prev->vy[i][j] + dt/6.0 * (k1_vy[i][j] + 4.0*k2_vy[i][j] + k3_vy[i][j]));
+            fg->vz[i][j] = damping_factor[i]*(fg_prev->vz[i][j] + dt/6.0 * (k1_vz[i][j] + 4.0*k2_vz[i][j] + k3_vz[i][j]));
         }
     }
 
@@ -199,6 +203,13 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     extrapolate_2D_array_up(fg->vy, nz_full, nz_ghost, ny); // Extrapolating vy to ghost cells above
     extrapolate_2D_array_down(fg->vz, nz_ghost, ny); // Extrapolating vz to ghost cells below
     extrapolate_2D_array_up(fg->vz, nz_full, nz_ghost, ny); // Extrapolating vz to ghost cells above
+
+    // Solving elliptic equation
+    solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info); // Getting p1
+
+    // Extrapolating p1 to ghost cells
+    extrapolate_2D_array_down(fg->p1, nz_ghost, ny); // Extrapolating p1 to ghost cells below
+    extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny); // Extrapolating p1 to ghost cells above
 
     // Solving algebraic equations
     first_law_thermodynamics(fg, bg, grid_info);

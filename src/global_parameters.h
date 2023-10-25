@@ -6,23 +6,23 @@
 
 #define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
-#define INITIALIZATION_TYPE 3 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for entropy pertubation, 4 for random, 5 for sod shock
+#define INITIALIZATION_TYPE 3 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for entropy pertubation, 4 for random, 5 for sod shock horizontal, 6 for sod shock vertical
 
-#define RUN_NAME "3d_test"
+#define RUN_NAME "rk3_hard_wall_longer_run" // Name of the run
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 1e5 // Simulation time in seconds
-#define MAX_DT 1e2 // Maximum time step in seconds
-#define SAVE_INTERVAL 1e3 // Save interval in seconds
+#define T 1e7 // Simulation time in seconds
+#define MAX_DT 1e3 // Maximum time step in seconds
+#define SAVE_INTERVAL 1e5 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
 
 #define CFL_CUT 0.8 // CFL cut
 
 // Order of the scheme (only upwind 1,2, central 2,4, rk1,2 implemented so far)
-#define UPWIND_ORDER 1 // 1 for first order, 2 for second order
+#define UPWIND_ORDER 2 // 1 for first order, 2 for second order
 #define CENTRAL_ORDER 2 // 2 for second order, 4 for fourth order
-#define TIME_ORDER 1 // 1,2,3 for RK1, RK2, RK3
+#define TIME_ORDER 3 // 1,2,3 for RK1, RK2, RK3
 
 #define FLOAT_PRECISION 1 // 0 for float, 1 for double, 2 for long double
 
@@ -30,11 +30,11 @@
 #define UNITS 0 // 0 for cgs, 1 for SI
 
 // Dimensions
-#define DIMENSIONS 3 // 1 for 1D, 2 for 2D, 3 for 3D
+#define DIMENSIONS 2 // 1 for 1D, 2 for 2D, 3 for 3D
 
 // Boundary conditions
-#define VERTICAL_BOUNDARY_TYPE 1 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
-#define ALPHA 0.5 // Soft wall parameter, 0 is no damping, 1 is linear damping, everything in between is exponential damping
+#define VERTICAL_BOUNDARY_TYPE 0 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
+#define ALPHA 0.1 // Soft wall parameter, 0 is no damping, 1 is linear damping, everything in between is exponential damping
 #define SOFT_WALL_HEIGHT_PERCENTAGE 0.1 // Percentage of the domain that will be damped at the top and bottom
 
 // Grid size
@@ -44,8 +44,8 @@
 #define X_SIZE 0.0 // In units of solar radii
 #define Y_SIZE 0.1 // In units of solar radii
 #define NX 0 // Number of grid points in x-direction
-#define NY 100 // Number of grid points in y-direction
-#define NZ 100 // Number of grid points in z-direction
+#define NY 60 // Number of grid points in y-direction
+#define NZ 120 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
 #define GS_TOL 1e-6 // Gauss-Seidel tolerance
@@ -65,7 +65,7 @@
 // 0 for constant, others not implemented yet
 #define EXTRAPOLATE_GHOST_CELLS 0
 
-// Debugging
+// Debugging part
 
 #define GRAVITY_ON 1 // 0 for gravity off, 1 for gravity on
 #define ADVECTION_ON 1 // 0 for advection off, 1 for advection on
@@ -75,6 +75,7 @@
 #define BFIELD_ON 0 // 0 for B-field off, 1 for B-field on
 
 #define DEBUG 1
+#define CONSTANT_BACKGROUND 0 // 0 for non-constant background, 1 for constant background
 
 
 
