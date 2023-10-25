@@ -82,12 +82,14 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     #endif // ADVECTION_ON
 
     #if VISCOSITY_ON == 1
-        FLOAT_P dd_vz_ddy = central_second_derivative_y(vz, i, j, dy, ny);
+        int j_minus2 = periodic_boundary(j-2, ny);
+        int j_plus2 = periodic_boundary(j+2, ny);
 
-        FLOAT_P ddd_vy_dyddz = (vy[i+1][j_plus] - vy[i+1][j_minus] - 2.0*vy[i][j_plus] + 2.0*vy[i][j_minus] + vy[i-1][j_plus] - vy[i-1][j_minus])/(2.0*dy*dz*dz);
+        FLOAT_P ddd_vz_dydydz = (vz[i+1][j_plus2]-2.0*vz[i+1][j]+vz[i+1][j_minus2] - vz[i-1][j_plus2]+2.0*vz[i-1][j]-vz[i-1][j_minus2])/(8.0*dy*dy*dz);
 
+        FLOAT_P ddd_vy_dydzdz = (vy[i+2][j_plus] - 2.0*vy[i][j_plus] +vy[i-2][j_plus] - vy[i+2][j_minus]  + 2.0*vy[i][j_minus] - vy[i-2][j_minus])/(8.0*dy*dz*dz);
 
-        rhs += 2*VISCOSITY_COEFF*(ddd_vy_dyddz + dd_vz_ddy);
+        rhs += 2*VISCOSITY_COEFF*(ddd_vy_dydzdz + ddd_vz_dydydz);
     #endif // VISCOSITY_ON
     
     return rhs;

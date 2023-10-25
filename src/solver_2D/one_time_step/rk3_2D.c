@@ -185,12 +185,24 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         k3_s1[nz_full-nz_ghost-1][j] = 0.0;
     }
 
+    // Finding mean of s1
+    FLOAT_P s1_mean = 0.0;
+    FLOAT_P tau = 60.0*60.0*4;
+    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
+    {
+        for (int j = 0; j < ny; j++)
+        {
+            s1_mean += fg_prev->s1[i][j];
+        }
+    }
+    s1_mean /= (nz_full - 2*nz_ghost)*ny;
+
     // Updating variables
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[i][j] = damping_factor[i]*(fg_prev->s1[i][j] + dt/6.0 * (k1_s1[i][j] + 4.0*k2_s1[i][j] + k3_s1[i][j]));
+            fg->s1[i][j] = damping_factor[i]*(fg_prev->s1[i][j] + dt/6.0 * (k1_s1[i][j] + 4.0*k2_s1[i][j] + k3_s1[i][j])) + s1_mean*(1-damping_factor[i])*(1-dt/tau);;
             fg->vy[i][j] = damping_factor[i]*(fg_prev->vy[i][j] + dt/6.0 * (k1_vy[i][j] + 4.0*k2_vy[i][j] + k3_vy[i][j]));
             fg->vz[i][j] = damping_factor[i]*(fg_prev->vz[i][j] + dt/6.0 * (k1_vz[i][j] + 4.0*k2_vz[i][j] + k3_vz[i][j]));
         }

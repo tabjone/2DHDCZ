@@ -21,8 +21,6 @@ void calculate_damping(FLOAT_P *damping_factor, struct BackgroundVariables *bg, 
     // Setting damping factor
     #if VERTICAL_BOUNDARY_TYPE == 0
         int nz_ghost = grid_info->nz_ghost;
-
-        printf("Hard wall.\n");
         // No damping
         for (int i = 0; i < nz_full; i++)
         {
