@@ -5,7 +5,6 @@ In the current state of solar modeling it is believed that the sun is composed s
 
 \citep{1996Sci...272.1286C}
 
-
 where fusion produces energy
 of a solar core, a radiative zone, a convective zone and an atmosphere
 
@@ -19,8 +18,6 @@ Time scales
 
 
 \section{Anelastic MHD}
-\subsection{Anelastic model background}
-Some of the MLT and pertubation theory here. Maybe derivation of continuity eq.
 \subsection{General anelastic MHD}
 
 In Mixing Length Theory (MLT) one looks at the characteristic mixing length $l_m$. This is the distance a parcel of fluid with thermodynamical properties different than the thermodynamical properties of the background will rise or fall before mixing with it's enviroments \citep{1925ZaMM....5..136P}. This model gives us the dominant balance for the lowest order equations and the relative sizes of pertubations to the first order \citep{1999ApJS..121..247L} and has been tested against fully-compressibile models, supporting it's validity \citep{1989ApJ...336.1022C}. 
@@ -39,7 +36,7 @@ where we used the fact that $\rho_0$ is not time-dependent. We look at the lowes
 \begin{equation}\label{eq:continuity}
     O(\epsilon^{1/2}):\ \nabla\cdot(\rho_0\mathbf{v})=0,
 \end{equation}
-setting $\mathbf{v}\equiv\mathbf{v}_1$ since the only velocity we look at is the first order pertubation. In a similar fashion one can derive all other MHD equations as have been done in \citep{1999ApJS..121..247L}. We will show the $\epsilon$-order as in this paper, but follow the notation of \citep{2021LRSP...18....5F} since we are not using scaled variables. In the following we let $x$ and $y$ be the horizontal directions and $z$ be the vertical upward direction so that the gravity $\mathbf{g}=-g\mathbf{\hat{k}}$. The pertubed entropy $s_1$, pressure $p_1$, temperature $T_1$, velocity $\mathbf{v}$ and density $\rho_1$ are functions of $(x,y,z,t)$ while the background entropy $s_0$, $p_0$, $T_0$ and $\rho_0$ are variables of only $z$. We then get that the \textbf{conservation of momentum} is
+setting $\mathbf{v}\equiv\mathbf{v}_1$ since the only velocity we look at is the first order pertubation. In a similar fashion one can derive all other MHD equations as have been done in \citep{1999ApJS..121..247L}. We will show the $\epsilon$-order as in this paper, but follow the notation of \citep{2021LRSP...18....5F} since we are not using scaled variables. In the following we let $x$ and $y$ be the horizontal directions and $z$ be the vertical upward direction so that the gravity $\mathbf{g}=-g\mathbf{\hat{k}}$. The pertubed entropy $s_1$, pressure $p_1$, temperature $T_1$, velocity $\mathbf{v}$ and density $\rho_1$ are functions of $(t,x,y,z)$ while the background entropy $s_0$, $p_0$, $T_0$ and $\rho_0$ are variables of only $z$. We then get that the \textbf{conservation of momentum} is
 \begin{align}\label{eq:momentum}
     O(1):\ \frac{d\rho_0}{dz}=-\rho_0 g,\\
     O(\epsilon):\ \rho_0\left[\frac{\partial\mathbf{v}}{\partial t}+(\mathbf{v}\cdot\nabla)\mathbf{v}\right]=-\nabla p_1 + \rho_1\mathbf{g}+\frac{1}{4\pi}(\nabla\times\mathbf{B})\times\mathbf{B}+\nabla\cdot\mathbf{\Pi},
@@ -79,6 +76,8 @@ where the spesific heat at constant pressure is
 and $\gamma$ is the adiabatic gas parameter ($5/3$ for a monoatomic ideal gas).
 
 The main benefit of the anelastic approximation is that it filters out fast moving sound waves. This means that we can have a higher temporal resolution because we dont have to consider acoustic time scales, but instead only having to consider the much lower dynamic time scale, which is determined by the flow velocity and Alfvén speed. The reason the fast moving sound waves are filtered out will be shown in the following derivation.....
+
+(Derivation follows)
 
 We now have equations for entropy \ref{eq:equation_of_state} \ref{eq:entropy_full}, velocity, temperature \ref{eq:first_law_thermodynamics}, density \ref{eq:equation_of_state} and the magnetic field \ref{eq:ohms_law}. To get an equation for the pressure we will take the the divergence of the momentum equation \ref{eq:momentum} and solve w.r.t. pressure. This gives an elliptic equation which can be solved by various numerical methods such as direct inversion or iterative methods.
 \begin{equation*}
@@ -121,25 +120,33 @@ And finally the elliptic equation
 
 
 \subsection{Adding thermal diffusivity}
-\subsection{Adding viscous stress}
-
-chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://arxiv.org/pdf/1408.3677.pdf
-
-Single ion plasma:
+To add the thermal diffusivity in the conservation of energy we use that $K\rho_0 = 1.866\cdot 10^6$ \citep{1999ApJS..121..247L}. This gives us another term when solving w.r.t. time
 \begin{equation}
-    \mu_{ZZ} = 0.96 \frac{3}{4\sqrt{\pi}}\frac{\sqrt{M_Z} T_Z^{5/2}}{Z^4 e^4 \ln\Lambda_Z}
+    \left[\frac{\partial s_1}{\partial t}\right]_{TD} = \frac{1.866\cdot 10^6}{\rho_0 T_0}\left[ \partial_z (T_0)(\partial_ys_1+\partial_zs_1)+T_0(\partial_y^2 s_1 + \partial_z^2 s_1)  \right].
 \end{equation}
 
-where $\ln\Lambda_Z$ is the Columb logarithm. 
-\href{chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://www.nrl.navy.mil/Portals/38/PDF%20Files/NRL_Plasma_Formulary_2019.pdf?ver=lSvX72q0HmFwRWJWBzaI6A%3d%3d&timestamp=1612555310291}{...}
-
-Typically 10-20. We pick 10.
-
-
-, $M_Z=m_u$ for Hydrogen, $Z=1$ for Hydrogen.
-
-
-
+\subsection{Adding viscous stress}
+We have that the viscous stress tensor is \citep{2021LRSP...18....5F}
+\begin{equation}
+\Pi_{ij} = \mu \left(\frac{\partial v_i}{\partial x_j} + \frac{\partial v_j}{\partial x_i}-\frac{2}{3}\left(\nabla\cdot\mathbf{v}\right)\delta_{ij}  \right),\i,j=x,y,z,
+\end{equation}
+where $\mu$ is the dynamic viscosity and $\delta$ is the Kronecker delta. Solving this w.r.t. the time derivatives gives us the the following additional terms to our equations. For the momentum equation we get
+\begin{align}
+    \mathbf{\hat{j}} &: \left[\partial_t v_y\right]_{\mu} = \frac{\mu}{\rho_0}\left[ \partial_z^2 v_y + \partial_y\partial_z v_z  \right],\\
+    \mathbf{\hat{k}} &: \left[\partial_t v_z\right]_{\mu} = \frac{\mu}{\rho_0}\left[ \partial_y^2 v_z + \partial_y\partial_z v_y \right].
+\end{align}
+For the entropy equation
+\begin{equation}
+    \left[\partial_t s_1\right]_{\mu} =\frac{\mu}{\rho_0 T_0}(\partial_zv_y+\partial_yv_z)^2.
+\end{equation}
+And for the elliptic equation 
+\begin{equation}
+    \left[\nabla^2 p_1\right]_{\mu} = 2\mu(\partial_y\partial_z^2v_y+\partial_y^2\partial_zv_z).
+\end{equation}
+For the dynamic viscosity $\mu$ we follow \citep{1999ApJS..121..247L} and use the Prantl number $P_r=\mu c_p/\kappa$, where $\kappa$ is the thermal conductivity. The Prandtl number is chosen from \citep{1995ApJ...441..903L}, typically varying between 0.5 and 2. The relation between thermal conductivity and thermal diffusivity is $K=\kappa/(\rho c_p)$. We can then solve the Prandtl number for dynamic viscosity and get
+\begin{equation}
+    \mu = K\rho_0 P_r = 1.866\cdot 10^6 P_r.
+\end{equation}
 
 \subsection{Adding the magnetic field}
 
@@ -157,7 +164,7 @@ For the temporal discretization we get that the resolution $\Delta t$ will be di
 \end{equation*}
 We name the foreground variables $f(z,x,t)$ and the background variables $h(z)$. These are then discretized as
 \begin{align*}
-    f(z,x,t) &\rightarrow f(z_i, x_i, t_n) = f_{i,j}^n,\\
+    f(z,x,t) &\rightarrow f(z_i, x_j, t_n) = f_{i,j}^n,\\
     h(z) &\rightarrow h(z_i) = h_i.
 \end{align*}
 We then let the analytical derivatives go to a numerical derivative on the discretized variables, here for a derivative in the x-direction
@@ -199,12 +206,8 @@ This can then be solved for the pressure at $(i,j)$, giving
 \begin{equation}
     p_{i,j} = \frac{F_{i,j} - a(p_{i+1,j} + p_{i-1,j}) - b(p_{i,j+1}+p_{j-1})}{c}
 \end{equation}
-To solve this we will use an iterative method....k+1, k. Show algo. Jacobi or Gauss-Seidel if we figure that out....
-.....
 
-.....
-
-.....
+....Here follows the Jacobi/Gauss-Seidel algo, talking about iterative method.
 
 \subsection{Stability Analysis}
 \label{subsec:von_neumann}
@@ -447,5 +450,3 @@ When we have the background set up we can interpolate this to a grid. We have do
     \caption{Gravitational acceleration as a function of radius for the integrated hydrostatic model in dashed lines and the Solar S model in dotted line.}
     \label{fig:gravitationa_acceleration} % For referencing the figure elsewhere in your document
 \end{figure}
-
-\subsection{Code testing, maybe not in theory}
