@@ -5,6 +5,8 @@
 #include "../functions.h"
 #include "global_parameters.h"
 
+#include "../one_time_step/one_time_step.h"
+
 void initialize_foreground(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
 
 void initialize_foreground_zeros(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info);

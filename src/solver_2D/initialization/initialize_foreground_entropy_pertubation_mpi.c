@@ -31,6 +31,9 @@ void initialize_foreground_entropy_pertubation_mpi(struct ForegroundVariables2D 
 
     initialize_foreground_zeros(fg, grid_info); // Sets everything to zero so boundary and ghost cells are automatically zero
 
+    FLOAT_P d[nz_full];
+    calculate_damping(d, bg, grid_info);
+
     // Spesific heat at constant pressure
     FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
 
@@ -40,7 +43,7 @@ void initialize_foreground_entropy_pertubation_mpi(struct ForegroundVariables2D 
         for (int j = 0; j < ny; j++)
         {
             // Entropy pertubation
-            fg->s1[i][j] = gaussian_2D((i-nz_ghost)*dz+z_offset, j*dy, centre_z, centre_y, sigma_z, sigma_y, amplitude);;
+            fg->s1[i][j] = d[i]*gaussian_2D((i-nz_ghost)*dz+z_offset, j*dy, centre_z, centre_y, sigma_z, sigma_y, amplitude);;
             // Calculating p1 from first law of thermodynamics
             fg->p1[i][j] = -bg->p0[i] * fg->s1[i][j]/c_p;
         }
