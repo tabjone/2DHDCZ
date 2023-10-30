@@ -3,9 +3,9 @@
 
 int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
 {
-    /*
+    
     FLOAT_P t, dt, dt_last, t_since_save;
-    FLOAT_P first_t;*/
+    FLOAT_P first_t;
     int save_nr;
     
     // Declare the background variables, foreground variables and grid info
@@ -33,20 +33,20 @@ int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
 
         // Initialize foreground to type set in parameter file
         initialize_foreground_3D_entropy_pertubation(fg_previous, bg, grid_info);
-        /*
+        
         // Saving the foreground variables to file
-        save_foreground(fg_previous, grid_info, mpi_info, 0, 0.0);
+        save_foreground_3D(fg_previous, grid_info, mpi_info, 0, 0.0);
         save_nr ++;
-    
+        
         t = 0.0;
-        first_t = 0.0;*/
+        first_t = 0.0;
     #endif // LOAD
-    /*
+    
     t_since_save = 0.0;
     dt_last = 0.0;
     while (t < T)
     { 
-        dt = one_time_step(bg, fg_previous, fg, grid_info, mpi_info, dt_last, first_t == t);
+        dt = one_time_step_3D(bg, fg_previous, fg, grid_info, mpi_info, dt_last, first_t == t);
         t += dt;
 
         t_since_save += dt;
@@ -54,13 +54,13 @@ int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
         
         if (t_since_save > SAVE_INTERVAL && SAVE_ALL == 0)
         {
-            save_foreground(fg, grid_info, mpi_info, save_nr, t);
+            save_foreground_3D(fg, grid_info, mpi_info, save_nr, t);
             save_nr++;
             t_since_save = 0.0;
         }
         else if (SAVE_ALL == 1)
         {
-            save_foreground(fg, grid_info, mpi_info, save_nr, t);
+            save_foreground_3D(fg, grid_info, mpi_info, save_nr, t);
             save_nr++;
         }
 
@@ -70,12 +70,11 @@ int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
         fg = tmp_ptr;
         if (mpi_info->rank == 0)
             printf("t = %.2f\n", t);
-        break;
     }
 
     // Save last time step
-    save_foreground(fg_previous, grid_info, mpi_info, save_nr, t);
-    */
+    save_foreground_3D(fg_previous, grid_info, mpi_info, save_nr, t);
+    
     deallocate_grid_info_struct_3D(grid_info);
     deallocate_background_struct(bg);
     deallocate_foreground_struct_3D(fg_previous);

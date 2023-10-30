@@ -82,7 +82,7 @@ def format_title(key):
 class Visualize_Foreground:
     def __init__(self, folder):
         self.folder = folder + "snap{}.h5"
-        self.num_snaps = len(os.listdir(folder))-1
+        self.num_snaps = len(os.listdir(folder))-2
         self.cmap = "RdBu"
         self.norm = TwoSlopeNorm
         self.set_plot_params()
@@ -147,9 +147,25 @@ class Visualize_Foreground:
 
     def plot(self, fig, ax, snap_nr, key):
         variables, info = read_fg(self.folder.format(snap_nr))
-        t, nx, nz, nz_ghost, dx, dz = info['t'], info['nx'], info['nz'], info['nz_ghost'], info['dx'], info['dz']   
+        t, nx, nz, nz_ghost, dx, dz = info['t'], info['nx'], info['nz'], info['nz_ghost'], info['dx'], info['dz']  
+
+        
 
         d = variables[key][nz_ghost:-1-nz_ghost+1,:]
+        background, _ = read_bg(self.folder.split("snap")[0]+"background.h5")
+        
+        if (key=="T1"):
+            d = d/(background["T0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
+            ax.set_title(format_title(key)+"$/T_0$")
+        elif (key=="rho1"):
+            d = d/(background["rho0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
+            ax.set_title(format_title(key)+r"$/\rho_0$")
+        elif (key=="p1"):
+            d = d/(background["p0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
+            ax.set_title(format_title(key)+"$/p_0$")
+        else:
+            ax.set_title(format_title(key))
+
         if self.plot_params[key][0]:
             vx = variables["vx"]
             vz = variables["vz"]
@@ -166,12 +182,18 @@ class Visualize_Foreground:
         t = t*u.s
         t = t.to(self.t_end.unit)
         
-        ax.set_title(format_title(key))
         ax.set_xlabel("x [Solar radii]", fontsize=self.font_size)
         ax.set_ylabel("z [Solar radii]", fontsize=self.font_size)
         
-        vmin = self.plot_params[key][1]
-        vmax = self.plot_params[key][2]
+        #vmin = self.plot_params[key][1]
+
+        
+
+        #vmax = self.plot_params[key][2]
+
+        vmax = np.max(np.abs(d))
+        vmin = -vmax        
+
         if self.norm == TwoSlopeNorm:
             norm = self.norm(vcenter=0, vmin=vmin, vmax=vmax)
             im =ax.imshow(d, origin="lower", extent=[self.x_0,self.x_1,self.z_0,self.z_1], aspect=self.aspect,norm=norm, cmap=self.cmap)
@@ -328,7 +350,7 @@ class Visualize_Foreground:
         plt.show()
 
 if __name__ == "__main__":
-    directory = "../data/soft_wall_rk2_upw2_bigger/"
+    directory = "../data/pressure_damping_smaller/"
     save_name = directory.split("/")[-2] + ".mp4"
 
     vf = Visualize_Foreground(directory)
@@ -341,8 +363,9 @@ if __name__ == "__main__":
         vf.plot_params['p1'] = (True, None, None, vf.plot_params['p1'][3])
         vf.plot_params['vx'] = (False, None, None, vf.plot_params['vx'][3])
         vf.plot_params['vz'] = (False, None, None, vf.plot_params['vz'][3])
-
-        #vf.norm = NoNorm
+        #vf.plot_all(plt.figure(figsize=(16,9)), 1)
+        #plt.show()
+        vf.norm = NoNorm
         vf.animate_all(save=True, save_name=save_name, fps=6, save_interval=1)
     if False:
         vf.animate_all_no_vmin_vmax(save=True, save_name=save_name, fps=4, save_interval=1)
