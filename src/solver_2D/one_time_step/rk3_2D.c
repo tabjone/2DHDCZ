@@ -219,6 +219,15 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     // Solving elliptic equation
     solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info); // Getting p1
 
+    // Damping pressure
+    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
+    {
+        for (int j = 0; j < ny; j++)
+        {
+            fg->p1[i][j] = damping_factor[i]*fg->p1[i][j];
+        }
+    }
+
     // Extrapolating p1 to ghost cells
     extrapolate_2D_array_down(fg->p1, nz_ghost, ny); // Extrapolating p1 to ghost cells below
     extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny); // Extrapolating p1 to ghost cells above
