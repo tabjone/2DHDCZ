@@ -28,29 +28,15 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     int nz_full = grid_info->nz_full;
     int ny = grid_info->ny;
 
-    // Solving elliptic equation
-    solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
-
-    // Extrapolating p1 to ghost cells
-    extrapolate_2D_array_down(fg->p1, nz_ghost, ny); // Extrapolating p1 to ghost cells below
-    extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny); // Extrapolating p1 to ghost cells above
-
-    // Calculating damping factor
-    FLOAT_P damping_factor[nz_full];
-    calculate_damping(damping_factor, bg, grid_info);
-
     // Calculating dt
     FLOAT_P dt = get_dt(fg_prev, grid_info, dt_last, first_timestep);
 
-    // Using the fg struct to store mid-calculation variables. Filling these with fg_prev values.
-    for (int i = 0; i < nz_full; i++)
-    {
-        for (int j = 0; j < ny; j++)
-        {
-            fg->T1[i][j] = fg_prev->T1[i][j];
-            fg->rho1[i][j] = fg_prev->rho1[i][j];
-        }
-    }
+    #if MPI_ON == 1
+        FLOAT_P reduced_dt;
+        // Picking smallest dt from all processes
+        MPI_Allreduce(&dt, &reduced_dt, 1, MPI_FLOAT_P, MPI_MIN, MPI_COMM_WORLD);
+        dt = reduced_dt;
+    #endif // MPI_ON
 
     // Slopes
     FLOAT_P **k1_s1, **k2_s1;
@@ -71,19 +57,33 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         for (int j = 0; j < ny; j++)
         {
             // Calculating k1 for the grid
-            k1_s1[i][j] = damping_factor[i]*rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j);
+            k1_s1[i][j] = rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j);
             k1_vy[i][j] = rhs_dvy_dt_2D(bg, fg_prev, grid_info, i, j);
-            k1_vz[i][j] = damping_factor[i]*rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
+            k1_vz[i][j] = rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
         }
     }
+
+    // Not periodic
     #if VERTICAL_BOUNDARY_TYPE != 2
-        // Bottom and top boundary k1
-        for (int j = 0; j < ny; j++)
+        if (!mpi_info->has_neighbor_below) // Bottom boundary
         {
-            k1_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
-            k1_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
+            for (int j = 0; j < ny; j++)
+            {
+                k1_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
+                k1_s1[nz_ghost][j] = 0.0;
+                k1_vz[nz_ghost][j] = 0.0;
+            }
         }
-    #endif // VERTICAL_BOUNDARY
+        if (!mpi_info->has_neighbor_above) // Top boundary
+        {
+            for (int j = 0; j < ny; j++)
+            {
+                k1_vy[nz_full-nz_ghost-1][j]=rhs_dvy_dt_2D_vertical_boundary(bg,fg_prev, grid_info, nz_full-nz_ghost-1, j);
+                k1_s1[nz_full-nz_ghost-1][j]=0.0;
+                k1_vz[nz_full-nz_ghost-1][j]=0.0;
+            }
+        }
+    #endif // VERTICAL_BOUNDARY_TYPE
 
     // Updating fg to hold mid-calculation variables
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
@@ -96,28 +96,13 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    #if VERTICAL_BOUNDARY_TYPE == 2
-        periodic_boundary_2D(fg->vy, grid_info);
-        periodic_boundary_2D(fg->vz, grid_info);
-        periodic_boundary_2D(fg->s1, grid_info);
-    #else
-        // Extrapolating mid-calculation variables
-        extrapolate_2D_array_up(fg->s1, nz_full, nz_ghost, ny);
-        extrapolate_2D_array_down(fg->s1, nz_ghost, ny);
-        extrapolate_2D_array_up(fg->vy, nz_full, nz_ghost, ny);
-        extrapolate_2D_array_down(fg->vy, nz_ghost, ny);
-        extrapolate_2D_array_up(fg->vz, nz_full, nz_ghost, ny);
-        extrapolate_2D_array_down(fg->vz, nz_ghost, ny);
-    #endif // VERTICAL_BOUNDARY_TYPE
+    update_vertical_boundary_ghostcells_2D(fg->s1, grid_info, mpi_info);
+    update_vertical_boundary_ghostcells_2D(fg->vy, grid_info, mpi_info);
+    update_vertical_boundary_ghostcells_2D(fg->vz, grid_info, mpi_info);
 
     // Calculating p1
     solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info);
-    #if VERTICAL_BOUNDARY_TYPE == 2
-        periodic_boundary_2D(fg->p1, grid_info);
-    #else
-        extrapolate_2D_array_constant_up(fg->p1, nz_full, nz_ghost, ny);
-        extrapolate_2D_array_constant_down(fg->p1, nz_ghost, ny);
-    #endif // VERTICAL_BOUNDARY_TYPE
+    update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
 
     // Updating mid calculation variables
     first_law_thermodynamics(fg, bg, grid_info);
@@ -129,22 +114,35 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         for (int j = 0; j < ny; j++)
         {
             // Calculating k2 for the grid
-            k2_s1[i][j] = damping_factor[i]*rhs_ds1_dt_2D(bg, fg, grid_info, i, j);
+            k2_s1[i][j] = rhs_ds1_dt_2D(bg, fg, grid_info, i, j);
             k2_vy[i][j] = rhs_dvy_dt_2D(bg, fg, grid_info, i, j);
-            k2_vz[i][j] = damping_factor[i]*rhs_dvz_dt_2D(bg, fg, grid_info, i, j);
+            k2_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, i, j);
         }
     }
 
+    // Not periodic
     #if VERTICAL_BOUNDARY_TYPE != 2
-        // Boundary
-        for (int j = 0; j < ny; j++)
+        if (!mpi_info->has_neighbor_below) // Bottom boundary
         {
-            k2_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
-            k2_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
+            for (int j = 0; j < ny; j++)
+            {
+                k2_vy[nz_ghost][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_ghost, j);
+                k2_s1[nz_ghost][j] = 0.0;
+                k2_vz[nz_ghost][j] = 0.0;
+            }
+        }
+        if (!mpi_info->has_neighbor_above) // Top boundary
+        {
+            for (int j = 0; j < ny; j++)
+            {
+                k2_vy[nz_full-nz_ghost-1][j] = rhs_dvy_dt_2D_vertical_boundary(bg, fg, grid_info, nz_full-nz_ghost-1, j);
+                k2_s1[nz_full-nz_ghost-1][j] = 0.0;
+                k2_vz[nz_full-nz_ghost-1][j] = 0.0;
+            }
         }
     #endif // VERTICAL_BOUNDARY_TYPE
 
-    // Updating variables for entire grid
+    // Updating variables for grid and boundaries
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < ny; j++)
@@ -155,20 +153,23 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    #if VERTICAL_BOUNDARY_TYPE == 2
-        periodic_boundary_2D(fg->vy, grid_info);
-        periodic_boundary_2D(fg->vz, grid_info);
-        periodic_boundary_2D(fg->s1, grid_info);
-    #else
-        // Extrapolating variables
-        extrapolate_2D_array_up(fg->s1, nz_full, nz_ghost, ny);
-        extrapolate_2D_array_down(fg->s1, nz_ghost, ny);
-        extrapolate_2D_array_up(fg->vy, nz_full, nz_ghost, ny);
-        extrapolate_2D_array_down(fg->vy, nz_ghost, ny);
-        extrapolate_2D_array_up(fg->vz, nz_full, nz_ghost, ny);
-        extrapolate_2D_array_down(fg->vz, nz_ghost, ny);
+    // Not periodic
+    #if VERTICAL_BOUNDARY_TYPE != 2
+        apply_vertical_boundary_damping(fg, bg, grid_info, mpi_info, dt);
     #endif // VERTICAL_BOUNDARY_TYPE
-    
+
+    update_vertical_boundary_ghostcells_2D(fg->s1, grid_info, mpi_info);
+    update_vertical_boundary_ghostcells_2D(fg->vy, grid_info, mpi_info);
+    update_vertical_boundary_ghostcells_2D(fg->vz, grid_info, mpi_info);
+
+    // Calculating p1
+    solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info);
+    update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
+
+    // Solving algebraic equations
+    first_law_thermodynamics(fg, bg, grid_info);
+    equation_of_state(fg, bg, grid_info);
+
     // Deallocating memory
     deallocate_2D_array(k1_s1);
     deallocate_2D_array(k2_s1);
@@ -176,10 +177,6 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     deallocate_2D_array(k2_vy);
     deallocate_2D_array(k1_vz);
     deallocate_2D_array(k2_vz);
-
-    // Solving algebraic equations
-    first_law_thermodynamics(fg, bg, grid_info);
-    equation_of_state(fg, bg, grid_info);
 
     return dt;
 }

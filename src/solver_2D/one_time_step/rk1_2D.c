@@ -28,20 +28,14 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
 
-    // Calculating damping factor
-    FLOAT_P damping_factor[nz_full];
-    #if MPI_ON == 0
-        calculate_damping(damping_factor, bg, grid_info);
-    #elif MPI_ON == 1
-        calculate_damping_mpi(damping_factor, bg, grid_info, mpi_info);
-    #endif // MPI_ON
-
     // Calculating dt
     FLOAT_P dt = get_dt(fg_prev, grid_info, dt_last, first_timestep);
 
     #if MPI_ON == 1
+        FLOAT_P reduced_dt;
         // Picking smallest dt from all processes
-        MPI_Allreduce(&dt, &dt, 1, MPI_FLOAT_P, MPI_MIN, MPI_COMM_WORLD);
+        MPI_Allreduce(&dt, &reduced_dt, 1, MPI_FLOAT_P, MPI_MIN, MPI_COMM_WORLD);
+        dt = reduced_dt;
     #endif // MPI_ON
 
     // Solving diff eqs for entire grid and boundary
@@ -49,9 +43,9 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[i][j] = (fg_prev->s1[i][j] + dt*rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j))* damping_factor[i];
+            fg->s1[i][j] = fg_prev->s1[i][j] + dt*rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j);
             fg->vy[i][j] = fg_prev->vy[i][j] + dt*rhs_dvy_dt_2D(bg, fg_prev, grid_info, i, j);
-            fg->vz[i][j] = (fg_prev->vz[i][j] + dt*rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j))* damping_factor[i];
+            fg->vz[i][j] = fg_prev->vz[i][j] + dt*rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
         }
     }
     #if VERTICAL_BOUNDARY_TYPE != 2
@@ -62,8 +56,7 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
                 fg->vy[nz_ghost][j] = fg_prev->vy[nz_ghost][j] + dt*rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
                 fg->vz[nz_ghost][j] = 0.0;
                 fg->s1[nz_ghost][j] = 0.0;
-            }
-            
+            }   
         }
         if (!mpi_info->has_neighbor_above)
         {
@@ -76,45 +69,18 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     #endif // VERTICAL_BOUNDARY_TYPE
 
-    #if VERTICAL_BOUNDARY_TYPE == 2
-        // Periodic boundary conditions
-        periodic_boundary_2D(fg->vy, grid_info);
-        periodic_boundary_2D(fg->vz, grid_info);
-        periodic_boundary_2D(fg->s1, grid_info);
-
-    #else
-        // Extrapolatating s1, vy and vz to ghost cells
-        extrapolate_2D_array_down(fg->s1, nz_ghost, ny); // Extrapolating s1 to ghost cells below
-        extrapolate_2D_array_up(fg->s1, nz_full, nz_ghost, ny); // Extrapolating s1 to ghost cells above
-        extrapolate_2D_array_down(fg->vy, nz_ghost, ny); // Extrapolating vy to ghost cells below
-        extrapolate_2D_array_up(fg->vy, nz_full, nz_ghost, ny); // Extrapolating vy to ghost cells above
-        extrapolate_2D_array_down(fg->vz, nz_ghost, ny); // Extrapolating vz to ghost cells below
-        extrapolate_2D_array_up(fg->vz, nz_full, nz_ghost, ny); // Extrapolating vz to ghost cells above
+    // Not periodic
+    #if VERTICAL_BOUNDARY_TYPE != 2
+        apply_vertical_boundary_damping(fg, bg, grid_info, mpi_info, dt);
     #endif // VERTICAL_BOUNDARY_TYPE
 
-    #if MPI_ON == 1
-        // Sending and receiving ghost cells
-        communicate_2D_ghost_above_below(fg->s1, grid_info, mpi_info);
-        communicate_2D_ghost_above_below(fg->vy, grid_info, mpi_info);
-        communicate_2D_ghost_above_below(fg->vz, grid_info, mpi_info);
-    #endif // MPI_ON
+    update_vertical_boundary_ghostcells_2D(fg->vy, grid_info, mpi_info);
+    update_vertical_boundary_ghostcells_2D(fg->vz, grid_info, mpi_info);
+    update_vertical_boundary_ghostcells_2D(fg->s1, grid_info, mpi_info);
     
     // Solving elliptic equation
     solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
-    
-    #if VERTICAL_BOUNDARY_TYPE == 2
-        // Periodic boundary conditions
-        periodic_boundary_2D(fg->p1, grid_info);
-    // Extrapolating p1 to ghost cells
-    #else
-        extrapolate_2D_array_down(fg->p1, nz_ghost, ny); // Extrapolating p1 to ghost cells below
-        extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny); // Extrapolating p1 to ghost cells above
-    #endif // VERTICAL_BOUNDARY_TYPE
-
-    #if MPI_ON == 1
-        // Sending and receiving ghost cells
-        communicate_2D_ghost_above_below(fg->p1, grid_info, mpi_info);
-    #endif // MPI_ON
+    update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
     
     // Solving algebraic equations.
     first_law_thermodynamics(fg, bg, grid_info);
