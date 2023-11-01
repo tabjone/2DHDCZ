@@ -31,10 +31,10 @@ FLOAT_P one_time_step_3D(struct BackgroundVariables *bg, struct ForegroundVariab
     FLOAT_P dt;
 
     #if TIME_ORDER == 1
-        dt = rk1_3D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
+        //dt = rk1_3D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
 
     #elif TIME_ORDER == 2
-        dt = rk2_3D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
+        //dt = rk2_3D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);
 
     #elif TIME_ORDER == 3
         dt = rk3_3D(bg, fg_prev, fg, grid_info, mpi_info, dt_last, first_timestep);

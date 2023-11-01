@@ -1,14 +1,10 @@
-Link sticking out of page. Move to margen på bunn.
+Use refeq instead of ref
 
-Citep now working, fix it.
+Link sticking out of page. Move to margen på bunn.
 
 Theory about the sun.
 
 Derivation of why the sound speed is filtered out
-
-Ideal anelastic HD
-
-Adding Viscosity
 
 ??? in background initialization
 
@@ -16,7 +12,7 @@ Should write (z,x,t) as (t,x,z). Always keep t first and then (x,y,z)
 
 Boundary conditions
 
-Fiks link ut av siden. Fiks ????, skriv inn likningsnavn
+Plot P_radiation/P_gas to show why we only need to include gas pressure.
 
 Plot from Solar S GONG adiabatic gradient, temp gradient. To show why we need k>0 in a numerical model -> Numerical convective instability must be bigger than the real sun.
 

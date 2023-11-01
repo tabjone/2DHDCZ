@@ -18,8 +18,64 @@ formatter.set_scientific(True)
 
 R_sun = 6.957e10
 
+def read_mpi_info(file_path):
+    with h5py.File(file_path, 'r') as f:
+        n_procs = f['/total_processes'][()]
+    return n_procs
+
+def read_fg_mpi(snap, n_procs, folder):
+    variables_list = {key: [] for key in ['T1', 'rho1', 'p1', 's1', 'vz', 'vy']}
+    infos = []
+
+    for i in range(n_procs):
+        variable, info = read_fg("{}snap{}_{}.h5".format(folder, snap, i))
+        infos.append(info)
+
+        for key in variables_list.keys():
+            if i == 0:
+                variables_list[key].append(variable[key][:-info['nz_ghost']])
+            elif i == n_procs - 1:
+                variables_list[key].append(variable[key][info['nz_ghost']:])
+            else:
+                variables_list[key].append(variable[key][info['nz_ghost']:-info['nz_ghost']])
+
+    # Concatenating the data for each variable
+    total_variables = {key: np.concatenate(variables_list[key], axis=0) for key in variables_list.keys()}
+    
+    # Aggregating the information
+    info = infos[0]
+    info['z0'] = infos[0]['z0']
+    info['z1'] = infos[-1]['z1']
+
+    return total_variables, info
+
+def read_bg_mpi(n_procs, folder):
+    variables_list = {key: [] for key in ['r', 'T0', 'rho0', 'p0', 'g', 'grad_s0']}
+    infos = []
+
+    for i in range(n_procs):
+        variable, info = read_bg("{}background_{}.h5".format(folder, i))
+        infos.append(info)
+
+        for key in variables_list.keys():
+            if i == 0:
+                variables_list[key].append(variable[key][:-info['nz_ghost']])
+            elif i == n_procs - 1:
+                variables_list[key].append(variable[key][info['nz_ghost']:])
+            else:
+                variables_list[key].append(variable[key][info['nz_ghost']:-info['nz_ghost']])
+
+    # Concatenating the data for each variable
+    total_variables = {key: np.concatenate(variables_list[key], axis=0) for key in variables_list.keys()}
+    
+    # Aggregating the information
+    info = infos[0]
+    info['z0'] = infos[0]['z0']
+    info['z1'] = infos[-1]['z1']
+
+    return total_variables, info
+
 def read_fg(file_path):
-    # NOW THIS IS A LITTLE BIT HACKY TO MAKE NEW DATA WORK WITH OLD CODE
     with h5py.File(file_path, 'r') as f:
         T1 = np.array(f['variables/T1'])
         rho1 = np.array(f['variables/rho1'])
@@ -29,19 +85,19 @@ def read_fg(file_path):
         vz = np.array(f['variables/vz'])
         
         t = np.array(f['grid_info/t'])
-        nx = np.array(f['grid_info/ny'])
+        ny = np.array(f['grid_info/ny'])
         nz = np.array(f['grid_info/nz'])
         nz_full = np.array(f['grid_info/nz_full'])
         nz_ghost = np.array(f['grid_info/nz_ghost'])
-        dx = np.array(f['grid_info/dy'])
+        dy = np.array(f['grid_info/dy'])
         dz = np.array(f['grid_info/dz'])
         z0 = np.array(f['grid_info/z0'])
         z1 = np.array(f['grid_info/z1'])
-        x0 = np.array(f['grid_info/y0'])
-        x1 = np.array(f['grid_info/y1'])
+        y0 = np.array(f['grid_info/y0'])
+        y1 = np.array(f['grid_info/y1'])
         
-        variables = {"T1": T1, "rho1": rho1, "p1": p1, "s1": s1, "vx": vy, "vz": vz}
-        info = {"t": t, "nx": nx, "nz": nz, "nz_full": nz_full, "nz_ghost": nz_ghost, "dx": dx, "dz": dz, "z0": z0, "z1": z1, "x0": x0, "x1": x1}
+        variables = {"T1": T1, "rho1": rho1, "p1": p1, "s1": s1, "vy": vy, "vz": vz}
+        info = {"t": t, "ny": ny, "nz": nz, "nz_full": nz_full, "nz_ghost": nz_ghost, "dy": dy, "dz": dz, "z0": z0, "z1": z1, "y0": y0, "y1": y1}
     return variables, info
 
 def read_bg(file_path):
@@ -65,7 +121,6 @@ def read_bg(file_path):
         
     return variables, info
 
-
 def format_title(key):
     # Dictionary for special replacements
     special = {"rho": r"\rho", "p": "p", "T": "T", "v": "v"}
@@ -81,78 +136,89 @@ def format_title(key):
 
 class Visualize_Foreground:
     def __init__(self, folder):
-        self.folder = folder + "snap{}.h5"
-        self.num_snaps = len(os.listdir(folder))-2
+        self.folder = folder
+
+        snap_id = 0
+        snaps = []
+
+        self.n_procs = read_mpi_info(folder+"mpi_info.h5")
+        
+        if self.n_procs > 1:
+            exit_flag = False  # Flag to indicate when to exit the while loop
+            while True:
+                for i in range(self.n_procs):
+                    snap_filepath = folder + f"snap{snap_id}_{i}.h5"
+                    if os.path.exists(snap_filepath):
+                        snaps.append(snap_filepath)
+                    else:
+                        exit_flag = True  # Set the flag to True when the condition is met
+                        break  # Break out of the for loop
+                snap_id += 1
+                if exit_flag:
+                    break  # Break out of the while loop if the flag is set
+        else:
+            while True:
+                snap_filepath = folder + f"snap{snap_id}.h5"
+                if os.path.exists(snap_filepath):
+                    snaps.append(snap_filepath)
+                    snap_id += 1
+                else:
+                    break        
+        self.snaps = snaps
+        self.num_snaps = int(len(self.snaps)/self.n_procs)
         self.cmap = "RdBu"
         self.norm = TwoSlopeNorm
         self.set_plot_params()
         
     def set_plot_params(self):
         self.num_quivers = 10
-        variables, info = read_fg(self.folder.format(0))
-        #print(variables['vx'])
-        z_shape, x_shape = variables['vx'].shape
-        self.quiver_stride_x = int(x_shape//self.num_quivers)
+        if self.n_procs > 1:
+            variables, info = read_fg_mpi(self.num_snaps-1, self.n_procs, self.folder)
+        else:
+            variables, info = read_fg(self.folder+f"snap{self.num_snaps-1}.h5")
+        
+        z_shape, y_shape = variables['vy'].shape
+        self.quiver_stride_y = int(y_shape//self.num_quivers)
         self.quiver_stride_z = int(z_shape//self.num_quivers)
 
-
-        self.quiver_stride = 100
         self.font_size = 13
         self.title_size = 15
-        
-        max_values = [0] * 6
-        min_values = [0] * 6
-        for i in range(self.num_snaps):
-            variables, info = read_fg(self.folder.format(i))
-            T1, rho1, p1, s1, vx, vz = variables["T1"], variables["rho1"], variables["p1"], variables["s1"], variables["vx"], variables["vz"]
-            
-            max_values = np.maximum(max_values, [T1.max(), rho1.max(), p1.max(), s1.max(), vx.max(), vz.max()])
-            min_values = np.minimum(min_values, [T1.min(), rho1.min(), p1.min(), s1.min(), vx.min(), vz.min()])
-        
-        #max_values = [max(abs(min_val), abs(max_val)) for min_val, max_val in zip(min_values, max_values)]
-        #min_values = [-val for val in max_values]
 
+        t, y0, y1, z0, z1 = info['t'], info['y0'], info['y1'], info['z0'], info['z1']
 
-
-        variables, info = read_fg(self.folder.format(self.num_snaps-1))
-        T1, rho1, p1, s1, vx, vz = variables["T1"], variables["rho1"], variables["p1"], variables["s1"], variables["vx"], variables["vz"]
-
-        t, nx, nz, nz_full, nz_ghost, dx, dz, z0, z1, x0, x1 = info['t'], info['nx'], info['nz'], info['nz_full'], info['nz_ghost'], info['dx'], info['dz'], info['z0'], info['z1'], info['x0'], info['x1']
+        self.y0 = y0/R_sun
+        self.y1 = y1/R_sun
+        self.z0 = z0/R_sun
+        self.z1 = z1/R_sun
         
-        self.x_0 = x0/R_sun
-        self.x_1 = x1/R_sun
-        self.z_0 = z0/R_sun
-        self.z_1 = z1/R_sun
-        
-        self.aspect = (self.x_1-self.x_0)/(self.z_1-self.z_0) * 1.2
+        self.aspect = (self.y1-self.y0)/(self.z1-self.z0) * 1.2
         
         self.t_end = t*u.s
-        if t>1e4:
+        if t>1e3:
             self.t_end = self.t_end.to("h")
-        if t>1e5:
+        if t>1e4:
             self.t_end = self.t_end.to("day")
-        
-        # multiply by big number to decrease quiver scale, multiply by small number to increase quiver scale
-        self.quiver_scale = 0.1*max(max(max_values[4], max_values[5]), max(np.abs(min_values[4]), np.abs(min_values[5])))
         
         # holding touple(var_name, quiver true/false, vmin, vmax)
         self.plot_params = {
-            "T1": (True, min_values[0], max_values[0], "Temperature [K]"),
-            "rho1": (True, min_values[1], max_values[1], r"Density [g/cm$^3$]"),
-            "p1": (True, min_values[2], max_values[2], r"Pressure [dyn/cm$^2$]"),
-            "s1": (True, min_values[3], max_values[3], "Entropy [erg/K]"),
-            "vx": (False, min_values[4], max_values[4], "x-velocity [cm/s]"),
-            "vz": (False, min_values[5], max_values[5], "z-velocity [cm/s]")
+            "T1": (True, None, None, "Temperature [K]"),
+            "rho1": (True, None, None, r"Density [g/cm$^3$]"),
+            "p1": (True, None, None, r"Pressure [dyn/cm$^2$]"),
+            "s1": (True, None, None, "Entropy [erg/K]"),
+            "vy": (False, None, None, "y-velocity [cm/s]"),
+            "vz": (False, None, None, "z-velocity [cm/s]")
         }     
 
     def plot(self, fig, ax, snap_nr, key):
-        variables, info = read_fg(self.folder.format(snap_nr))
-        t, nx, nz, nz_ghost, dx, dz = info['t'], info['nx'], info['nz'], info['nz_ghost'], info['dx'], info['dz']  
-
-        
+        if self.n_procs > 1:
+            variables, info = read_fg_mpi(snap_nr, self.n_procs, self.folder)
+            background, _ = read_bg_mpi(self.n_procs, self.folder)
+        else:
+            variables, info = read_fg(self.folder+f"snap{snap_nr}.h5")
+            background, _ = read_bg(self.folder+"background.h5")
+        t, nz_ghost, dy, dz = info['t'], info['nz_ghost'], info['dy'], info['dz']  
 
         d = variables[key][nz_ghost:-1-nz_ghost+1,:]
-        background, _ = read_bg(self.folder.split("snap")[0]+"background.h5")
         
         if (key=="T1"):
             d = d/(background["T0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
@@ -167,39 +233,33 @@ class Visualize_Foreground:
             ax.set_title(format_title(key))
 
         if self.plot_params[key][0]:
-            vx = variables["vx"]
-            vz = variables["vz"]
-            vx = vx[nz_ghost:-1-nz_ghost+1,:]
-            vz = vz[nz_ghost:-1-nz_ghost+1,:]
+            vy = variables["vy"][nz_ghost:-1-nz_ghost+1,:]
+            vz = variables["vz"][nz_ghost:-1-nz_ghost+1,:]
 
-            Y, X = np.mgrid[0:d.shape[0]:self.quiver_stride_z, 0:d.shape[1]:self.quiver_stride_x]
+            Y, X = np.mgrid[0:d.shape[0]:self.quiver_stride_z, 0:d.shape[1]:self.quiver_stride_y]
             # Convert pixel indices to data coordinates
-            X_data = (X * dx)/R_sun
-            Y_data = (Y * dz)/R_sun+self.z_0
+            X_data = (X * dy)/R_sun
+            Y_data = (Y * dz)/R_sun+self.z0
             self.quiver_scale = None
-            ax.quiver(X_data, Y_data, vx[::self.quiver_stride_z, ::self.quiver_stride_x], vz[::self.quiver_stride_z, ::self.quiver_stride_x], scale=self.quiver_scale)
+            ax.quiver(X_data, Y_data, vy[::self.quiver_stride_z, ::self.quiver_stride_y], vz[::self.quiver_stride_z, ::self.quiver_stride_y], scale=self.quiver_scale)
         
         t = t*u.s
         t = t.to(self.t_end.unit)
         
         ax.set_xlabel("x [Solar radii]", fontsize=self.font_size)
         ax.set_ylabel("z [Solar radii]", fontsize=self.font_size)
-        
-        #vmin = self.plot_params[key][1]
 
-        
+        if self.plot_params[key][2] == None:
+            vmax = np.max(np.abs(d))
+            vmin = -vmax        
 
-        #vmax = self.plot_params[key][2]
-
-        vmax = np.max(np.abs(d))
-        vmin = -vmax        
+        extent = [self.y0,self.y1,self.z0,self.z1]
 
         if self.norm == TwoSlopeNorm:
             norm = self.norm(vcenter=0, vmin=vmin, vmax=vmax)
-            im =ax.imshow(d, origin="lower", extent=[self.x_0,self.x_1,self.z_0,self.z_1], aspect=self.aspect,norm=norm, cmap=self.cmap)
+            im =ax.imshow(d, origin="lower", extent=extent, aspect=self.aspect,norm=norm, cmap=self.cmap)
         else:
-            im =ax.imshow(d, origin="lower", extent=[self.x_0,self.x_1,self.z_0,self.z_1], aspect=self.aspect,vmin=vmin, vmax=vmax, cmap=self.cmap)
-        
+            im =ax.imshow(d, origin="lower", extent=extent, aspect=self.aspect,vmin=vmin, vmax=vmax, cmap=self.cmap)
         
         return im, t
 
@@ -207,7 +267,7 @@ class Visualize_Foreground:
         gs = gridspec.GridSpec(2, 6, width_ratios=[1, 0.05, 1, 0.05, 1, 0.05], wspace=0.6, hspace=0.3)
 
         # Order of keys for plotting
-        plot_order = ["T1", "rho1", "vx", "p1", "s1", "vz"]
+        plot_order = ["T1", "rho1", "vy", "p1", "s1", "vz"]
 
         for idx, key in enumerate(plot_order):
             i, j = divmod(idx, 3)  # Convert 1D index to 2D indices
@@ -258,7 +318,6 @@ class Visualize_Foreground:
     def animate_all(self, save=False, save_name=None, fps=4, save_interval=10):
         def init_animation():
             self.plot_all(self.fig, 0)
-            
 
         def update_animation(snap_nr):
             """Update the plots for each frame."""
@@ -275,48 +334,14 @@ class Visualize_Foreground:
         else:
             plt.show()
 
-    def animate_all_no_vmin_vmax(self, save=False, save_name=None, fps=4, save_interval=10):
-        for key in self.plot_params.keys():
-            self.plot_params[key] = (self.plot_params[key][0], None, None, self.plot_params[key][3])
-        self.animate_all(save, save_name, fps, save_interval)
-
-    def plot_v_of_t(self):
-        t = np.zeros(self.num_snaps)
-        vx = np.zeros(self.num_snaps)
-        vz = np.zeros(self.num_snaps)
-        for i in range(self.num_snaps):
-            variables, info = read_fg(self.folder.format(i))
-            t[i] = info["t"]
-            vx[i] = np.max(np.abs(variables["vx"]))
-            vz[i] = np.max(np.abs(variables["vz"]))
-
-        t = t*u.s
-        t = t.to(self.t_end.unit)
-        plt.plot(t, vx, label="vx")
-        plt.plot(t, vz, label="vz")
-        plt.xlabel("t [%s]" % self.t_end.unit.to_string(format='latex_inline'))
-        #plt.xlabel("t [s]")
-        plt.ylabel("Max Velocity [cm/s]")
-        plt.legend()
-        plt.show()
-
-    def plot_p_of_t(self):
-        t = np.zeros(self.num_snaps)
-        p = np.zeros(self.num_snaps)
-        for i in range(self.num_snaps):
-            variables, info = read_fg(self.folder.format(i))
-            t[i] = info["t"]
-            p[i] = np.max(np.abs(variables["p1"]))
-        plt.plot(t, p)
-        plt.xlabel("t [s]")
-        plt.ylabel("Max Pressure [dyn/cm$^2$]")
-        plt.show()
-
     def plot_rho_of_t(self):
         t = np.zeros(self.num_snaps)
         rho = np.zeros(self.num_snaps)
         for i in range(self.num_snaps):
-            variables, info = read_fg(self.folder.format(i))
+            if self.n_procs > 1:
+                variables, info = read_fg_mpi(i, self.n_procs, self.folder)
+            else:
+                variables, info = read_fg(self.folder + "{i}.h5")
             t[i] = info["t"]
             rho[i] = np.max(np.abs(variables["rho1"]))
         plt.plot(t, rho)
@@ -328,7 +353,10 @@ class Visualize_Foreground:
         t = np.zeros(self.num_snaps)
         T = np.zeros(self.num_snaps)
         for i in range(self.num_snaps):
-            variables, info = read_fg(self.folder.format(i))
+            if self.n_procs > 1:
+                variables, info = read_fg_mpi(i, self.n_procs, self.folder)
+            else:
+                variables, info = read_fg(self.folder + "{i}.h5")
             t[i] = info["t"]
             T[i] = np.max(np.abs(variables["T1"]))
         plt.plot(t, T)
@@ -340,7 +368,10 @@ class Visualize_Foreground:
         t = np.zeros(self.num_snaps)
         s = np.zeros(self.num_snaps)
         for i in range(self.num_snaps):
-            variables, info = read_fg(self.folder.format(i))
+            if self.n_procs > 1:
+                variables, info = read_fg_mpi(i, self.n_procs, self.folder)
+            else:
+                variables, info = read_fg(self.folder + "{i}.h5")
             t[i] = info["t"]
             s[i] = np.max(np.abs(variables["s1"]))
             
@@ -350,7 +381,7 @@ class Visualize_Foreground:
         plt.show()
 
 if __name__ == "__main__":
-    directory = "../data/pressure_damping_smaller/"
+    directory = "../data/rk3_no_mpi/"
     save_name = directory.split("/")[-2] + ".mp4"
 
     vf = Visualize_Foreground(directory)
@@ -361,11 +392,14 @@ if __name__ == "__main__":
         vf.plot_params['rho1'] = (True, None, None, vf.plot_params['rho1'][3])
         vf.plot_params['s1'] = (True, None, None, vf.plot_params['s1'][3])
         vf.plot_params['p1'] = (True, None, None, vf.plot_params['p1'][3])
-        vf.plot_params['vx'] = (False, None, None, vf.plot_params['vx'][3])
+        vf.plot_params['vy'] = (False, None, None, vf.plot_params['vy'][3])
         vf.plot_params['vz'] = (False, None, None, vf.plot_params['vz'][3])
+        #fig, ax = plt.subplots()
+        #vf.plot(fig, ax, 0, "p1")
+        #plt.show()
         #vf.plot_all(plt.figure(figsize=(16,9)), 1)
         #plt.show()
         vf.norm = NoNorm
-        vf.animate_all(save=True, save_name=save_name, fps=6, save_interval=1)
+        vf.animate_all(save=True, save_name=save_name, fps=5, save_interval=1)
     if False:
         vf.animate_all_no_vmin_vmax(save=True, save_name=save_name, fps=4, save_interval=1)

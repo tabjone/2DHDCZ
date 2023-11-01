@@ -48,43 +48,18 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
             fg->vz[i][j] = fg_prev->vz[i][j] + dt*rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
         }
     }
-    #if VERTICAL_BOUNDARY_TYPE != 2
-        if (!mpi_info->has_neighbor_below)
-        {
-            for (int j = 0; j < ny; j++)
-            {
-                fg->vy[nz_ghost][j] = fg_prev->vy[nz_ghost][j] + dt*rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_ghost, j);
-                fg->vz[nz_ghost][j] = 0.0;
-                fg->s1[nz_ghost][j] = 0.0;
-            }   
-        }
-        if (!mpi_info->has_neighbor_above)
-        {
-            for (int j = 0; j < ny; j++)
-            {
-                fg->vy[nz_full-nz_ghost-1][j] = fg_prev->vy[nz_full-nz_ghost-1][j] + dt*rhs_dvy_dt_2D_vertical_boundary(bg, fg_prev, grid_info, nz_full-nz_ghost-1, j);
-                fg->vz[nz_full-nz_ghost-1][j] = 0.0;
-                fg->s1[nz_full-nz_ghost-1][j] = 0.0;
-            }
-        }
-    #endif // VERTICAL_BOUNDARY_TYPE
 
-    // Not periodic
-    #if VERTICAL_BOUNDARY_TYPE != 2
-        apply_vertical_boundary_damping(fg, bg, grid_info, mpi_info, dt);
-    #endif // VERTICAL_BOUNDARY_TYPE
+    apply_vertical_boundary_damping(fg, bg, grid_info, mpi_info, dt);
 
     update_vertical_boundary_ghostcells_2D(fg->vy, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->vz, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->s1, grid_info, mpi_info);
-    
+    // Solving algebraic equations.
+    first_law_thermodynamics(fg, bg, grid_info);
+    equation_of_state(fg, bg, grid_info);
     // Solving elliptic equation
     solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
     update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
     
-    // Solving algebraic equations.
-    first_law_thermodynamics(fg, bg, grid_info);
-    equation_of_state(fg, bg, grid_info);
-
     return dt;
 }

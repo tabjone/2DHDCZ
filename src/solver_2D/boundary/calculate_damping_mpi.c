@@ -1,4 +1,4 @@
-#include "one_time_step.h"
+#include "boundary.h"
  
 void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
@@ -22,22 +22,25 @@ void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *
     #if VERTICAL_BOUNDARY_TYPE == 0
         int nz_ghost = grid_info->nz_ghost;
 
-        printf("Hard wall.\n");
-        // No damping
+        // No damping inside grid
         for (int i = 0; i < nz_full; i++)
         {
             damping_factor[i] = 1.0;
         }
-        // Boundaries
-        for (int i = 0; i < nz_ghost+1; i++)
-        {
-            damping_factor[i] = 0.0;
+        if (mpi_info->rank == 0) // Bottom boundary
+        {   
+            for (int i = 0; i < nz_ghost+1; i++)
+            {
+                damping_factor[i] = 0.0;
+            }
         }
-        for (int i = nz_full-nz_ghost-1; i < nz_full; i++)
+        if (mpi_info->rank == mpi_info->size-1) // Top boundary
         {
-            damping_factor[i] = 0.0;
+            for (int i = nz_full-nz_ghost-1; i < nz_full; i++)
+            {
+                damping_factor[i] = 0.0;
+            }
         }
-
     #elif VERTICAL_BOUNDARY_TYPE == 1
         // Soft wall
         // Getting grid info
@@ -69,9 +72,6 @@ void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *
             // Receive the top r from process 0
             MPI_Bcast(&top_r, 1, MPI_FLOAT_P, mpi_info->size-1, MPI_COMM_WORLD);
         }
-        
-
-
 
         FLOAT_P damped_domain = (top_r - bottom_r) * SOFT_WALL_HEIGHT_PERCENTAGE;
         // Calculate z0 for the bottom and top
@@ -139,7 +139,6 @@ void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *
         }
          
     #elif VERTICAL_BOUNDARY_TYPE == 2
-        printf("Periodic.\n");
         // No damping
         for (int i = 0; i < nz_full; i++)
         {

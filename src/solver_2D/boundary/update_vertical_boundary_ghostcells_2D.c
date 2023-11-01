@@ -2,6 +2,10 @@
 
 void update_vertical_boundary_ghostcells_2D(FLOAT_P **array, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
+    FLOAT_P nz_ghost = grid_info->nz_ghost;
+    FLOAT_P nz_full = grid_info->nz_full;
+    FLOAT_P ny = grid_info->ny;
+
     #if MPI_ON == 1
         // Sending and receiving ghost cells
         communicate_2D_ghost_above_below(array, grid_info, mpi_info);
@@ -9,7 +13,7 @@ void update_vertical_boundary_ghostcells_2D(FLOAT_P **array, struct GridInfo2D *
 
     if (!mpi_info->has_neighbor_below)
     {
-        extrapolate_2D_array_down(array, nz_ghost, ny); // Extrapolating vy to ghost cells below
+        extrapolate_2D_array_down(array, nz_ghost, ny);
     }
     if (!mpi_info->has_neighbor_above)
     {

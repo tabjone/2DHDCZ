@@ -24,7 +24,7 @@ void initialize_foreground(struct ForegroundVariables2D *fg, struct BackgroundVa
         #elif INITIALIZATION_TYPE == 2
             initialize_foreground_density_pertubation(fg, bg, grid_info);
         #elif INITIALIZATION_TYPE == 3
-            initialize_foreground_entropy_pertubation(fg, bg, grid_info);
+            initialize_foreground_entropy_pertubation(fg, bg, grid_info, mpi_info);
         #elif INITIALIZATION_TYPE == 4
             initialize_foreground_random(fg, bg, grid_info);
         #elif INITIALIZATION_TYPE == 5

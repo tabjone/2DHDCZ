@@ -1,6 +1,6 @@
 #include "initialization.h"
 
-void initialize_foreground_entropy_pertubation(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
+void initialize_foreground_entropy_pertubation(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Initializes the grid with a small entropy pertubation and setting T1=0.
@@ -23,7 +23,7 @@ void initialize_foreground_entropy_pertubation(struct ForegroundVariables2D *fg,
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
 
-    FLOAT_P amplitude = 1.0e2;
+    FLOAT_P amplitude = 1.0e1;
     FLOAT_P centre_z = 0.5*dz*nz;
     FLOAT_P sigma_z = 0.1*dz*nz;
     FLOAT_P centre_y = 0.5*dy*ny;
@@ -46,15 +46,8 @@ void initialize_foreground_entropy_pertubation(struct ForegroundVariables2D *fg,
         }
     }
 
-    #if VERTICAL_BOUNDARY_TYPE == 2
-        periodic_boundary_2D(fg->p1, grid_info);
-        periodic_boundary_2D(fg->s1, grid_info);
-    #else
-        extrapolate_2D_array_down(fg->p1, nz_ghost, ny);
-        extrapolate_2D_array_up(fg->p1, nz_full, nz_ghost, ny);
-        extrapolate_2D_array_down(fg->s1, nz_ghost, ny);
-        extrapolate_2D_array_up(fg->s1, nz_full, nz_ghost, ny);
-    #endif // VERTICAL_BOUNDARY_TYPE == 2
+    update_vertical_boundary_ghostcells_2D(fg->s1, grid_info, mpi_info);
+    update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
 
     equation_of_state(fg, bg, grid_info); // Getting rho1 from equation of state
 }

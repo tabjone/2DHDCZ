@@ -1,3 +1,54 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{1}
+
+\bibitem{1996Sci...272.1286C}
+J.~{Christensen-Dalsgaard}, W.~{Dappen}, S.~V. {Ajukov}, E.~R. {Anderson},
+  H.~M. {Antia}, S.~{Basu}, V.~A. {Baturin}, G.~{Berthomieu}, B.~{Chaboyer},
+  S.~M. {Chitre}, A.~N. {Cox}, P.~{Demarque}, J.~{Donatowicz}, W.~A.
+  {Dziembowski}, M.~{Gabriel}, D.~O. {Gough}, D.~B. {Guenther}, J.~A. {Guzik},
+  J.~W. {Harvey}, F.~{Hill}, G.~{Houdek}, C.~A. {Iglesias}, A.~G. {Kosovichev},
+  J.~W. {Leibacher}, P.~{Morel}, C.~R. {Proffitt}, J.~{Provost}, J.~{Reiter},
+  Jr. {Rhodes}, E.~J., F.~J. {Rogers}, I.~W. {Roxburgh}, M.~J. {Thompson}, and
+  R.~K. {Ulrich}.
+\newblock {The Current State of Solar Modeling}.
+\newblock {\em Science}, 272(5266):1286--1292, May 1996.
+
+\bibitem{1925ZaMM....5..136P}
+L.~{Prandtl}.
+\newblock {7. Bericht {\"u}ber Untersuchungen zur ausgebildeten Turbulenz}.
+\newblock {\em Zeitschrift Angewandte Mathematik und Mechanik}, 5(2):136--139,
+  January 1925.
+
+\bibitem{1999ApJS..121..247L}
+S.~R. {Lantz} and Y.~{Fan}.
+\newblock {Anelastic Magnetohydrodynamic Equations for Modeling Solar and
+  Stellar Convection Zones}.
+\newblock {\em \apjs}, 121(1):247--264, March 1999.
+
+\bibitem{1989ApJ...336.1022C}
+Kwing~L. {Chan} and S.~{Sofia}.
+\newblock {Turbulent Compressible Convection in a Deep Atmosphere. IV. Results
+  of Three-dimensional Computations}.
+\newblock {\em \apj}, 336:1022, January 1989.
+
+\bibitem{2021LRSP...18....5F}
+Yuhong {Fan}.
+\newblock {Magnetic fields in the solar convection zone}.
+\newblock {\em Living Reviews in Solar Physics}, 18(1):5, December 2021.
+
+\bibitem{1995ApJ...441..903L}
+Steven~R. {Lantz} and R.~N. {Sudan}.
+\newblock {Magnetoconvection Dynamics in a Stratified Layer. I. Two-dimensional
+  Simulations and Visualization}.
+\newblock {\em \apj}, 441:903, March 1995.
+
+\bibitem{1991ApJ...378..413C}
+J.~{Christensen-Dalsgaard}, D.~O. {Gough}, and M.~J. {Thompson}.
+\newblock {The Depth of the Solar Convection Zone}.
+\newblock {\em \apj}, 378:413, September 1991.
+
+\bibitem{2007SSRv..130..105G}
+N.~{Grevesse}, M.~{Asplund}, and A.~J. {Sauval}.
+\newblock {The Solar Chemical Composition}.
+\newblock {\em \ssr}, 130(1-4):105--114, June 2007.
 
 \end{thebibliography}
