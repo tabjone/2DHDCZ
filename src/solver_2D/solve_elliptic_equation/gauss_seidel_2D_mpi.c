@@ -140,10 +140,14 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
             }
             
         }
-        MPI_Allreduce(&max_difference, &max_difference, 1, MPI_FLOAT_P, MPI_MAX, MPI_COMM_WORLD);
-        // Find biggest max_pnew of all processes
-        MPI_Allreduce(&max_pnew, &max_pnew, 1, MPI_FLOAT_P, MPI_MAX, MPI_COMM_WORLD);
+        FLOAT_P reduced_max_difference;
+        FLOAT_P reduced_max_pnew;
 
+        MPI_Allreduce(&max_difference, &reduced_max_difference, 1, MPI_FLOAT_P, MPI_MAX, MPI_COMM_WORLD);
+        // Find biggest max_pnew of all processes
+        MPI_Allreduce(&max_pnew, &reduced_max_pnew, 1, MPI_FLOAT_P, MPI_MAX, MPI_COMM_WORLD);
+        max_difference = reduced_max_difference;
+        max_pnew = reduced_max_pnew;
         tolerance_criteria = max_difference/max_pnew;
         iter++;
     }

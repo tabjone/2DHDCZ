@@ -4,15 +4,15 @@
 #include "hdf5.h"
 #include <mpi.h>
 
-#define MPI_ON 0 // 0 for MPI off, 1 for MPI on
+#define MPI_ON 1 // 0 for MPI off, 1 for MPI on
 
 #define INITIALIZATION_TYPE 3 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for entropy pertubation, 4 for random, 5 for sod shock horizontal, 6 for sod shock vertical
 
-#define RUN_NAME "rk3_no_mpi" // Name of the run
+#define RUN_NAME "rk3_mpi_big_grid" // Name of the run
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 1e5 // Simulation time in seconds
+#define T 1e6 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
 #define SAVE_INTERVAL 1e3 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
@@ -44,8 +44,8 @@
 #define X_SIZE 0.1 // In units of solar radii
 #define Y_SIZE 0.1 // In units of solar radii
 #define NX 50 // Number of grid points in x-direction
-#define NY 70 // Number of grid points in y-direction
-#define NZ 70 // Number of grid points in z-direction
+#define NY 600 // Number of grid points in y-direction
+#define NZ 600 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
 #define GS_TOL 1e-6 // Gauss-Seidel tolerance

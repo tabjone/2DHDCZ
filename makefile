@@ -1,9 +1,9 @@
 # Compiler and Flags
 CC = mpicc
 CFLAGS = -Wall -Isrc -Isrc/shared_files $(HDF5_FLAGS) -O3
-LIBS = $(HDF5_LIBS)
+LIBS = $(HDF5_LIBS) -lm
 
-NP = 4  # default number of processes
+NP = 5  # default number of processes
 
 # HDF5 library location
 HDF5_FLAGS = -I/opt/homebrew/opt/hdf5/include
