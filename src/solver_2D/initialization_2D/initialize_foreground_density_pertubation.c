@@ -1,4 +1,4 @@
-#include "initialization.h"
+#include "initialization_2D.h"
 
 void initialize_foreground_density_pertubation(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
 {

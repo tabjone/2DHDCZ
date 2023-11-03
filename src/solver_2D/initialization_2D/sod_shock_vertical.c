@@ -1,4 +1,4 @@
-#include "initialization.h"
+#include "initialization_2D.h"
 
 void sod_shock_vertical(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
 {
@@ -36,7 +36,7 @@ void sod_shock_vertical(struct ForegroundVariables2D *fg, struct BackgroundVaria
             else
             {
                 fg->p1[i][j] = bg->p0[nz_full/2]*0.001;
-                fg->rho1[i][j] = fg->rho1[i][j] = bg->rho0[nz_full/2]*0.001;
+                fg->rho1[i][j] = bg->rho0[nz_full/2]*0.001;
                 fg->T1[i][j] = 0.0;
                 fg->s1[i][j] = 0.0;
             }

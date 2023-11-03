@@ -68,6 +68,8 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         first_t = 0.0;
     #endif // LOAD
 
+    printf("Initialization done\n");
+
     t_since_save = 0.0;
     dt_last = 0.0;
     while (t < T)
@@ -77,6 +79,10 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
 
         t_since_save += dt;
         dt_last = dt;
+        if (dt_last < 0.001)
+        {
+            break;
+        }
         
         if (t_since_save > SAVE_INTERVAL && SAVE_ALL == 0)
         {

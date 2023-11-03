@@ -1,4 +1,4 @@
-#include "initialization.h"
+#include "initialization_2D.h"
 
 void initialize_foreground_velocity_right(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info)
 {

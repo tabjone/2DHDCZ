@@ -1,4 +1,4 @@
-#include "initialization.h"
+#include "initialization_2D.h"
 
 void initialize_foreground_entropy_pertubation_mpi(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {

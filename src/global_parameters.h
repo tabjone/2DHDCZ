@@ -4,15 +4,13 @@
 #include "hdf5.h"
 #include <mpi.h>
 
-#define MPI_ON 1 // 0 for MPI off, 1 for MPI on
+#define MPI_ON 0 // 0 for MPI off, 1 for MPI on
 
-#define INITIALIZATION_TYPE 3 // 0 for zeros, 1 for velocity right, 2 for density pertubation, 3 for entropy pertubation, 4 for random, 5 for sod shock horizontal, 6 for sod shock vertical
-
-#define RUN_NAME "rk3_mpi_big_grid" // Name of the run
+#define RUN_NAME "two_pertubations_3" // Name of the run
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 1e6 // Simulation time in seconds
+#define T 1e4 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
 #define SAVE_INTERVAL 1e3 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
@@ -39,16 +37,16 @@
 
 // Grid size
 #define CZ_START 0.7 // In units of solar radii
-#define R_START 0.71 // In units of solar radii
-#define R_END 0.81 // In units of solar radii
+#define R_START 0.75 // In units of solar radii
+#define R_END 0.85 // In units of solar radii
 #define X_SIZE 0.1 // In units of solar radii
 #define Y_SIZE 0.1 // In units of solar radii
 #define NX 50 // Number of grid points in x-direction
-#define NY 600 // Number of grid points in y-direction
-#define NZ 600 // Number of grid points in z-direction
+#define NY 100 // Number of grid points in y-direction
+#define NZ 100 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
-#define GS_TOL 1e-6 // Gauss-Seidel tolerance
+#define GS_TOL 1e-5 // Gauss-Seidel tolerance
 #define GS_MAX_ITER 5e7 // Gauss-Seidel max iterations
 
 // Physical parameters
@@ -57,7 +55,7 @@
 #define NABLA_AD 0.4 // Adiabatic temperature gradient
 
 // Background parameters
-#define K 0.01 // superadiabacicity parameter in CZ
+#define SUPERAD_PARAM 0.001 // superadiabacicity parameter in CZ
 #define p_step 0.1 // Number for determining step-size in space
 
 // Extra parameters
@@ -74,7 +72,7 @@
 #define THERMAL_DIFFUSIVITY_ON 1 // 0 for thermal diffusivity off, 1 for thermal diffusivity on
 #define BFIELD_ON 0 // 0 for B-field off, 1 for B-field on
 
-#define DEBUG 0
+#define DEBUG 1
 #define CONSTANT_BACKGROUND 0 // 0 for non-constant background, 1 for constant background
 
 

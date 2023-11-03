@@ -1,4 +1,4 @@
-#include "initialization.h"
+#include "initialization_2D.h"
 
 void initialize_foreground_entropy_pertubation(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
@@ -24,10 +24,16 @@ void initialize_foreground_entropy_pertubation(struct ForegroundVariables2D *fg,
     FLOAT_P dz = grid_info->dz;
 
     FLOAT_P amplitude = 1.0e1;
-    FLOAT_P centre_z = 0.5*dz*nz;
     FLOAT_P sigma_z = 0.1*dz*nz;
-    FLOAT_P centre_y = 0.5*dy*ny;
     FLOAT_P sigma_y = 0.1*dy*ny;
+    FLOAT_P centre_z[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Z;
+    FLOAT_P centre_y[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Y;
+
+    for (int i = 0; i < IC_N_ENTROPY_PERTUBATION; i++)
+    {
+        centre_z[i] *= dz * NZ;
+        centre_y[i] *= dy * NY;
+    }
 
     initialize_foreground_zeros(fg, grid_info); // Sets everything to zero so boundary and ghost cells are automatically zero
 
@@ -39,8 +45,11 @@ void initialize_foreground_entropy_pertubation(struct ForegroundVariables2D *fg,
     {
         for (int j = 0; j < ny; j++)
         {
-            // Entropy pertubation
-            fg->s1[i][j] = gaussian_2D((i-nz_ghost)*dz, j*dy, centre_z, centre_y, sigma_z, sigma_y, amplitude);;
+            for (int n = 0; n < IC_N_ENTROPY_PERTUBATION; n++)
+            {
+                // Entropy pertubation
+                fg->s1[i][j] += gaussian_2D((i-nz_ghost)*dz, j*dy, centre_z[n], centre_y[n], sigma_z, sigma_y, amplitude);
+            }
             // Calculating p1 from first law of thermodynamics
             fg->p1[i][j] = -bg->p0[i] * fg->s1[i][j]/c_p;
         }

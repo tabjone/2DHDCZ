@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "initialization.h"
+#include "initialization_2D.h"
 #include "global_parameters.h"
 
 void initialize_foreground_random(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg , struct GridInfo2D *grid_info)

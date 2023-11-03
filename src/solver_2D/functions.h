@@ -14,10 +14,8 @@
 #include "./one_time_step/one_time_step.h"
 #include "./equations/equations.h"
 #include "./boundary/boundary.h"
-#include "./initialization/initialization.h"
+#include "./initialization_2D/initialization_2D.h"
 #include "io_functions/io_functions.h"
-
-
 
 void calculate_grid_info(struct GridInfo2D **grid_info, struct MpiInfo *mpi_info);
 void calculate_grid_info_mpi(struct MpiInfo *mpi_info, struct GridInfo2D **grid_info);
