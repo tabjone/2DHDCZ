@@ -54,9 +54,20 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     update_vertical_boundary_ghostcells_2D(fg->vy, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->vz, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->s1, grid_info, mpi_info);
+    
+    // Need these for T1 and rho1
+    for (int i = 0; i < nz_full; i++)
+    {
+        for (int j = 0; j < ny; j++)
+        {
+            fg->p1[i][j] = fg_prev->p1[i][j];
+        }
+    }
+
     // Solving algebraic equations.
     first_law_thermodynamics(fg, bg, grid_info);
     equation_of_state(fg, bg, grid_info);
+    
     // Solving elliptic equation
     solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
     update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);

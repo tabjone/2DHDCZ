@@ -22,7 +22,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     first_timestep : bool
         True if this is the first timestep, false otherwise.
     */
-
+   
     // Getting grid info
     int ny = grid_info->ny;
     int nz_ghost = grid_info->nz_ghost;
@@ -78,6 +78,8 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
+    
+
     apply_vertical_boundary_damping(fg, bg, grid_info, mpi_info, dt);
 
     // Updating ghost cells
@@ -85,6 +87,14 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     update_vertical_boundary_ghostcells_2D(fg->vy, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->vz, grid_info, mpi_info);
 
+    // Need these for T1 and rho1
+    for (int i = 0; i < nz_full; i++)
+    {
+        for (int j = 0; j < ny; j++)
+        {
+            fg->p1[i][j] = fg_prev->p1[i][j];
+        }
+    }
 
     // Updating mid-calculation variables rho1 and T1
     first_law_thermodynamics(fg, bg, grid_info);
@@ -93,8 +103,6 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     // Calculating pressure
     solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
-
-    
 
     // Calculating k2 inside the grid and on boundaries
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)

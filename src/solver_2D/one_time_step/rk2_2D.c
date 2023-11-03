@@ -80,6 +80,15 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     update_vertical_boundary_ghostcells_2D(fg->vy, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->vz, grid_info, mpi_info);
 
+    // Need these for T1 and rho1
+    for (int i = 0; i < nz_full; i++)
+    {
+        for (int j = 0; j < ny; j++)
+        {
+            fg->p1[i][j] = fg_prev->p1[i][j];
+        }
+    }
+
     // Updating mid calculation variables
     first_law_thermodynamics(fg, bg, grid_info);
     equation_of_state(fg, bg, grid_info);
