@@ -13,7 +13,7 @@ void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown)
     FLOAT_P c_p = r_star /(1.0-1.0/GAMMA);
     FLOAT_P ds_dr = - c_p * (nabla_star - NABLA_AD) / bg->p0[i] * dp_dr;
 
-    if ((i+1) % bg->N == 0 && i != 0 && false)
+    if ((i+1) % bg->N == 0 && i != 0)
     {
         bg->r = realloc(bg->r, sizeof(FLOAT_P)*(bg->N*bg->N_increment));
         bg->p0 = realloc(bg->p0, sizeof(FLOAT_P)*(bg->N*bg->N_increment));
