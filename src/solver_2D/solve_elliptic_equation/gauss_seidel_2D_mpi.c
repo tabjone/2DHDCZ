@@ -60,23 +60,22 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
         int i_start = 0;
         int i_end = nz;
     #else
-        int i_start, i_end;
-        // Setting boundary conditions
-        if (mpi_info->has_neighbor_below)
+        int i_start = 1;
+        int i_end = nz+1;
+
+        if (!mpi_info->has_neighbor_below) // Boundary zero
         {
-            i_start = 1;
+            for (int j = 0; j < ny; j++)
+            {
+                pnew[1][j] = 0.0;
+            }
         }
-        else
+        if (mpi_info->has_neighbor_above) // Boundary zero
         {
-            i_start = 2;
-        }
-        if (mpi_info->has_neighbor_above)
-        {
-            i_end = nz+1;
-        }
-        else
-        {
-            i_end = nz;
+            for (int j = 0; j < ny; j++)
+            {
+                pnew[nz][j] = 0.0;
+            }
         }
     #endif // VERTICAL_BOUNDARY_TYPE
 
@@ -101,6 +100,7 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
 
         // Copy pnew to p
         copy_2D_array(pnew, p, 0, nz+2, 0, ny);
+
         communicate_p_gauss_seidel(p, grid_info, mpi_info);
     
         for (int i = i_start; i < i_end; i++)
@@ -163,7 +163,6 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
         for (int j = 0; j < ny; j++)
         {
             p1[i + nz_ghost][j] = pnew[i+1][j];
-            //p1[i+nz_ghost][j] = p1[i+nz_ghost][j];
         }
     }
     
