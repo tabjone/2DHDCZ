@@ -7,15 +7,16 @@
 
 int main(int argc, char *argv[])
 {
+	printf("Top of main");
     struct MpiInfo *mpi_info;
     mpi_info = malloc(sizeof(struct MpiInfo));
 
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &mpi_info->size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_info->rank);
+
     // Initialize MPI
     #if MPI_ON == 1
-        MPI_Init(&argc, &argv);
-        MPI_Comm_size(MPI_COMM_WORLD, &mpi_info->size);
-        MPI_Comm_rank(MPI_COMM_WORLD, &mpi_info->rank);
-
         // Check if there are neighbors above and below
         if (mpi_info->rank == 0)
         {
@@ -32,9 +33,9 @@ int main(int argc, char *argv[])
             mpi_info->has_neighbor_below = true;
             mpi_info->has_neighbor_above = true;
         }
-        #else
-            mpi_info->has_neighbor_below = false;
-            mpi_info->has_neighbor_above = false;
+    #else
+        mpi_info->has_neighbor_below = false;
+        mpi_info->has_neighbor_above = false;
     #endif // MPI_ON
 
     char dir_name[100];
@@ -42,22 +43,9 @@ int main(int argc, char *argv[])
 
     // Use snprintf to create the directory path with the base directory and RUN_NAME
     snprintf(dir_name, sizeof(dir_name), "data/%s", RUN_NAME);
-
-    #if MPI_ON == 1
-        if (mpi_info->rank == 0)
-        {
-            // Check if directory exists
-            if (stat(dir_name, &st) == -1) {
-                // If directory doesn't exist, create it with permissions set to rwxr-xr-x
-                if (mkdir(dir_name, 0755) == -1) {
-                    perror("Error creating directory");
-                    return 1;
-                }
-            }
-        }
-        // Wait for rank 0 to finish creating the directory
-        MPI_Barrier(MPI_COMM_WORLD);
-    #else
+    
+    if (mpi_info->rank == 0)
+    {
         // Check if directory exists
         if (stat(dir_name, &st) == -1) {
             // If directory doesn't exist, create it with permissions set to rwxr-xr-x
@@ -66,20 +54,30 @@ int main(int argc, char *argv[])
                 return 1;
             }
         }
-    #endif // MPI_ON
+    }
+    // Wait for rank 0 to finish creating the directory
+   MPI_Barrier(MPI_COMM_WORLD);
 
     #if DIMENSIONS == 1
         printf("Not implemented yet\n");
     #elif DIMENSIONS == 2
-        main_2D(argc, argv, mpi_info);
+        #if MPI_ON == 0
+            if (mpi_info->rank==0){
+                printf("Starting\n");
+                main_2D(argc, argv, mpi_info);}
+        #else
+            main_2D(argc, argv, mpi_info);
+        #endif // MPI_ON
     #elif DIMENSIONS == 3
         main_3D(argc, argv, mpi_info);
     #endif // DIMENSIONS
+	
+	MPI_Barrier(MPI_COMM_WORLD);
 
     free(mpi_info);
 
-    #if MPI_ON == 1
-        MPI_Finalize();
-    #endif // MPI_ON
+    
+    MPI_Finalize();
+    
     return 0;
 }
