@@ -14,7 +14,9 @@ void communicate_3D_ghost_above_below(float ***array, struct GridInfo2D *grid_in
     mpi_info : struct MpiInfo pointer
         Pointer to the struct containing mpi info.
     */
-   /*
+
+    DENNE FUNKSJONEN MÅ GÅS OVER OG SJEKKE AT ALT SENDES OG MOTTAS RIKTIG
+
     MPI_Status status;
 
     // Getting grid info
@@ -28,21 +30,40 @@ void communicate_3D_ghost_above_below(float ***array, struct GridInfo2D *grid_in
     bool has_neighbor_above = mpi_info->has_neighbor_above;
     bool has_neighbor_below = mpi_info->has_neighbor_below;
 
+    int n_send = nz_ghost*ny*nx;
+
     // Communicating ghost cells with even-odd method
+    // Sending to above
     if (rank % 2 == 0) {
         if (has_neighbor_above) {
-            MPI_Send(&array[nz_full - 2*nz_ghost][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
+            MPI_Send(&array[nz][0][0], n_send, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
         }
         if (has_neighbor_below) {
-            MPI_Recv(&array[0][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(&array[0][0][0], n_send, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD, &status);
         }
     } else {
         if (has_neighbor_below) {
-            MPI_Recv(&array[0][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(&array[0][0][0], n_send, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD, &status);
         }
         if (has_neighbor_above) {
-            MPI_Send(&array[nz_full - 2*nz_ghost][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
+            MPI_Send(&array[nz][0][0], n_send, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD);
         }
     }
-    */
+
+    // Now sending to below
+    if (rank % 2 == 0) {
+        if (has_neighbor_below) {
+            MPI_Send(&array[nz_ghost][0][0], n_send, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD);
+        }
+        if (has_neighbor_above) {
+            MPI_Recv(&array[nz + nz_ghost][0][0], n_send, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD, &status);
+        }
+    } else {
+        if (has_neighbor_above) {
+            MPI_Recv(&array[nz + nz_ghost][0][0], n_send, MPI_FLOAT_P, rank + 1, 0, MPI_COMM_WORLD, &status);
+        }
+        if (has_neighbor_below) {
+            MPI_Send(&array[nz_ghost][0][0], n_send, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD);
+        }
+    }
 }
