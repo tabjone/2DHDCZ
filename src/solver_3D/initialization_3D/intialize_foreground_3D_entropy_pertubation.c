@@ -1,6 +1,6 @@
 #include "initialization_3D.h"
 
-void initialize_foreground_3D_entropy_pertubation(struct ForegroundVariables3D *fg, struct BackgroundVariables *bg, struct GridInfo3D *grid_info)
+void initialize_foreground_3D_entropy_pertubation(struct ForegroundVariables3D *fg, struct BackgroundVariables *bg, struct GridInfo3D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Initializes the grid with a small entropy pertubation and setting T1=0.
@@ -25,30 +25,28 @@ void initialize_foreground_3D_entropy_pertubation(struct ForegroundVariables3D *
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
 
+    // Getting mpi info
+    FLOAT_P z_offset = mpi_info->z_offset;
+
+    // Setting up gaussians
     FLOAT_P amplitude = 1.0e2;
-    FLOAT_P centre_z = 0.5*dz*nz;
     FLOAT_P sigma_z = 0.1*dz*nz;
-    FLOAT_P centre_y = 0.5*dy*ny;
     FLOAT_P sigma_y = 0.1*dy*ny;
-    FLOAT_P centre_x = 0.5*dx*nx;
     FLOAT_P sigma_x = 0.1*dx*nx;
 
-    // First setting all values to zero
-    for (int i = 0; i < nz_full; i++)
+    // Getting centre of gaussians from initial conditions file
+    FLOAT_P centre_z[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Z;
+    FLOAT_P centre_y[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Y;
+    FLOAT_P centre_x[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_X;
+
+    for (int i = 0; i < IC_N_ENTROPY_PERTUBATION; i++)
     {
-        for (int j = 0; j < ny; j++)
-        {
-            for (int k = 0; k < nx; k++)
-            {
-                fg->p1[i][j][k] = 0.0;
-                fg->s1[i][j][k] = 0.0;
-                fg->T1[i][j][k] = 0.0;
-                fg->vx[i][j][k] = 0.0;
-                fg->vy[i][j][k] = 0.0;
-                fg->vz[i][j][k] = 0.0;
-            }
-        }
+        centre_z[i] *= dz * NZ;
+        centre_y[i] *= dy * NY;
+        centre_x[i] *= dx * NX;
     }
+
+    initialize_foreground_zeros_3D(fg, grid_info); // Sets everything to zero so boundary and ghost cells are automatically zero
 
     // Spesific heat at constant pressure
     FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
@@ -60,11 +58,11 @@ void initialize_foreground_3D_entropy_pertubation(struct ForegroundVariables3D *
         {
             for (int k = 0; k < nx; k++)
             {
-                fg->vx[i][j][k] = 0.0;
-                fg->vy[i][j][k] = 0.0;
-                fg->vz[i][j][k] = 0.0;
-                // Entropy pertubation
-                fg->s1[i][j][k] = gaussian_3D((i-nz_ghost)*dz, j*dy, k*dz, centre_z, centre_y, centre_x, sigma_z, sigma_y, sigma_x, amplitude);
+                for (int n = 0; n < IC_N_ENTROPY_PERTUBATION; n++)
+                {
+                    // Entropy pertubation
+                    fg->s1[i][j][k] += gaussian_3D((i-nz_ghost)*dz+z_offset, j*dy, k*dz, centre_z[n], centre_y[n], centre_x[n], sigma_z, sigma_y, sigma_x, amplitude);
+                }
                 // Calculating p1 from first law of thermodynamics
                 fg->p1[i][j][k] = -bg->p0[i] * fg->s1[i][j][k]/c_p;
             }
@@ -72,10 +70,8 @@ void initialize_foreground_3D_entropy_pertubation(struct ForegroundVariables3D *
         }
     }
 
-    extrapolate_3D_array_down(fg->p1, nz_ghost, ny, nx);
-    extrapolate_3D_array_up(fg->p1, nz_full, nz_ghost, ny, nx);
-    extrapolate_3D_array_down(fg->s1, nz_ghost, ny, nx);
-    extrapolate_3D_array_up(fg->s1, nz_full, nz_ghost, ny, nx);
+    update_vertical_boundary_ghostcells_3D(fg->s1, grid_info, mpi_info);
+    update_vertical_boundary_ghostcells_3D(fg->p1, grid_info, mpi_info);
 
     equation_of_state_3D(fg, bg, grid_info); // Getting rho1 from equation of state
 }
