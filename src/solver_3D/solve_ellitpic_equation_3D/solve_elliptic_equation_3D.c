@@ -23,19 +23,12 @@ void solve_elliptic_equation_3D(struct BackgroundVariables *bg, struct Foregroun
         }
     }
 
-    // Solve boudaries
-    for (int j = 0; j < ny; j++)
-    { 
-        for (int k = 0; k < nx; k++)
-        {
-            // Bottom boundary
-            rhs[0][j][k] = 0.0;
-            // Top bundary
-            rhs[nz-1][j][k] = 0.0;
-        }
-    }
+    #if MPI_ON == 0
+        gauss_seidel_3D(rhs, fg->p1, fg_prev->p1, grid_info);
+    #elif MPI_ON == 1
+        gauss_seidel_3D_mpi(rhs, fg->p1, fg_prev->p1, grid_info, mpi_info);
+    #endif // MPI_ON
 
-    gauss_seidel_3D(rhs, fg->p1, fg_prev->p1, grid_info);
     deallocate_3D_array(rhs);
 
 }

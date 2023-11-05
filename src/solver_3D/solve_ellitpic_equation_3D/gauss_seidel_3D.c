@@ -50,15 +50,22 @@ void gauss_seidel_3D(FLOAT_P ***b, FLOAT_P ***p1, FLOAT_P ***initial_p1, struct 
         }
     }
 
-    // Setting boundary conditions
-    for (int j = 0; j < ny; j++)
-    {
-        for (int k = 0; k < nx; k++)
+    #if VERTICAL_BOUNDARY_TYPE == 2
+        int i_start = 0;
+        int i_end = nz;
+    #else
+        int i_start = 1;
+        int i_end = nz-1;
+        // Setting boundary conditions
+        for (int j = 0; j < ny; j++)
         {
-            pnew[0][j][k] = 0.0;
-            pnew[nz-1][j][k] = 0.0;
-        }
-    }
+            for (int k = 0; k < nx; k++)
+            {
+                pnew[0][j][k] = 0.0;
+                pnew[nz-1][j][k] = 0.0;
+            }
+        }    
+    #endif // VERTICAL_BOUNDARY_TYPE
 
     // Tolerance parameters
     FLOAT_P abs_difference, abs_pnew;
@@ -67,7 +74,7 @@ void gauss_seidel_3D(FLOAT_P ***b, FLOAT_P ***p1, FLOAT_P ***initial_p1, struct 
     FLOAT_P max_difference = 0.0;
 
     // Periodic boundary conditions
-    int j_plus, j_minus, k_plus, k_minus;
+    int i_plus, i_minus, j_plus, j_minus, k_plus, k_minus;
 
     int iter = 0;
     while (tolerance_criteria > GS_TOL)
@@ -82,19 +89,30 @@ void gauss_seidel_3D(FLOAT_P ***b, FLOAT_P ***p1, FLOAT_P ***initial_p1, struct 
         // Copy pnew to p
         copy_3D_array(pnew, p, 0, nz, 0, ny, 0, nx);
         
-        for (int i = 1; i < nz-1; i++)
+        for (int i = i_start; i < i_end; i++)
         {
+            #if VERTICAL_BOUNDARY_TYPE == 2
+                i_plus = periodic_boundary(i+1, nz);
+                i_minus = periodic_boundary(i-1, nz);
+            #else
+                i_plus = i+1;
+                i_minus = i-1;
+            #endif // VERTICAL_BOUNDARY_TYPE
+
             for (int j = 0; j < ny; j++)
             {
+                j_plus = periodic_boundary(j+1, ny);
+                j_minus = periodic_boundary(j-1, ny);
                 for (int k = 0; k < nx; k++)
                 {
-                    j_plus = periodic_boundary(j+1, ny);
-                    j_minus = periodic_boundary(j-1, ny);
                     k_plus = periodic_boundary(k+1, nx);
                     k_minus = periodic_boundary(k-1, nx);
 
-                    pnew[i][j][k] = (b[i][j][k] - a*(p[i+1][j][k] + pnew[i-1][j][k]) - c*(p[i][j_plus][k] + pnew[i][j_minus][k]) - d*(p[i][j][k_plus] + pnew[i][j][k_minus]))/g;
-                    
+                    // Gauss-Seidel
+                    //pnew[i][j][k] = (b[i][j][k] - a*(p[i+1][j][k] + pnew[i-1][j][k]) - c*(p[i][j_plus][k] + pnew[i][j_minus][k]) - d*(p[i][j][k_plus] + pnew[i][j][k_minus]))/g;
+                    // Jacobi
+                    pnew[i][j][k] = (b[i][j][k] - a*(p[i_plus][j][k] + p[i_minus][j][k]) - c*(p[i][j_plus][k] + p[i][j_minus][k]) - d*(p[i][j][k_plus] + p[i][j][k_minus]))/g;
+
                     // Finding maximum absolute value of pnew
                     abs_pnew = fabs(pnew[i][j][k]);
 

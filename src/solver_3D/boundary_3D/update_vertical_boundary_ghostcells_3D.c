@@ -7,8 +7,6 @@ void update_vertical_boundary_ghostcells_3D(FLOAT_P ***array, struct GridInfo3D 
     int ny = grid_info->ny;
     int nx = grid_info->nx;
 
-    int size = mpi_info->size;
-
     #if MPI_ON == 1
         // Sending and receiving ghost cells
         communicate_3D_ghost_above_below(array, grid_info, mpi_info);
@@ -29,6 +27,7 @@ void update_vertical_boundary_ghostcells_3D(FLOAT_P ***array, struct GridInfo3D 
     // Handle case of periodic boundary
     #if VERTICAL_BOUNDARY_TYPE == 2
         #if MPI_ON == 1
+            int size = mpi_info->size;
             // Send and recieve to/from bottom
             if (!mpi_info->has_neighbor_above)
             {

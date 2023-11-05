@@ -26,7 +26,7 @@ void initialize_foreground_3D_entropy_pertubation(struct ForegroundVariables3D *
     FLOAT_P dz = grid_info->dz;
 
     // Getting mpi info
-    FLOAT_P z_offset = mpi_info->z_offset;
+    FLOAT_P z_offset = grid_info->z_offset;
 
     // Setting up gaussians
     FLOAT_P amplitude = 1.0e2;

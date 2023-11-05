@@ -1,3 +1,5 @@
+#include "initialization_3D.h"
+
 void initialize_foreground_zeros_3D(struct ForegroundVariables3D *fg, struct GridInfo3D *grid_info) 
 {
     /*

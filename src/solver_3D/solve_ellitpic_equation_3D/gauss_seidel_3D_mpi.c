@@ -1,7 +1,7 @@
-#include "solve_elliptic_equation.h"
+#include "solve_elliptic_equation_3D.h"
 #include <float.h>
 
-void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
+void gauss_seidel_3D_mpi(FLOAT_P ***b, FLOAT_P ***p1, FLOAT_P ***initial_p1, struct GridInfo3D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Solves the elliptic equation for the pressure field using Gauss-Seidel method
@@ -19,29 +19,35 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
     */
 
     // Getting grid info
+    int nx = grid_info->nx;
     int ny = grid_info->ny;
     int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
+    FLOAT_P dx = grid_info->dx;
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
 
     // Pre-calculating stencil values
     FLOAT_P a = 1.0/(dz*dz);
     FLOAT_P c = 1.0/(dy*dy);
-    FLOAT_P g = -2.0*(a+c);
+    FLOAT_P d = 1.0/(dx*dx);
+    FLOAT_P g = -2.0*(a+c+d);
 
     // Initializing p and pnew
-    FLOAT_P **pnew, **p;
-    allocate_2D_array(&pnew, nz+2, ny);
-    allocate_2D_array(&p, nz+2, ny);
+    FLOAT_P ***pnew, ***p;
+    allocate_3D_array(&pnew, nz+2, ny, nx);
+    allocate_3D_array(&p, nz+2, ny, nx);
     
     // Initialize ghost cells
     for (int j = 0; j < ny; j++)
     {
-        pnew[0][j] = 0.0;
-        pnew[nz+1][j] = 0.0;
-        p[0][j] = 0.0;
-        p[nz+1][j] = 0.0;
+        for (int k = 0; k < nx; k++)
+        {
+            pnew[0][j][k] = 0.0;
+            pnew[nz+1][j][k] = 0.0;
+            p[0][j][k] = 0.0;
+            p[nz+1][j][k] = 0.0;
+        }
     }
     
     // Initialize inside grid
@@ -49,12 +55,15 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
     {
         for (int j = 0; j < ny; j++)
         {
-            pnew[i+1][j] = initial_p1[i+nz_ghost][j];
-            p[i+1][j] = 0.0;
+            for (int k = 0; k < nx; k++)
+            {
+                pnew[i+1][j][k] = initial_p1[i+nz_ghost][j][k];
+                p[i+1][j][k] = 0.0;
+            }
         }
     }
 
-    communicate_p_gauss_seidel(pnew, grid_info, mpi_info);
+    communicate_p_gauss_seidel_3D(pnew, grid_info, mpi_info);
 
     #if VERTICAL_BOUNDARY_TYPE == 2
         int i_start = 0;
@@ -67,14 +76,20 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
         {
             for (int j = 0; j < ny; j++)
             {
-                pnew[1][j] = 0.0;
+                for (int k = 0; k < nx; k++)
+                {
+                    pnew[1][j][k] = 0.0;
+                }
             }
         }
         if (!mpi_info->has_neighbor_above) // Boundary zero
         {
             for (int j = 0; j < ny; j++)
             {
-                pnew[nz][j] = 0.0;
+                for (int k = 0; k < nx; k++)
+                {
+                    pnew[nz][j][k] = 0.0;
+                }
             }
         }
     #endif // VERTICAL_BOUNDARY_TYPE
@@ -85,7 +100,7 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
     FLOAT_P tolerance_criteria = DBL_MAX;
 
     // Periodic boundary conditions
-    int i_plus, i_minus, j_plus, j_minus;
+    int i_plus, i_minus, j_plus, j_minus, k_plus, k_minus;
 
     int iter = 0;
     
@@ -99,9 +114,9 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
         max_pnew = 0.0;
 
         // Copy pnew to p
-        copy_2D_array(pnew, p, 0, nz+2, 0, ny);
+        copy_3D_array(pnew, p, 0, nz+2, 0, ny, 0, nx);
 
-        communicate_p_gauss_seidel(p, grid_info, mpi_info);
+        communicate_p_gauss_seidel_3D(p, grid_info, mpi_info);
     
         for (int i = i_start; i < i_end; i++)
         {
@@ -116,29 +131,32 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
             {
                 j_plus = periodic_boundary(j+1, ny);
                 j_minus = periodic_boundary(j-1, ny);
-                // Gauss-Seidel
-                //pnew[i][j] = (b[i][j] - a*(p[i_plus][j] + pnew[i_minus][j]) - c*(p[i][j_plus] + pnew[i][j_minus]))/g;
-                // Jacobi
-                //printf("i_minus=%d, i_plus=%d\n", i_minus, i_plus);
-                pnew[i][j] = (b[i-i_start][j] - a*(p[i_plus][j] + p[i_minus][j]) - c*(p[i][j_plus] + p[i][j_minus]))/g;
-                
-                // Finding maximum absolute value of pnew
-                abs_pnew = fabs(pnew[i][j]);
-
-                if (abs_pnew > max_pnew)
+                for (int k = 0; k < nx; k++)
                 {
-                    max_pnew = abs_pnew;
-                }
-
-                // Finding maximum difference between p and pnew
-                abs_difference = fabs(pnew[i][j] - p[i][j]);
+                    k_plus = periodic_boundary(k+1, nx);
+                    k_minus = periodic_boundary(k-1, nx);
+                    // Gauss-Seidel
+                    //pnew[i][j][k] = (b[i][j][k] - a*(p[i+1][j][k] + pnew[i-1][j][k]) - c*(p[i][j_plus][k] + pnew[i][j_minus][k]) - d*(p[i][j][k_plus] + pnew[i][j][k_minus]))/g;
+                    // Jacobi
+                    pnew[i][j][k] = (b[i][j][k] - a*(p[i_plus][j][k] + p[i_minus][j][k]) - c*(p[i][j_plus][k] + p[i][j_minus][k]) - d*(p[i][j][k_plus] + p[i][j][k_minus]))/g;
                 
-                if (abs_difference > max_difference)
-                {
-                    max_difference = abs_difference;
+                    // Finding maximum absolute value of pnew
+                    abs_pnew = fabs(pnew[i][j][k]);
+
+                    if (abs_pnew > max_pnew)
+                    {
+                        max_pnew = abs_pnew;
+                    }
+
+                    // Finding maximum difference between p and pnew
+                    abs_difference = fabs(pnew[i][j][k] - p[i][j][k]);
+                    
+                    if (abs_difference > max_difference)
+                    {
+                        max_difference = abs_difference;
+                    }
                 }
-            }
-            
+            }    
         }
         FLOAT_P reduced_max_difference;
         FLOAT_P reduced_max_pnew;
@@ -162,10 +180,13 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
     {
         for (int j = 0; j < ny; j++)
         {
-            p1[i + nz_ghost][j] = pnew[i+1][j];
+            for (int k = 0; k < nx; k++)
+            {
+                p1[i + nz_ghost][j][k] = pnew[i+1][j][k];
+            }
         }
     }
     
-    deallocate_2D_array(p);
-    deallocate_2D_array(pnew);
+    deallocate_3D_array(p);
+    deallocate_3D_array(pnew);
 }

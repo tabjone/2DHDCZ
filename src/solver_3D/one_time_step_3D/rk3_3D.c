@@ -78,9 +78,9 @@ FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
             for (int k = 0; k < nx; k++)
             {
                 // Using fg to store mid-calculation variables.
-                fg->s1[i][j] = fg_prev->s1[i][j] + dt/2.0 * k1_s1[i][j];
-                fg->vy[i][j] = fg_prev->vy[i][j] + dt/2.0 * k1_vy[i][j];
-                fg->vz[i][j] = fg_prev->vz[i][j] + dt/2.0 * k1_vz[i][j];
+                fg->s1[i][j][k] = fg_prev->s1[i][j][k] + dt/2.0 * k1_s1[i][j][k];
+                fg->vy[i][j][k] = fg_prev->vy[i][j][k] + dt/2.0 * k1_vy[i][j][k];
+                fg->vz[i][j][k] = fg_prev->vz[i][j][k] + dt/2.0 * k1_vz[i][j][k];
             }
         }
     }
@@ -119,9 +119,9 @@ FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
         {
             for (int k = 0; k < nx; k++)
             {
-                k2_s1[i][j][k] = rhs_ds1_dt_2D(bg, fg, grid_info, i, j, k);
-                k2_vy[i][j][k] = rhs_dvy_dt_2D(bg, fg, grid_info, i, j, k);
-                k2_vz[i][j][k] = rhs_dvz_dt_2D(bg, fg, grid_info, i, j, k);
+                k2_s1[i][j][k] = rhs_ds1_dt_3D(bg, fg, grid_info, i, j, k);
+                k2_vy[i][j][k] = rhs_dvy_dt_3D(bg, fg, grid_info, i, j, k);
+                k2_vz[i][j][k] = rhs_dvz_dt_3D(bg, fg, grid_info, i, j, k);
             }
         }
     }
@@ -178,6 +178,7 @@ FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
                 fg->s1[i][j][k] = fg_prev->s1[i][j][k] + dt/6.0 * (k1_s1[i][j][k] + 4.0*k2_s1[i][j][k] + k3_s1[i][j][k]);
                 fg->vy[i][j][k] = fg_prev->vy[i][j][k] + dt/6.0 * (k1_vy[i][j][k] + 4.0*k2_vy[i][j][k] + k3_vy[i][j][k]);
                 fg->vz[i][j][k] = fg_prev->vz[i][j][k] + dt/6.0 * (k1_vz[i][j][k] + 4.0*k2_vz[i][j][k] + k3_vz[i][j][k]);
+            }
         }
     }
 

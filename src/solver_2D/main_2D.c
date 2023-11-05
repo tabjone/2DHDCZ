@@ -50,12 +50,9 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
 
         // Initialize the background variables and saving it to file
         solar_s_background_initialization(bg, mpi_info, grid_info->nz_full, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1, grid_info->nz);
-        communicate_background_ghost_above_below(bg, grid_info, mpi_info);
+        communicate_background_ghost_above_below(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost);
         save_background(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1);
         save_mpi_info(mpi_info);
-
-        
-
         
         // Initialize foreground to type set in parameter file
         initialize_foreground(fg_previous, bg, grid_info, mpi_info);

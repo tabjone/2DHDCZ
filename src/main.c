@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
                 printf("Starting\n");
                 main_2D(argc, argv, mpi_info);}
         #else
+            printf("Hello");
             main_2D(argc, argv, mpi_info);
         #endif // MPI_ON
     #elif DIMENSIONS == 3

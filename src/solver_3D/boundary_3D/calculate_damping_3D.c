@@ -1,4 +1,4 @@
-#include "one_time_step_3D.h"
+#include "boundary_3D.h"
  
 void calculate_damping_3D(FLOAT_P *damping_factor, struct BackgroundVariables *bg, struct GridInfo3D *grid_info)
 {

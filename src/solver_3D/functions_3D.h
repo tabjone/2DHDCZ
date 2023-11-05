@@ -7,5 +7,6 @@
 #include "./one_time_step_3D/one_time_step_3D.h"
 
 void calculate_grid_info_3D(struct GridInfo3D **grid_info, struct MpiInfo *mpi_info);
+void calculate_grid_info_3D_mpi(struct GridInfo3D **grid_info, struct MpiInfo *mpi_info);
 
 #endif // FUNCTIONS_H__

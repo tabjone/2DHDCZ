@@ -17,8 +17,11 @@ int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
     #elif LOAD == 0
         // Initializing the simulation
         save_nr = 0;
-
-        calculate_grid_info_3D(&grid_info, mpi_info);
+        #if MPI_ON == 0
+            calculate_grid_info_3D(&grid_info, mpi_info);
+        #elif MPI_ON == 1
+            calculate_grid_info_3D_mpi(&grid_info, mpi_info);
+        #endif // MPI_ON
         // Allocating memory for the background and foreground variables
         allocate_background_struct(&bg, grid_info->nz_full);
         allocate_foreground_struct_3D(&fg, grid_info);
@@ -26,13 +29,14 @@ int main_3D(int argc, char *argv[], struct MpiInfo *mpi_info)
         
         // Initialize the background variables and saving it to file
         solar_s_background_initialization(bg, mpi_info, grid_info->nz_full, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1, grid_info->nz);
+        communicate_background_ghost_above_below(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost);
         
         save_background(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1);
         
         save_mpi_info(mpi_info);
 
         // Initialize foreground to type set in parameter file
-        initialize_foreground_3D_entropy_pertubation(fg_previous, bg, grid_info);
+        initialize_foreground_3D_entropy_pertubation(fg_previous, bg, grid_info, mpi_info);
         
         // Saving the foreground variables to file
         save_foreground_3D(fg_previous, grid_info, mpi_info, 0, 0.0);

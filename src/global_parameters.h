@@ -4,13 +4,13 @@
 #include "hdf5.h"
 #include <mpi.h>
 
-#define MPI_ON 0 // 0 for MPI off, 1 for MPI on
+#define MPI_ON 1 // 0 for MPI off, 1 for MPI on
 
-#define RUN_NAME "two_pertubations_3" // Name of the run
+#define RUN_NAME "two_perts_3D" // Name of the run
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 1e4 // Simulation time in seconds
+#define T 1e6 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
 #define SAVE_INTERVAL 1e3 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
@@ -28,12 +28,12 @@
 #define UNITS 0 // 0 for cgs, 1 for SI
 
 // Dimensions
-#define DIMENSIONS 2 // 1 for 1D, 2 for 2D, 3 for 3D
+#define DIMENSIONS 3 // 1 for 1D, 2 for 2D, 3 for 3D
 
 // Boundary conditions
 #define VERTICAL_BOUNDARY_TYPE 0 // 0 for Hard-wall, 1 for soft-wall, 2 for periodic 
-#define ALPHA 0.1 // Soft wall parameter, 0 is no damping, 1 is linear damping, everything in between is exponential damping
-#define SOFT_WALL_HEIGHT_PERCENTAGE 0.1 // Percentage of the domain that will be damped at the top and bottom
+#define ALPHA 0.2 // Soft wall parameter, 0 is no damping, 1 is linear damping, everything in between is exponential damping
+#define SOFT_WALL_HEIGHT_PERCENTAGE 0.05 // Percentage of the domain that will be damped at the top and bottom
 
 // Grid size
 #define CZ_START 0.7 // In units of solar radii
@@ -42,8 +42,8 @@
 #define X_SIZE 0.1 // In units of solar radii
 #define Y_SIZE 0.1 // In units of solar radii
 #define NX 50 // Number of grid points in x-direction
-#define NY 100 // Number of grid points in y-direction
-#define NZ 100 // Number of grid points in z-direction
+#define NY 500 // Number of grid points in y-direction
+#define NZ 500 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
 #define GS_TOL 1e-5 // Gauss-Seidel tolerance
