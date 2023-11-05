@@ -84,8 +84,7 @@ void calculate_damping_3D(FLOAT_P *damping_factor, struct BackgroundVariables *b
         }
          
     #elif VERTICAL_BOUNDARY_TYPE == 2
-        printf("Periodic.\n");
-        // No damping
+        // No damping, periodic
         for (int i = 0; i < nz_full; i++)
         {
             damping_factor[i] = 1.0;
