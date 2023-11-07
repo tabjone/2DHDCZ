@@ -117,7 +117,7 @@ void gauss_seidel_3D_mpi(FLOAT_P ***b, FLOAT_P ***p1, FLOAT_P ***initial_p1, str
         copy_3D_array(pnew, p, 0, nz+2, 0, ny, 0, nx);
 
         communicate_p_gauss_seidel_3D(p, grid_info, mpi_info);
-    
+        
         for (int i = i_start; i < i_end; i++)
         {
             #if VERTICAL_BOUNDARY_TYPE == 2
@@ -135,11 +135,10 @@ void gauss_seidel_3D_mpi(FLOAT_P ***b, FLOAT_P ***p1, FLOAT_P ***initial_p1, str
                 {
                     k_plus = periodic_boundary(k+1, nx);
                     k_minus = periodic_boundary(k-1, nx);
-                    // Gauss-Seidel
-                    //pnew[i][j][k] = (b[i][j][k] - a*(p[i+1][j][k] + pnew[i-1][j][k]) - c*(p[i][j_plus][k] + pnew[i][j_minus][k]) - d*(p[i][j][k_plus] + pnew[i][j][k_minus]))/g;
+
                     // Jacobi
-                    pnew[i][j][k] = (b[i][j][k] - a*(p[i_plus][j][k] + p[i_minus][j][k]) - c*(p[i][j_plus][k] + p[i][j_minus][k]) - d*(p[i][j][k_plus] + p[i][j][k_minus]))/g;
-                
+                    pnew[i][j][k] = (b[i-i_start][j][k] - a*(p[i_plus][j][k] + p[i_minus][j][k]) - c*(p[i][j_plus][k] + p[i][j_minus][k]) - d*(p[i][j][k_plus] + p[i][j][k_minus]))/g;
+
                     // Finding maximum absolute value of pnew
                     abs_pnew = fabs(pnew[i][j][k]);
 
@@ -158,6 +157,7 @@ void gauss_seidel_3D_mpi(FLOAT_P ***b, FLOAT_P ***p1, FLOAT_P ***initial_p1, str
                 }
             }    
         }
+        
         FLOAT_P reduced_max_difference;
         FLOAT_P reduced_max_pnew;
 
