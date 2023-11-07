@@ -11,9 +11,9 @@ void save_background(struct BackgroundVariables *bg, struct MpiInfo *mpi_info, i
 
     // Construct the full path for the snapshot file inside the new directory
     #if MPI_ON == 0
-        snprintf(file_path, sizeof(file_path), "data/%s/background.h5", RUN_NAME);
+        snprintf(file_path, sizeof(file_path), "%s%s/background.h5", SAVE_DIR, RUN_NAME);
     #elif MPI_ON == 1
-        snprintf(file_path, sizeof(file_path), "data/%s/background_%d.h5", RUN_NAME, mpi_info->rank);
+        snprintf(file_path, sizeof(file_path), "%s%s/background_%d.h5", SAVE_DIR, RUN_NAME, mpi_info->rank);
     #endif // MPI_ON
 
     hid_t file, group_grid_data, group_variables;

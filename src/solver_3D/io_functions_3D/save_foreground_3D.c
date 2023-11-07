@@ -26,9 +26,9 @@ void save_foreground_3D(struct ForegroundVariables3D *fg, struct GridInfo3D *gri
     char file_path[150];
 
     #if MPI_ON == 0
-        snprintf(file_path, sizeof(file_path), "data/%s/snap%d.h5", RUN_NAME, snap_number);
+        snprintf(file_path, sizeof(file_path), "%s%s/snap%d.h5", SAVE_DIR, RUN_NAME, snap_number);
     #elif MPI_ON == 1
-        snprintf(file_path, sizeof(file_path), "data/%s/snap%d_%d.h5", RUN_NAME, snap_number, mpi_info->rank);
+        snprintf(file_path, sizeof(file_path), "%s%s/snap%d_%d.h5", SAVE_DIR, RUN_NAME, snap_number, mpi_info->rank);
     #endif // MPI_ON
   
     // Getting grid info

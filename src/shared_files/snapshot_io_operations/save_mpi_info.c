@@ -16,7 +16,7 @@ void save_mpi_info(struct MpiInfo *mpi_info)
 
     // File path
     char file_path[150];
-    snprintf(file_path, sizeof(file_path), "data/%s/mpi_info.h5", RUN_NAME);
+    snprintf(file_path, sizeof(file_path), "%s%s/mpi_info.h5", SAVE_DIR, RUN_NAME);
     #if MPI_ON == 0
     hid_t file;
     herr_t status;
