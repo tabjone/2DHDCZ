@@ -30,9 +30,9 @@ void initialize_foreground_3D_entropy_pertubation(struct ForegroundVariables3D *
 
     // Setting up gaussians
     FLOAT_P amplitude = 1.0e2;
-    FLOAT_P sigma_z = 0.1*dz*nz;
-    FLOAT_P sigma_y = 0.1*dy*ny;
-    FLOAT_P sigma_x = 0.1*dx*nx;
+    FLOAT_P sigma_z = 0.1*dz*NZ;
+    FLOAT_P sigma_y = 0.1*dy*NY;
+    FLOAT_P sigma_x = 0.1*dx*NX;
 
     // Getting centre of gaussians from initial conditions file
     FLOAT_P centre_z[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Z;

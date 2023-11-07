@@ -22,10 +22,11 @@ void initialize_foreground_entropy_pertubation(struct ForegroundVariables2D *fg,
     int ny = grid_info->ny;
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
+    FLOAT_P z_offset = grid_info->z_offset;
 
     FLOAT_P amplitude = 1.0e1;
-    FLOAT_P sigma_z = 0.1*dz*nz;
-    FLOAT_P sigma_y = 0.1*dy*ny;
+    FLOAT_P sigma_z = 0.1*dz*NZ;
+    FLOAT_P sigma_y = 0.1*dy*NY;
     FLOAT_P centre_z[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Z;
     FLOAT_P centre_y[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Y;
 
@@ -48,7 +49,7 @@ void initialize_foreground_entropy_pertubation(struct ForegroundVariables2D *fg,
             for (int n = 0; n < IC_N_ENTROPY_PERTUBATION; n++)
             {
                 // Entropy pertubation
-                fg->s1[i][j] += gaussian_2D((i-nz_ghost)*dz, j*dy, centre_z[n], centre_y[n], sigma_z, sigma_y, amplitude);
+                fg->s1[i][j] += gaussian_2D((i-nz_ghost)*dz+z_offset, j*dy, centre_z[n], centre_y[n], sigma_z, sigma_y, amplitude);
             }
             // Calculating p1 from first law of thermodynamics
             fg->p1[i][j] = -bg->p0[i] * fg->s1[i][j]/c_p;
