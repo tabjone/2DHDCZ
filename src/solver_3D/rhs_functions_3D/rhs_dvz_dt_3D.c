@@ -32,6 +32,7 @@ FLOAT_P rhs_dvz_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
     int nx = grid_info->nx;
     int ny = grid_info->ny;
     int nz = grid_info->nz;
+    int nz_full = grid_info->nz_full;
     FLOAT_P dx = grid_info->dx;
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
@@ -66,6 +67,22 @@ FLOAT_P rhs_dvz_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
     #if ADVECTION_ON == 1
         rhs -= vx[i][j][k]*dvz_dx + vy[i][j][k]*dvz_dy + vz[i][j][k]*dvz_dz;
     #endif // ADVECTION_ON
+
+    #if VISCOSITY_ON == 1
+        // Periodic boundary conditions
+        int j_minus = periodic_boundary(j-1, ny);
+        int j_plus = periodic_boundary(j+1, ny);
+        int k_minus = periodic_boundary(k-1, nx);
+        int k_plus = periodic_boundary(k+1, nx);
+
+        FLOAT_P dd_vz_ddx = central_second_derivative_x_3D(vz, i, j, k, dx, nx);
+        FLOAT_P dd_vz_ddy = central_second_derivative_y_3D(vz, i, j, k, dy, ny);
+
+        FLOAT_P dd_vx_dxdz = (vx[i+1][j][k_plus] - vx[i+1][j][k_minus] - vx[i-1][j][k_plus] + vx[i-1][j][k_minus])/(4.0*dx*dz);
+        FLOAT_P dd_vy_dydz = (vy[i+1][j_plus][k] - vy[i+1][j_minus][k] - vy[i-1][j_plus][k] + vy[i-1][j_minus][k])/ (4.0*dy*dz);
+        
+        rhs += VISCOSITY_COEFF*one_over_rho0[i]*(dd_vx_dxdz + dd_vz_ddx + dd_vy_dydz + dd_vz_ddy);
+    #endif // VISCOSITY_ON
 
     return rhs;
 }

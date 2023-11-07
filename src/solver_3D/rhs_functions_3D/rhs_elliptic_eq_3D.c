@@ -103,5 +103,34 @@ FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVari
     }
     #endif // ADVECTION_ON
 
+    #if VISCOSITY_ON == 1
+        FLOAT_P ddd_vx_dxddy = ((vx[i][j_plus][k_plus] - 2.0 * vx[i][j][k_plus] + vx[i][j_minus][k_plus]) -
+                                (vx[i][j_plus][k_minus] - 2.0 * vx[i][j][k_minus] + vx[i][j_minus][k_minus]) ) /
+                               (2.0 * dx * dy * dy);
+
+        FLOAT_P ddd_vx_dxddz = ((vx[i+1][j][k_plus] - 2.0 * vx[i][j][k_plus] + vx[i-1][j][k_plus]) -
+                                (vx[i+1][j][k_minus] - 2.0 * vx[i][j][k_minus] + vx[i-1][j][k_minus])) /
+                               (2.0 * dx * dz * dz);
+
+        FLOAT_P ddd_vy_ddxdy = ((vy[i][j_plus][k_plus] - 2.0 * vy[i][j_plus][k] + vy[i][j_plus][k_minus]) -
+                                (vy[i][j_minus][k_plus] - 2.0 * vy[i][j_minus][k] + vy[i][j_minus][k_minus])) /
+                               (2.0 * dx * dx * dy);
+
+        FLOAT_P ddd_vy_dyddz = ((vy[i+1][j_plus][k] - 2.0 * vy[i][j_plus][k] + vy[i-1][j_plus][k]) -
+                                (vy[i+1][j_minus][k] - 2.0 * vy[i][j_minus][k] + vy[i-1][j_minus][k])) /
+                               (2.0 * dy * dz * dz);
+
+        FLOAT_P ddd_vz_ddxdz = ((vz[i+1][j][k_plus] - 2.0 * vz[i+1][j][k] + vz[i+1][j][k_minus]) -
+                                (vz[i-1][j][k_plus] - 2.0 * vz[i-1][j][k] + vz[i-1][j][k_minus])) /
+                               (2.0 * dx * dx * dz);
+
+        FLOAT_P ddd_vz_ddydz = ((vz[i+1][j_plus][k] - 2.0 * vz[i+1][j][k] + vz[i+1][j_minus][k]) -
+                                (vz[i-1][j_plus][k] - 2.0 * vz[i-1][j][k] + vz[i-1][j_minus][k])) /
+                               (2.0 * dy * dy * dz);
+
+        rhs += 2.0*VISCOSITY_COEFF*(ddd_vx_dxddy + ddd_vx_dxddz + ddd_vy_ddxdy + ddd_vy_dyddz + ddd_vz_ddxdz + ddd_vz_ddydz);
+    #endif // VISCOSITY_ON
+
+
     return rhs;
 }
