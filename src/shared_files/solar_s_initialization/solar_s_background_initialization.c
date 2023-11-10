@@ -77,7 +77,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
 
     // Upward integration
     int i = 0;
-    while (i_var_up.r[i] < R_SUN * R_END)
+    while (i_var_up.r[i] < R_SUN * 0.99)
     {   
         integrate_one_step(&i_var_up, i, false);
         i++;
@@ -92,7 +92,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
 
     // Downward integration
     int j = 0;
-    while (i_var_down.r[j] > R_SUN * R_START)
+    while (i_var_down.r[j] > R_SUN * 0.5)
     {   
         integrate_one_step(&i_var_down, j, true); 
         j++;
@@ -147,9 +147,15 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
         bg->r[i+grid_nz_ghost] = grid_z0 + i * (grid_z1 - grid_z0) / (grid_nz-1.0);
     }
 
+    for (int l = 0; l < grid_nz_ghost; l++)
+    {
+        bg->r[l] = bg->r[grid_nz_ghost]-(grid_nz_ghost-l)*grid_dz;
+        bg->r[grid_nz_full - grid_nz_ghost+l] = bg->r[grid_nz_full-grid_nz_ghost-1]+(l+1)*grid_dz;
+    }
+
     // Interpolating the background variables to the grid
     FLOAT_P x0, x1;
-    for (i = grid_nz_ghost; i < grid_nz_full-grid_nz_ghost; i++)
+    for (i = 0; i < grid_nz_full; i++)
     {
         // Handle edge cases
         if (bg->r[i] < r[0])
@@ -186,7 +192,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
     }
 
     // Extrapolating background variables to ghost cells
-    extrapolate_background(bg, grid_nz_full, grid_nz_ghost, grid_dz);
+    //extrapolate_background(bg, grid_nz_full, grid_nz_ghost, grid_dz);
 
     #if CONSTANT_BACKGROUND == 1
         // Constant background
