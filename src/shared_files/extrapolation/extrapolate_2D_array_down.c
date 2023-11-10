@@ -13,10 +13,13 @@ void extrapolate_2D_array_down(FLOAT_P **array, int nz_ghost, int ny)
         A pointer to the GridInfo struct.
     */
 
-    #if EXTRAPOLATE_GHOST_CELLS == 0
+    #if EXTRAPOLATE_2D_GHOST_CELLS == 0
         // Constant extrapolation
         extrapolate_2D_array_constant_down(array, nz_ghost, ny);
+    #elif EXTRAPOLATE_2D_GHOST_CELLS == 1
+        // Antisymmetric extrapolation
+        extrapolate_2D_array_antisymmetric_down(array, nz_ghost, ny);
     #else
-        #error "Only constant extrapolation implemented."
-    #endif // EXTRAPOLATE_GHOST_CELLS == 0
+        #error "Extrapolating bla bla."
+    #endif // EXTRAPOLATE_GHOST_CELLS
 }
