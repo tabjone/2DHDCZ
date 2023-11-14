@@ -1,6 +1,6 @@
 #include "one_time_step.h"
 
-FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc, FLOAT_P dt_last, bool first_timestep)
 {
     /*
     Calculates the foreground at the next timestep using the RK2 method.
@@ -51,15 +51,15 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     allocate_2D_array(&k1_vz, nz_full, ny);
     allocate_2D_array(&k2_vz, nz_full, ny);
 
-    // Inside the grid
+    // Inside the grid and boundaries
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < ny; j++)
         {
             // Calculating k1 for the grid
-            k1_s1[i][j] = rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j);
-            k1_vy[i][j] = rhs_dvy_dt_2D(bg, fg_prev, grid_info, i, j);
-            k1_vz[i][j] = rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
+            k1_s1[i][j] = rhs_ds1_dt_2D(bg, fg, grid_info, precalc, i, j);
+            k1_vy[i][j] = rhs_dvy_dt_2D(bg, fg, grid_info, precalc, i, j);
+            k1_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, precalc, i, j);
         }
     }
 
@@ -94,7 +94,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     equation_of_state(fg, bg, grid_info);
 
     // Calculating p1
-    solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info);
+    solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info, precalc); // Getting p1
     update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
 
     // Calculating k2
@@ -103,9 +103,9 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         for (int j = 0; j < ny; j++)
         {
             // Calculating k2 for the grid
-            k2_s1[i][j] = rhs_ds1_dt_2D(bg, fg, grid_info, i, j);
-            k2_vy[i][j] = rhs_dvy_dt_2D(bg, fg, grid_info, i, j);
-            k2_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, i, j);
+            k2_s1[i][j] = rhs_ds1_dt_2D(bg, fg, grid_info, precalc, i, j);
+            k2_vy[i][j] = rhs_dvy_dt_2D(bg, fg, grid_info, precalc, i, j);
+            k2_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, precalc, i, j);
         }
     }
 
@@ -131,7 +131,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     equation_of_state(fg, bg, grid_info);
 
     // Calculating p1
-    solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info);
+    solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info, precalc);
     update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
 
     // Deallocating memory

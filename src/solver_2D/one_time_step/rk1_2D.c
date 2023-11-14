@@ -1,6 +1,6 @@
 #include "one_time_step.h"
 
-FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc, FLOAT_P dt_last, bool first_timestep)
 {
     /*
     Calculates the foreground at the next timestep using the RK1 method.
@@ -43,9 +43,9 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[i][j] = fg_prev->s1[i][j] + dt*rhs_ds1_dt_2D(bg, fg_prev, grid_info, i, j);
-            fg->vy[i][j] = fg_prev->vy[i][j] + dt*rhs_dvy_dt_2D(bg, fg_prev, grid_info, i, j);
-            fg->vz[i][j] = fg_prev->vz[i][j] + dt*rhs_dvz_dt_2D(bg, fg_prev, grid_info, i, j);
+            fg->s1[i][j] = fg_prev->s1[i][j] + dt*rhs_ds1_dt_2D(bg, fg, grid_info, precalc, i, j);
+            fg->vy[i][j] = fg_prev->vy[i][j] + dt*rhs_dvy_dt_2D(bg, fg, grid_info, precalc, i, j);
+            fg->vz[i][j] = fg_prev->vz[i][j] + dt*rhs_dvz_dt_2D(bg, fg, grid_info, precalc, i, j);
         }
     }
 
@@ -69,7 +69,7 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     equation_of_state(fg, bg, grid_info);
     
     // Solving elliptic equation
-    solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info); // Getting p1
+    solve_elliptic_equation(bg, fg_prev, fg, grid_info, mpi_info, precalc); // Getting p1
     update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
     
     return dt;

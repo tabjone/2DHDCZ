@@ -1,9 +1,9 @@
 #include "spacial_derivatives.h"
 
-FLOAT_P central_second_derivative_y(FLOAT_P **array, struct PrecalculatedVariables *precalc, int i, int j)
+FLOAT_P central_second_derivative_yz(FLOAT_P **array, struct PrecalculatedVariables *precalc, int i, int j)
 {
     /*
-    Calculates the central second derivative of a 2D array at a point (i, j) in the y-direction.
+    Calculates the central second derivative of a 2D array at a point (i, j) in the yz-direction.
 
     Parameters
     ----------
@@ -22,5 +22,5 @@ FLOAT_P central_second_derivative_y(FLOAT_P **array, struct PrecalculatedVariabl
     int j_minus = precalc->j_minus[j];
     int j_plus = precalc->j_plus[j];
 
-    return (array[i][j_plus] - 2.0*array[i][j] + array[i][j_minus]) * precalc->one_over_dydy;
+    return (array[i+1][j_plus] - array[i+1][j_minus] - array[i-1][j_plus] + array[i-1][j_minus]) * precalc->one_over_4dydz;
 }

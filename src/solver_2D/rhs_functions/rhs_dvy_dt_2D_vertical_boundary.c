@@ -1,3 +1,5 @@
+
+/*
 #include "rhs_functions.h"
 
 FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, int i, int j)
@@ -22,7 +24,7 @@ FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct F
     -------
     rhs : FLOAT_P
         The right hand side of the momentum equation for the y-direction.
-    */
+    
 
     FLOAT_P rhs = 0.0; // This is the return value
 
@@ -52,3 +54,4 @@ FLOAT_P rhs_dvy_dt_2D_vertical_boundary(struct BackgroundVariables *bg, struct F
     
     return rhs;
 }
+*/

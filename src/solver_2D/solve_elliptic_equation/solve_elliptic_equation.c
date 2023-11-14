@@ -1,7 +1,7 @@
 #include "solve_elliptic_equation.h"
 #include "global_parameters.h"
 
-void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
+void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc)
 {
     /*
     Solves the elliptic equation for the pressure field
@@ -31,7 +31,7 @@ void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVa
     {
         for (int j = 0; j < ny; j++)
         {
-            rhs[i][j] = rhs_elliptic_eq_2D(bg, fg_prev, grid_info, i+nz_ghost, j);
+            rhs[i][j] = rhs_elliptic_eq_2D(bg, fg_prev, grid_info, precalc, i+nz_ghost, j);
         }
     }
     #if MPI_ON == 0

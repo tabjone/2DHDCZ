@@ -1,6 +1,6 @@
 #include "spacial_derivatives.h"
 
-FLOAT_P upwind_first_derivative_y(FLOAT_P **array, FLOAT_P **velocity, int i, int j, FLOAT_P dy, int ny)
+FLOAT_P upwind_first_derivative_y(FLOAT_P **array, FLOAT_P **velocity, struct PrecalculatedVariables *precalc, int i, int j)
 {
     /*
     Calculates the central first derivative of a 2D array at a point (i, j) in the y-direction.
@@ -21,29 +21,29 @@ FLOAT_P upwind_first_derivative_y(FLOAT_P **array, FLOAT_P **velocity, int i, in
         The number of points in the z-direction.
     */
 
-    int j_minus = periodic_boundary(j-1, ny);
-    int j_plus = periodic_boundary(j+1, ny);
+    int j_minus = precalc->j_minus[j];
+    int j_plus = precalc->j_plus[j];
 
     #if UPWIND_ORDER == 1
         if (velocity[i][j] >= 0)
         {
-            return (array[i][j] - array[i][j_minus])/dy;
+            return (array[i][j] - array[i][j_minus]) * precalc->one_over_dy;
         }
         else
         {
-            return (array[i][j_plus] - array[i][j])/dy;
+            return (array[i][j_plus] - array[i][j]) * precalc->one_over_dy;
         }
     #elif UPWIND_ORDER == 2
-        int j_minus2 = periodic_boundary(j-2, ny);
-        int j_plus2 = periodic_boundary(j+2, ny);
+        int j_minus2 = precalc->j_minus2[j];
+        int j_plus2 = precalc->j_plus2[j];
 
         if (velocity[i][j] >= 0)
         {
-            return (3.0*array[i][j] -4.0*array[i][j_minus] + array[i][j_minus2])/(2.0*dy);
+            return (3.0*array[i][j] -4.0*array[i][j_minus] + array[i][j_minus2]) * precalc->one_over_2dy;
         }
         else
         {
-            return (-3.0*array[i][j] + 4.0*array[i][j_plus] - array[i][j_plus2])/(2.0*dy);
+            return (-3.0*array[i][j] + 4.0*array[i][j_plus] - array[i][j_plus2]) * precalc->one_over_2dy;
         }
     #endif // UPWIND_ORDER
 }

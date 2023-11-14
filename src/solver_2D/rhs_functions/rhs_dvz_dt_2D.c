@@ -1,7 +1,7 @@
 #include "rhs_functions.h"
 #include "global_parameters.h"
 
-FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, int i, int j)
+FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables *precalc, int i, int j)
 {
     /*
     Calculates the right hands side of the momentum equation for the z-direction in 2D.
@@ -27,14 +27,8 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
 
     FLOAT_P rhs = 0.0; // This is the return value
 
-    // Getting the grid info
-    int nz_full = grid_info->nz_full;
-    int ny = grid_info->ny;
-    FLOAT_P dy = grid_info->dy;
-    FLOAT_P dz = grid_info->dz;
-
     // Creating pointers to background arrays
-    FLOAT_P *one_over_rho0 = bg->one_over_rho0;
+    FLOAT_P *one_over_rho0 = precalc->one_over_rho0;
     FLOAT_P *g = bg->g;
     
     // Creating pointers to foreground arrays
@@ -44,9 +38,9 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P **vz = fg->vz;
 
     // Calculate the derivatives
-    FLOAT_P dp1_dz = central_first_derivative_z(p1, i, j, dz, nz_full);
-    FLOAT_P dvz_dy = upwind_first_derivative_y(vz, vy, i, j, dy, ny);
-    FLOAT_P dvz_dz = upwind_first_derivative_z(vz, vz, i, j, dz, nz_full);
+    FLOAT_P dp1_dz = central_first_derivative_z(p1, precalc, i, j);
+    FLOAT_P dvz_dy = upwind_first_derivative_y(vz, vy, precalc, i, j);
+    FLOAT_P dvz_dz = upwind_first_derivative_z(vz, vz, precalc, i, j);
 
     #if GAS_PRESSURE_ON == 1
         rhs -= one_over_rho0[i] * dp1_dz;
@@ -62,14 +56,11 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     #endif // ADVECTION_ON
 
     #if VISCOSITY_ON == 1
-        // Periodic boundary conditions
-        int j_minus = periodic_boundary(j-1, ny);
-        int j_plus = periodic_boundary(j+1, ny);
 
-        FLOAT_P dd_vz_dy = central_second_derivative_y(vz, i, j, dy, ny);
-        FLOAT_P dd_vy_dydz = (vy[i+1][j_plus] - vy[i+1][j_minus] - vy[i-1][j_plus] + vy[i-1][j_minus])/(4.0*dy*dz);
+        FLOAT_P dd_vz_dy = central_second_derivative_y(vz, precalc, i, j);
+        FLOAT_P dd_vy_dydz = central_second_derivative_yz(vy, precalc, i, j);
 
-        rhs += VISCOSITY_COEFF*one_over_rho0[i]*(dd_vz_dy + dd_vy_dydz);
+        rhs += precalc->VIS_COEFF_over_rho0[i]*(dd_vz_dy + dd_vy_dydz);
     #endif // VISCOSITY_ON
 
     return rhs;

@@ -1,6 +1,6 @@
 #include "rhs_functions.h"
 
-FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, int i, int j)
+FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables *precalc, int i, int j)
 {
     /*
     Calculates the right hand side of the elliptic equation in 2D.
@@ -26,12 +26,6 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
 
     FLOAT_P rhs = 0.0; // This is the return value
 
-    // Getting the grid info
-    int nz_full = grid_info->nz_full;
-    int ny = grid_info->ny;
-    FLOAT_P dy = grid_info->dy;
-    FLOAT_P dz = grid_info->dz;
-
     // Creating pointers to foreground arrays
     FLOAT_P **rho1 = fg->rho1;
     FLOAT_P **vy = fg->vy;
@@ -40,30 +34,26 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     // Creating pointers to background arrays
     FLOAT_P *rho0 = bg->rho0;
     FLOAT_P *g = bg->g;
-    FLOAT_P *grad_g = bg->grad_g;
-    FLOAT_P *grad_rho0 = bg->grad_rho0;
-
-    // Periodic boundary conditions
-    int j_minus = periodic_boundary(j-1, ny);
-    int j_plus = periodic_boundary(j+1, ny);
+    FLOAT_P *grad_g = precalc->grad_g;
+    FLOAT_P *grad_rho0 = precalc->grad_rho0;
 
     // Calculate the derivatives
     // First derivatives
-    FLOAT_P dvy_dy = central_first_derivative_y(vy, i, j, dy, ny);
-    FLOAT_P dvy_dz = central_first_derivative_z(vy, i, j, dz, nz_full);
-    FLOAT_P dvz_dy = central_first_derivative_y(vz, i, j, dy, ny);
-    FLOAT_P dvz_dz = central_first_derivative_z(vz, i, j, dz, nz_full);
+    FLOAT_P dvy_dy = central_first_derivative_y(vy, precalc, i, j);
+    FLOAT_P dvy_dz = central_first_derivative_z(vy, precalc, i, j);
+    FLOAT_P dvz_dy = central_first_derivative_y(vz, precalc, i, j);
+    FLOAT_P dvz_dz = central_first_derivative_z(vz, precalc, i, j);
 
-    FLOAT_P drho1_dz = central_first_derivative_z(rho1, i, j, dz, nz_full);
+    FLOAT_P drho1_dz = central_first_derivative_z(rho1, precalc, i, j);
 
     // Second derivatives
-    FLOAT_P dd_vy_ddy = central_second_derivative_y(vy, i, j, dy, ny);
-    FLOAT_P dd_vz_ddz = central_second_derivative_z(vz, i, j, dz, nz_full);
+    FLOAT_P dd_vy_ddy = central_second_derivative_y(vy, precalc, i, j);
+    FLOAT_P dd_vz_ddz = central_second_derivative_z(vz, precalc, i, j);
 
     // Mixed derivatives
-    FLOAT_P dd_vy_dydz = (vy[i+1][j_plus] - vy[i+1][j_minus] - vy[i-1][j_plus] + vy[i-1][j_minus])/(4.0*dy*dz);
-    FLOAT_P dd_vz_dydz = (vz[i+1][j_plus] - vz[i+1][j_minus] - vz[i-1][j_plus] + vz[i-1][j_minus])/(4.0*dy*dz);
-    
+    FLOAT_P dd_vy_dydz = central_second_derivative_yz(vy, precalc, i, j);
+    FLOAT_P dd_vz_dydz = central_second_derivative_yz(vz, precalc, i, j);
+
     // Squared of derivatives
     FLOAT_P dvy_dy_sqrd = dvy_dy*dvy_dy;
     FLOAT_P dvz_dz_sqrd = dvz_dz*dvz_dz;
@@ -82,14 +72,10 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     #endif // ADVECTION_ON
 
     #if VISCOSITY_ON == 1
-        int j_minus2 = periodic_boundary(j-2, ny);
-        int j_plus2 = periodic_boundary(j+2, ny);
+        FLOAT_P ddd_vz_dydydz = central_third_derivative_yyz(vz, precalc, i, j);
+        FLOAT_P ddd_vy_dydzdz = central_third_derivative_yzz(vy, precalc, i, j);
 
-        FLOAT_P ddd_vz_dydydz = (vz[i+1][j_plus2]-2.0*vz[i+1][j]+vz[i+1][j_minus2] - vz[i-1][j_plus2]+2.0*vz[i-1][j]-vz[i-1][j_minus2])/(8.0*dy*dy*dz);
-
-        FLOAT_P ddd_vy_dydzdz = (vy[i+2][j_plus] - 2.0*vy[i][j_plus] +vy[i-2][j_plus] - vy[i+2][j_minus]  + 2.0*vy[i][j_minus] - vy[i-2][j_minus])/(8.0*dy*dz*dz);
-
-        rhs += 2*VISCOSITY_COEFF*(ddd_vy_dydzdz + ddd_vz_dydydz);
+        rhs += precalc->two_VIS_COEFF*(ddd_vy_dydzdz + ddd_vz_dydydz);
     #endif // VISCOSITY_ON
     
     return rhs;

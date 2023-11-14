@@ -9,6 +9,8 @@
 #include "global_constants.h"
 #include "shared_files.h"
 
+#include "./precalculated_variables/precalculated_variables.h"
+
 #include "./solve_elliptic_equation/solve_elliptic_equation.h"
 #include "./rhs_functions/rhs_functions.h"
 #include "./one_time_step/one_time_step.h"

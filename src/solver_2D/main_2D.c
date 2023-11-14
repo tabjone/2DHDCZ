@@ -50,7 +50,6 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
 
         // Initialize the background variables and saving it to file
         solar_s_background_initialization(bg, mpi_info, grid_info->nz_full, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1, grid_info->nz);
-        communicate_background_ghost_above_below(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost);
         save_background(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1);
         save_mpi_info(mpi_info);
         
@@ -64,14 +63,19 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         t = 0.0;
         first_t = 0.0;
     #endif // LOAD
-
+    
     printf("Initialization done\n");
+
+    printf("Precalculating\n");
+    struct PrecalculatedVariables *precalc;
+
+    allocate_calculate_precalc_struct(&precalc, bg, grid_info);
 
     t_since_save = 0.0;
     dt_last = 0.0;
     while (t < T)
     { 
-        dt = one_time_step(bg, fg_previous, fg, grid_info, mpi_info, dt_last, first_t == t);
+        dt = one_time_step(bg, fg_previous, fg, grid_info, mpi_info, precalc, dt_last, first_t == t);
         t += dt;
 
         t_since_save += dt;
@@ -106,6 +110,7 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
     
     deallocate_grid_info_struct_2D(grid_info);
     deallocate_background_struct(bg);
+    deallocate_precalc_struct(precalc);
     deallocate_foreground_struct_2D(fg_previous);
     deallocate_foreground_struct_2D(fg);
 

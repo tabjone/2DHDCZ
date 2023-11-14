@@ -1,6 +1,6 @@
 #include "spacial_derivatives.h"
 
-FLOAT_P central_first_derivative_z(FLOAT_P **array, int i, int j, FLOAT_P dz, int nz)
+FLOAT_P central_first_derivative_z(FLOAT_P **array, struct PrecalculatedVariables *precalc, int i, int j)
 {
     /*
     Calculates the central first derivative of a 2D array at a point (i, j) in the z-direction.
@@ -18,5 +18,5 @@ FLOAT_P central_first_derivative_z(FLOAT_P **array, int i, int j, FLOAT_P dz, in
     nz : int
         The number of points in the z-direction.
     */
-    return (array[i+1][j] - array[i-1][j]) / (2.0 * dz);
+    return (array[i+1][j] - array[i-1][j]) * precalc->one_over_2dz;
 }

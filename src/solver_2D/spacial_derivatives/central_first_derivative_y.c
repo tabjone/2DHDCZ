@@ -1,6 +1,6 @@
 #include "spacial_derivatives.h"
 
-FLOAT_P central_first_derivative_y(FLOAT_P **array, int i, int j, FLOAT_P dy, int ny)
+FLOAT_P central_first_derivative_y(FLOAT_P **array, struct PrecalculatedVariables *precalc, int i, int j)
 {
     /*
     Calculates the central first derivative of a 2D array at a point (i, j) in the y-direction.
@@ -18,8 +18,8 @@ FLOAT_P central_first_derivative_y(FLOAT_P **array, int i, int j, FLOAT_P dy, in
     ny : int
         The number of points in the y-direction.
     */
-    int j_minus = periodic_boundary(j-1, ny);
-    int j_plus = periodic_boundary(j+1, ny);
+    int j_minus = precalc->j_minus[j];
+    int j_plus = precalc->j_plus[j];
 
-    return (array[i][j_plus] - array[i][j_minus]) / (2.0 * dy);
+    return (array[i][j_plus] - array[i][j_minus]) * precalc->one_over_2dy;
 }

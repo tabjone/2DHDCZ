@@ -1,6 +1,6 @@
 #include "spacial_derivatives.h"
 
-FLOAT_P upwind_first_derivative_z(FLOAT_P **array, FLOAT_P **velocity, int i, int j, FLOAT_P dz, int nz)
+FLOAT_P upwind_first_derivative_z(FLOAT_P **array, FLOAT_P **velocity, struct PrecalculatedVariables *precalc, int i, int j)
 {
     /*
     Calculates the central first derivative of a 2D array at a point (i, j) in the z-direction.
@@ -24,20 +24,20 @@ FLOAT_P upwind_first_derivative_z(FLOAT_P **array, FLOAT_P **velocity, int i, in
     #if UPWIND_ORDER == 1
         if (velocity[i][j] >= 0)
         {
-            return (array[i][j] - array[i-1][j])/dz;
+            return (array[i][j] - array[i-1][j]) * precalc->one_over_dz;
         }
         else
         {
-            return (array[i+1][j] - array[i][j])/dz;
+            return (array[i+1][j] - array[i][j]) * precalc->one_over_dz;
         }
     #elif UPWIND_ORDER == 2
         if (velocity[i][j] >= 0)
         {
-            return (3.0*array[i][j] -4.0*array[i-1][j] + array[i-2][j])/(2.0*dz);
+            return (3.0*array[i][j] -4.0*array[i-1][j] + array[i-2][j]) * precalc->one_over_2dz;
         }
         else
         {
-            return (-3.0*array[i][j] + 4.0*array[i+1][j] - array[i+2][j])/(2.0*dz);
+            return (-3.0*array[i][j] + 4.0*array[i+1][j] - array[i+2][j]) * precalc->one_over_2dz;
         }
     #endif // UPWIND_ORDER
 }
