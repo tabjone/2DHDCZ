@@ -17,10 +17,6 @@ void extrapolate_background(struct BackgroundVariables *bg, int nz_full, int nz_
         bg->T0[i] = bg->T0[nz_ghost];
         bg->grad_s0[i] = bg->grad_s0[nz_ghost];
         bg->g[i] = bg->g[nz_ghost];
-        bg->one_over_rho0[i] = bg->one_over_rho0[nz_ghost];
-        bg->grad_g[i] = bg->grad_g[nz_ghost];
-        bg->grad_rho0[i] = bg->grad_rho0[nz_ghost];
-        bg->eta_over_four_pi_rho0_T0[i] = bg->eta_over_four_pi_rho0_T0[nz_ghost];
 
         bg->r[nz_full - nz_ghost+i] = bg->r[nz_full-nz_ghost-1]+(i+1)*dz;
         bg->p0[nz_full - nz_ghost + i] = bg->p0[nz_full - nz_ghost - 1];
@@ -28,10 +24,6 @@ void extrapolate_background(struct BackgroundVariables *bg, int nz_full, int nz_
         bg->T0[nz_full - nz_ghost + i] = bg->T0[nz_full - nz_ghost - 1];
         bg->grad_s0[nz_full - nz_ghost + i] = bg->grad_s0[nz_full - nz_ghost - 1];
         bg->g[nz_full - nz_ghost + i] = bg->g[nz_full - nz_ghost - 1];
-        bg->one_over_rho0[nz_full - nz_ghost + i] = bg->one_over_rho0[nz_full - nz_ghost - 1];
-        bg->grad_g[nz_full - nz_ghost + i] = bg->grad_g[nz_full - nz_ghost - 1];
-        bg->grad_rho0[nz_full - nz_ghost + i] = bg->grad_rho0[nz_full - nz_ghost - 1];
-        bg->eta_over_four_pi_rho0_T0[nz_full - nz_ghost + i] = bg->eta_over_four_pi_rho0_T0[nz_full - nz_ghost - 1];
     }
     #endif // EXTAPOLATE_GHOST_CELLS
 }

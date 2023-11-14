@@ -206,32 +206,6 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
         }
     #endif // CONSTANT_BACKGROUND
 
-    // Pre-calculate 1/rho0 and eta/(4*pi*rho0*T0)
-    for (i = 0; i < grid_nz_full; i++)
-    {
-        bg->one_over_rho0[i] = 1.0/bg->rho0[i];
-        bg->eta_over_four_pi_rho0_T0[i] = ETA/(4*M_PI*bg->rho0[i]*bg->T0[i]);
-
-    }
-
-    int nz_ghost = grid_nz_ghost;
-    int nz_full = grid_nz_full;
-
-    // Pre-calculate grad_g and grad_rho0
-    // First for endpoints
-    bg->grad_g[nz_ghost] = (bg->g[nz_ghost+1]-bg->g[nz_ghost])/(bg->r[nz_ghost+1]-bg->r[nz_ghost]);
-    bg->grad_rho0[nz_ghost] = (bg->rho0[nz_ghost+1]-bg->rho0[nz_ghost])/(bg->r[nz_ghost+1]-bg->r[nz_ghost]);
-
-    bg->grad_g[nz_full-nz_ghost-1] = (bg->g[nz_full-nz_ghost-1]-bg->g[nz_full-nz_ghost-2])/(bg->r[nz_full-nz_ghost-1]-bg->r[nz_full-nz_ghost-2]);
-    bg->grad_rho0[nz_full-nz_ghost-1] = (bg->rho0[nz_full-nz_ghost-1]-bg->rho0[nz_full-nz_ghost-2])/(bg->r[nz_full-nz_ghost-1]-bg->r[nz_full-nz_ghost-2]);
-
-    // Then for the rest of the grid using central derivative second order
-    for (i = nz_ghost+1; i < nz_full-nz_ghost-1; i++)
-    {
-        bg->grad_g[i] = (bg->g[i+1]-bg->g[i-1])/(bg->r[i+1]-bg->r[i-1]);
-        bg->grad_rho0[i] = (bg->rho0[i+1]-bg->rho0[i-1])/(bg->r[i+1]-bg->r[i-1]);
-    }
-
     // Deallocating full integration arrays
     free(r);
     free(p0);

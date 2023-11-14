@@ -9,12 +9,8 @@ struct BackgroundVariables
     FLOAT_P *p0;
     FLOAT_P *T0;
     FLOAT_P *rho0;
-    FLOAT_P *one_over_rho0;
     FLOAT_P *grad_s0;
     FLOAT_P *g;
-    FLOAT_P *grad_g;
-    FLOAT_P *grad_rho0;
-    FLOAT_P *eta_over_four_pi_rho0_T0;
 };
 
 struct ForegroundVariables2D
