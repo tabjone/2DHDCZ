@@ -27,7 +27,7 @@ FLOAT_P rhs_ds1_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
     */
 
     FLOAT_P rhs = 0.0; // This is the return value
-
+    /*
     // Getting the grid info
     int nx = grid_info->nx;
     int ny = grid_info->ny;
@@ -78,6 +78,6 @@ FLOAT_P rhs_ds1_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
         
         rhs += VISCOSITY_COEFF/(bg->T0[i]*bg->rho0[i]) * ((dvy_dz + dvz_dy)*(dvy_dz + dvz_dy) + (dvx_dy + dvy_dx)*(dvx_dy + dvy_dx) + (dvx_dz + dvz_dx)*(dvx_dz + dvz_dx));
     #endif // VISCOSITY_ON
-    
+    */
     return rhs;
 }

@@ -25,9 +25,9 @@ FLOAT_P rhs_dvx_dt_3D_vertical_boundary(struct BackgroundVariables *bg, struct F
     rhs : FLOAT_P
         The right hand side of the momentum equation for the x-direction.
     */
-
+    
     FLOAT_P rhs = 0.0; // This is the return value
-
+    /*
     // Getting the grid info
     int nx = grid_info->nx;
     int ny = grid_info->ny;
@@ -56,6 +56,6 @@ FLOAT_P rhs_dvx_dt_3D_vertical_boundary(struct BackgroundVariables *bg, struct F
     #if ADVECTION_ON == 1
         rhs -= vx[i][j][k]*dvx_dx + vy[i][j][k]*dvx_dy;
     #endif // ADVECTION_ON
-
+    */
     return rhs;
 }

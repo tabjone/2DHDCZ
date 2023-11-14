@@ -27,7 +27,7 @@ FLOAT_P rhs_dvy_dt_3D_vertical_boundary(struct BackgroundVariables *bg, struct F
     */
 
     FLOAT_P rhs = 0.0; // This is the return value
-
+    /*
     // Getting the grid info
     int nx = grid_info->nx;
     int ny = grid_info->ny;
@@ -55,6 +55,6 @@ FLOAT_P rhs_dvy_dt_3D_vertical_boundary(struct BackgroundVariables *bg, struct F
     #if ADVECTION_ON == 1
         rhs -= vx[i][j][k]*dvy_dx + vy[i][j][k]*dvy_dy;
     #endif // ADVECTION_ON
-
+    */
     return rhs;
 }

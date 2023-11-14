@@ -27,7 +27,7 @@ FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVari
     */
 
     FLOAT_P rhs = 0.0; // This is the return value
-
+    /*
     // Getting the grid info
     int nx = grid_info->nx;
     int ny = grid_info->ny;
@@ -130,7 +130,7 @@ FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVari
 
         rhs += 2.0*VISCOSITY_COEFF*(ddd_vx_dxddy + ddd_vx_dxddz + ddd_vy_ddxdy + ddd_vy_dyddz + ddd_vz_ddxdz + ddd_vz_ddydz);
     #endif // VISCOSITY_ON
-
+    */
 
     return rhs;
 }
