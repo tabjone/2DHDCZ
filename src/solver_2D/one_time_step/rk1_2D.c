@@ -43,9 +43,9 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[i][j] = fg_prev->s1[i][j] + dt*rhs_ds1_dt_2D(bg, fg, grid_info, precalc, i, j);
-            fg->vy[i][j] = fg_prev->vy[i][j] + dt*rhs_dvy_dt_2D(bg, fg, grid_info, precalc, i, j);
-            fg->vz[i][j] = fg_prev->vz[i][j] + dt*rhs_dvz_dt_2D(bg, fg, grid_info, precalc, i, j);
+            fg->s1[i][j] = fg_prev->s1[i][j] + dt*rhs_ds1_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
+            fg->vy[i][j] = fg_prev->vy[i][j] + dt*rhs_dvy_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
+            fg->vz[i][j] = fg_prev->vz[i][j] + dt*rhs_dvz_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
         }
     }
 

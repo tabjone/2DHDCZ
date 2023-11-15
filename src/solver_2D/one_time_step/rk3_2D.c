@@ -60,9 +60,9 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         for (int j = 0; j < ny; j++)
         {
             // Calculating k1 for the grid
-            k1_s1[i][j] = rhs_ds1_dt_2D(bg, fg, grid_info, precalc, i, j);
-            k1_vy[i][j] = rhs_dvy_dt_2D(bg, fg, grid_info, precalc, i, j);
-            k1_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, precalc, i, j);
+            k1_s1[i][j] = rhs_ds1_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
+            k1_vy[i][j] = rhs_dvy_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
+            k1_vz[i][j] = rhs_dvz_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
         }
     }
 
@@ -77,6 +77,8 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
             fg->vz[i][j] = fg_prev->vz[i][j] + dt/2.0 * k1_vz[i][j];
         }
     }
+
+
 
     
 
