@@ -71,6 +71,10 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
 
     allocate_calculate_precalc_struct(&precalc, bg, grid_info);
 
+    #if SAVE_RHS == 1
+        save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, 0);
+    #endif // SAVE_RHS
+
     t_since_save = 0.0;
     dt_last = 0.0;
     while (t < T)
@@ -87,13 +91,19 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         
         if (t_since_save > SAVE_INTERVAL && SAVE_ALL == 0)
         {
-            save_foreground(fg, grid_info, mpi_info, save_nr, t);
+            save_foreground(fg_previous, grid_info, mpi_info, save_nr, t);
+            #if SAVE_RHS == 1
+                save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, save_nr);
+            #endif // SAVE_RHS
             save_nr++;
             t_since_save = 0.0;
         }
         else if (SAVE_ALL == 1)
         {
             save_foreground(fg, grid_info, mpi_info, save_nr, t);
+            #if SAVE_RHS == 1
+                save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, save_nr);
+            #endif // SAVE_RHS
             save_nr++;
         }
 

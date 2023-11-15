@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     struct stat st = {0}; // Initialize the stat structure
 
     // Use snprintf to create the directory path with the base directory and RUN_NAME
-    snprintf(dir_name, sizeof(dir_name), "data/%s", RUN_NAME);
+    snprintf(dir_name, sizeof(dir_name), "%s%s", SAVE_DIR, RUN_NAME);
     
     if (mpi_info->rank == 0)
     {
@@ -55,9 +55,30 @@ int main(int argc, char *argv[])
             }
         }
     }
-    // Wait for rank 0 to finish creating the directory
-   MPI_Barrier(MPI_COMM_WORLD);
 
+    #if SAVE_RHS == 1
+        char dir_name_rhs[100];
+
+        // Use snprintf to create the directory path with the base directory and RUN_NAME
+        snprintf(dir_name_rhs, sizeof(dir_name_rhs), "%s%s/rhs", SAVE_DIR, RUN_NAME);
+        
+        // Create directory
+        if (mpi_info->rank == 0)
+        {
+            // Check if directory exists
+            if (stat(dir_name_rhs, &st) == -1) {
+                // If directory doesn't exist, create it with permissions set to rwxr-xr-x
+                if (mkdir(dir_name_rhs, 0755) == -1) {
+                    perror("Error creating directory");
+                    return 1;
+                }
+            }
+        }
+    #endif // SAVE_RHS
+
+    // Wait for rank 0 to finish creating the directory
+    MPI_Barrier(MPI_COMM_WORLD);
+    
     #if DIMENSIONS == 1
         printf("Not implemented yet\n");
     #elif DIMENSIONS == 2
@@ -74,7 +95,7 @@ int main(int argc, char *argv[])
     #endif // DIMENSIONS
 	
 	MPI_Barrier(MPI_COMM_WORLD);
-
+    
     free(mpi_info);
 
     
