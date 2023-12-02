@@ -60,4 +60,18 @@ void communicate_p_gauss_seidel(FLOAT_P **array, struct GridInfo2D *grid_info, s
             MPI_Send(&array[1][0], ny, MPI_FLOAT_P, rank - 1, 0, MPI_COMM_WORLD);
         }
     }
+    // Handle periodic boundary
+    #if PERIODIC_BOUNDARY_VERTICAL == 1
+        // Sending between process 0 and size-1
+        if (rank == 0)
+        {
+            MPI_Send(&array[1][0], ny, MPI_FLOAT_P, mpi_info->size-1, 0, MPI_COMM_WORLD);
+            MPI_Recv(&array[0][0], ny, MPI_FLOAT_P, mpi_info->size-1, 0, MPI_COMM_WORLD, &status);
+        }
+        else if (rank == mpi_info->size-1)
+        {
+            MPI_Recv(&array[nz+1][0], ny, MPI_FLOAT_P, 0, 0, MPI_COMM_WORLD, &status);
+            MPI_Send(&array[nz][0], ny, MPI_FLOAT_P, 0, 0, MPI_COMM_WORLD);       
+        }
+    #endif // VERTICAL_BOUNDARY_TYPE
 }

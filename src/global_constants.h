@@ -3,6 +3,11 @@
 
 #include "global_parameters.h"
 #include "stdio.h"
+#include "math.h"
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif // M_PI
 
 #define ETA 0.1 // magnetic diffusivity [cm2 s-1]
 

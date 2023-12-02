@@ -1,4 +1,5 @@
 #include "solar_s_initialization.h"
+#include <math.h>
 
 void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown)
 {

@@ -16,7 +16,6 @@ void initialize_foreground_3D_entropy_pertubation(struct ForegroundVariables3D *
     */
 
     // Getting grid info
-    int nz = grid_info->nz;
     int nz_full = grid_info->nz_full;
     int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;

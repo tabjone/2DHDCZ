@@ -23,7 +23,7 @@ void apply_vertical_boundary_damping_3D(struct ForegroundVariables3D *fg, struct
     
     // Finding mean of s1
     FLOAT_P s1_mean = 0.0;
-    FLOAT_P tau = 60.0*60.0*4;
+    //FLOAT_P tau = 60.0*60.0*4;
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < ny; j++)

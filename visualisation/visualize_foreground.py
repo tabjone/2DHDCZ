@@ -9,6 +9,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib.ticker import ScalarFormatter, FormatStrFormatter
 from IPython.display import HTML
 from matplotlib.colors import TwoSlopeNorm, NoNorm
+from scipy.ndimage import zoom
 
 from astropy import units as u
 
@@ -17,6 +18,16 @@ formatter = ScalarFormatter(useMathText=True)
 formatter.set_scientific(True)
 
 R_sun = 6.957e10
+
+def resize_array(arr, target_size=300):
+    if arr.shape[0] > target_size:
+        # Calculate the zoom factor
+        zoom_factor = target_size / arr.shape[0]
+        # Apply zoom only on the first axis
+        resized_arr = zoom(arr, zoom_factor)
+        return resized_arr
+    else:
+        return arr
 
 def read_mpi_info(file_path):
     with h5py.File(file_path, 'r') as f:
@@ -135,8 +146,9 @@ def format_title(key):
     return "${}_{}$".format(prefix, suffix)
 
 class Visualize_Foreground:
-    def __init__(self, folder):
+    def __init__(self, folder, delta=False):
         self.folder = folder
+        self.delta = delta
 
         snap_id = 0
         snaps = []
@@ -200,37 +212,63 @@ class Visualize_Foreground:
             self.t_end = self.t_end.to("day")
         
         # holding touple(var_name, quiver true/false, vmin, vmax)
-        self.plot_params = {
-            "T1": (True, None, None, "Temperature [K]"),
-            "rho1": (True, None, None, r"Density [g/cm$^3$]"),
-            "p1": (True, None, None, r"Pressure [dyn/cm$^2$]"),
-            "s1": (True, None, None, "Entropy [erg/K]"),
+        if self.delta:
+            self.plot_params = {
+            "T1": (False, None, None, "Temperature [K]"),
+            "rho1": (False, None, None, r"Density [g/cm$^3$]"),
+            "p1": (False, None, None, r"Pressure [dyn/cm$^2$]"),
+            "s1": (False, None, None, "Entropy [erg/K]"),
             "vy": (False, None, None, "y-velocity [cm/s]"),
             "vz": (False, None, None, "z-velocity [cm/s]")
-        }     
+        }  
+        else:
+            self.plot_params = {
+                "T1": (True, None, None, "Temperature [K]"),
+                "rho1": (True, None, None, r"Density [g/cm$^3$]"),
+                "p1": (True, None, None, r"Pressure [dyn/cm$^2$]"),
+                "s1": (True, None, None, "Entropy [erg/K]"),
+                "vy": (False, None, None, "y-velocity [cm/s]"),
+                "vz": (False, None, None, "z-velocity [cm/s]")
+            }     
 
     def plot(self, fig, ax, snap_nr, key):
         if self.n_procs > 1:
-            variables, info = read_fg_mpi(snap_nr, self.n_procs, self.folder)
-            background, _ = read_bg_mpi(self.n_procs, self.folder)
+            if self.delta:
+                variables_new, info = variables, info = read_fg_mpi(snap_nr, self.n_procs, self.folder)
+                variables_old, info = variables, info = read_fg_mpi(snap_nr-1, self.n_procs, self.folder)
+                variables = {key: variables_new[key]-variables_old[key] for key in variables_new.keys()}
+                background, _ = read_bg_mpi(self.n_procs, self.folder)
+            else:
+                variables, info = read_fg_mpi(snap_nr, self.n_procs, self.folder)
+                background, _ = read_bg_mpi(self.n_procs, self.folder)
         else:
-            variables, info = read_fg(self.folder+f"snap{snap_nr}.h5")
-            background, _ = read_bg(self.folder+"background.h5")
+            if self.delta:
+                variables_new, info = read_fg(self.folder+f"snap{snap_nr}.h5")
+                variables_old, info = read_fg(self.folder+f"snap{snap_nr-1}.h5")
+                variables = {key: variables_new[key]-variables_old[key] for key in variables_new.keys()}
+                background, _ = read_bg(self.folder+"background.h5")
+            else:
+                variables, info = read_fg(self.folder+f"snap{snap_nr}.h5")
+                background, _ = read_bg(self.folder+"background.h5")
         t, nz_ghost, dy, dz = info['t'], info['nz_ghost'], info['dy'], info['dz']  
 
         d = variables[key][nz_ghost:-1-nz_ghost+1,:]
-        
-        if (key=="T1"):
-            d = d/(background["T0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
-            ax.set_title(format_title(key)+"$/T_0$")
-        elif (key=="rho1"):
-            d = d/(background["rho0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
-            ax.set_title(format_title(key)+r"$/\rho_0$")
-        elif (key=="p1"):
-            d = d/(background["p0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
-            ax.set_title(format_title(key)+"$/p_0$")
+
+        if self.delta:
+            ax.set_title(r"$\Delta$"+format_title(key))
+                
         else:
-            ax.set_title(format_title(key))
+            if (key=="T1"):
+                d = d/(background["T0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
+                ax.set_title(format_title(key)+"$/T_0$")
+            elif (key=="rho1"):
+                d = d/(background["rho0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
+                ax.set_title(format_title(key)+r"$/\rho_0$")
+            elif (key=="p1"):
+                d = d/(background["p0"][nz_ghost:-1-nz_ghost+1])[:, np.newaxis]
+                ax.set_title(format_title(key)+"$/p_0$")
+            else:
+                ax.set_title(format_title(key))
 
         if self.plot_params[key][0]:
             vy = variables["vy"][nz_ghost:-1-nz_ghost+1,:]
@@ -255,12 +293,13 @@ class Visualize_Foreground:
 
         extent = [self.y0,self.y1,self.z0,self.z1]
 
-        if self.norm == TwoSlopeNorm:
-            norm = self.norm(vcenter=0, vmin=vmin, vmax=vmax)
-            im =ax.imshow(d, origin="lower", extent=extent, aspect=self.aspect,norm=norm, cmap=self.cmap)
+
+        if vmin < 0 and vmax > 0:
+            if self.norm == TwoSlopeNorm:
+                norm = self.norm(vcenter=0, vmin=vmin, vmax=vmax)
+                im =ax.imshow(d, origin="lower", extent=extent, aspect=self.aspect,norm=norm, cmap=self.cmap)
         else:
             im =ax.imshow(d, origin="lower", extent=extent, aspect=self.aspect,vmin=vmin, vmax=vmax, cmap=self.cmap)
-        
         return im, t
 
     def plot_all(self, fig, snap_nr):
@@ -288,7 +327,7 @@ class Visualize_Foreground:
             formatter = ScalarFormatter(useMathText=True)
             formatter.set_scientific(True)
             formatter.set_powerlimits((-1, 1))
-            cbar.ax.yaxis.set_major_formatter(formatter)
+            #cbar.ax.yaxis.set_major_formatter(formatter)
 
         # Title for the entire plot with the time
         fig.suptitle(f"t={t.value:.1f} [{t.unit.to_string(format='latex_inline')}]", fontsize=self.title_size, y=0.96)
@@ -317,7 +356,10 @@ class Visualize_Foreground:
 
     def animate_all(self, save=False, save_name=None, fps=4, save_interval=10):
         def init_animation():
-            self.plot_all(self.fig, 0)
+            if self.delta:
+                self.plot_all(self.fig, 1)
+            else:
+                self.plot_all(self.fig, 0)
 
         def update_animation(snap_nr):
             """Update the plots for each frame."""
@@ -327,8 +369,11 @@ class Visualize_Foreground:
             self.plot_all(self.fig, snap_nr)  # Plot the new snapshot
 
         self.fig = plt.figure(figsize=(16, 9))  # Create a figure
-        #self.plot_all(self.fig,self.num_snaps-1)
-        anim = FuncAnimation(self.fig, update_animation, interval=250, frames=range(0,self.num_snaps, save_interval), init_func=init_animation)
+        
+        if self.delta:
+            anim = FuncAnimation(self.fig, update_animation, interval=250, frames=range(1,self.num_snaps, save_interval), init_func=init_animation)
+        else:
+            anim = FuncAnimation(self.fig, update_animation, interval=250, frames=range(0,self.num_snaps, save_interval), init_func=init_animation)
         if save:
             anim.save(save_name, writer='ffmpeg', fps=fps, extra_args=['-vcodec', 'libx264'])
         else:
@@ -381,25 +426,12 @@ class Visualize_Foreground:
         plt.show()
 
 if __name__ == "__main__":
-    directory = "../data/rk3_no_mpi/"
-    save_name = directory.split("/")[-2] + ".mp4"
+    DATA_FOLDER = "/mn/stornext/d10/data/tabjone/data/"
+    RUN_NAME = "bigger_box_high_res_little_higher_k/"
 
-    vf = Visualize_Foreground(directory)
-    #vf.plot_all(plt.figure(figsize=(16,9)), 1)
-    #plt.show()
-    if True:
-        vf.plot_params['T1'] = (True, None, None, vf.plot_params['T1'][3])
-        vf.plot_params['rho1'] = (True, None, None, vf.plot_params['rho1'][3])
-        vf.plot_params['s1'] = (True, None, None, vf.plot_params['s1'][3])
-        vf.plot_params['p1'] = (True, None, None, vf.plot_params['p1'][3])
-        vf.plot_params['vy'] = (False, None, None, vf.plot_params['vy'][3])
-        vf.plot_params['vz'] = (False, None, None, vf.plot_params['vz'][3])
-        #fig, ax = plt.subplots()
-        #vf.plot(fig, ax, 0, "p1")
-        #plt.show()
-        #vf.plot_all(plt.figure(figsize=(16,9)), 1)
-        #plt.show()
-        vf.norm = NoNorm
-        vf.animate_all(save=True, save_name=save_name, fps=5, save_interval=1)
-    if False:
-        vf.animate_all_no_vmin_vmax(save=True, save_name=save_name, fps=4, save_interval=1)
+    vf = Visualize_Foreground(DATA_FOLDER+RUN_NAME, delta=False)
+    vf.norm = TwoSlopeNorm
+    fig, ax = plt.subplots(figsize=(6,6))
+
+    vf.plot(fig, ax, 1, "p1")
+    plt.savefig("vy.png")

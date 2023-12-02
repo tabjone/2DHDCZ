@@ -3,6 +3,7 @@
 
 #include "shared_files.h"
 #include "global_parameters.h"
+#include "global_boundary.h"
 
 void periodic_boundary_2D(FLOAT_P **array, struct GridInfo2D *grid_info);
 void update_vertical_boundary_ghostcells_2D(FLOAT_P **array, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);

@@ -52,6 +52,7 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         solar_s_background_initialization(bg, mpi_info, grid_info->nz_full, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1, grid_info->nz);
         save_background(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1);
         save_mpi_info(mpi_info);
+        save_info(mpi_info);
         
         // Initialize foreground to type set in parameter file
         initialize_foreground(fg_previous, bg, grid_info, mpi_info);
@@ -70,7 +71,7 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
     struct PrecalculatedVariables *precalc;
 
     allocate_calculate_precalc_struct(&precalc, bg, grid_info);
-
+    
     #if SAVE_RHS == 1
         save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, 0);
     #endif // SAVE_RHS
@@ -78,13 +79,14 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
     t_since_save = 0.0;
     dt_last = 0.0;
     while (t < T)
-    { 
+    {
         dt = one_time_step(bg, fg_previous, fg, grid_info, mpi_info, precalc, dt_last, first_t == t);
         t += dt;
-
+        
         t_since_save += dt;
         dt_last = dt;
-        if (dt_last < 0.001)
+        
+        if (dt_last < 0.0001)
         {
             break;
         }
@@ -116,7 +118,10 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
     }
 
     // Save last time step
-    save_foreground(fg_previous, grid_info, mpi_info, save_nr, t);
+    //save_foreground(fg_previous, grid_info, mpi_info, save_nr, t);
+    #if SAVE_RHS == 1
+        //save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, save_nr);
+    #endif // SAVE_RHS
     
     deallocate_grid_info_struct_2D(grid_info);
     deallocate_background_struct(bg);

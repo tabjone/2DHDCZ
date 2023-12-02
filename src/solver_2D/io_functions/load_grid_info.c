@@ -42,11 +42,10 @@ void load_grid_info(struct GridInfo2D **grid_info, const char *file_path)
         fprintf(stderr, "Failed to close grid_info group\n");
     }
 
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+
     // Load the numbers into the grid_info struct
     allocate_grid_info_struct_2D(grid_info, nz, nz_ghost, nz_full, ny, dz, dy, z0, z1, z_offset, y0, y1);
-    #pragma GCC diagnostic pop
+
     // Close the file
     status = H5Fclose(file);
     if (status < 0) {

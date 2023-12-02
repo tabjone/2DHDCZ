@@ -7,6 +7,7 @@
 #include "shared_files.h"
 #include <math.h>
 #include <stdlib.h>
+#include "initialization.h"
 
 struct IntegrationVariables
 {

@@ -77,18 +77,14 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
             fg->vz[i][j] = fg_prev->vz[i][j] + dt/2.0 * k1_vz[i][j];
         }
     }
-
-
-
     
-
     apply_vertical_boundary_damping(fg, bg, grid_info, mpi_info, dt);
-
+    
     // Updating ghost cells
     update_vertical_boundary_ghostcells_2D(fg->s1, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->vy, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->vz, grid_info, mpi_info);
-
+    
     // Need these for T1 and rho1
     for (int i = 0; i < nz_full; i++)
     {
@@ -101,11 +97,11 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     // Updating mid-calculation variables rho1 and T1
     first_law_thermodynamics(fg, bg, grid_info);
     equation_of_state(fg, bg, grid_info);
-
+    
     // Calculating pressure
     solve_elliptic_equation(bg, fg, fg, grid_info, mpi_info, precalc);
     update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
-
+    
     // Calculating k2 inside the grid and on boundaries
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
@@ -116,7 +112,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
             k2_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, precalc, i, j);
         }
     }
-
+    
     // Updating fg to hold mid-calculation variables
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
@@ -127,13 +123,14 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
             fg->vz[i][j] = fg_prev->vz[i][j] - dt * k1_vz[i][j] + 2.0 * dt * k2_vz[i][j];
         }
     }
-    apply_vertical_boundary_damping(fg, bg, grid_info, mpi_info, dt);
 
+    apply_vertical_boundary_damping(fg, bg, grid_info, mpi_info, dt);
+    
     // Updating ghost cells
     update_vertical_boundary_ghostcells_2D(fg->s1, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->vy, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->vz, grid_info, mpi_info);
-
+    
     // Updating mid-calculation variables rho1, T1
     first_law_thermodynamics(fg, bg, grid_info);
     equation_of_state(fg, bg, grid_info);

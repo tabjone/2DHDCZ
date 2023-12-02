@@ -7,7 +7,7 @@ void apply_vertical_boundary_damping(struct ForegroundVariables2D *fg, struct Ba
     int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;
 
-    // Pre-Calculate this in main
+    // Pre-Calculate this in precalc
     // Calculating damping factor
     //FLOAT_P damping_factor[nz_full];
 
@@ -19,28 +19,54 @@ void apply_vertical_boundary_damping(struct ForegroundVariables2D *fg, struct Ba
     #elif MPI_ON == 1
         calculate_damping_mpi(damping_factor, bg, grid_info, mpi_info);
     #endif // MPI_ON
-    
-    // Finding mean of s1
-    FLOAT_P s1_mean = 0.0;
-    FLOAT_P tau = 60.0*60.0*4;
-    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
-    {
-        for (int j = 0; j < ny; j++)
-        {
-            s1_mean += fg->s1[i][j];
-        }
-    }
-    s1_mean /= (nz_full - 2*nz_ghost)*ny;
 
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[i][j] = damping_factor[i]*fg->s1[i][j];// + s1_mean*(1-damping_factor[i])*(1-dt/tau);
+            fg->s1[i][j] = damping_factor[i]*fg->s1[i][j];
             fg->vz[i][j] = damping_factor[i]*fg->vz[i][j];
         }
     }
 
+    // On boundary
+    if (!mpi_info->has_neighbor_above)
+    {
+        for (int j = 0; j < ny; j++)
+        {
+            *fg->s1[nz_full-nz_ghost-1] = UPPER_ENTROPY_BOUNDARY;
+            *fg->p1[nz_full-nz_ghost-1] = UPPER_PRESSURE_BOUNDARY;
+            *fg->vz[nz_full-nz_ghost-1] = 0.0;
+        }
+    }
+    if (!mpi_info->has_neighbor_below)
+    {
+        for (int j = 0; j < ny; j++)
+        {
+            *fg->s1[nz_ghost] = LOWER_ENTROPY_BOUNDARY;
+            *fg->p1[nz_ghost] = LOWER_PRESSURE_BOUNDARY;
+            *fg->vz[nz_ghost] = 0.0;
+        }
+    }
+
+    #if OSCILLATING_S1_BC == 1
+        FLOAT_P s1_mean = 0.0;
+        for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
+        {
+            for (int j = 0; j < ny; j++)
+            {
+                s1_mean += fg->s1[i][j];
+            }
+        }
+        s1_mean /= (nz_full - 2*nz_ghost)*ny;
+        for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
+        {
+            for (int j = 0; j < ny; j++)
+            {
+                fg->s1[i][j] += + s1_mean*(1-damping_factor[i])*(1-dt/TAU_BC);
+            }
+        }
+    #endif // OSCILLATING_S1_BC
     deallocate_1D_array(damping_factor);
     
 }

@@ -1,6 +1,7 @@
 #include "precalculated_variables.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 void allocate_calculate_precalc_struct(struct PrecalculatedVariables **pv, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
 {

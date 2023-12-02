@@ -1,10 +1,12 @@
 #ifndef INITIALIZATION_H__
 #define INITIALIZATION_H__
 
-#define IC_SOD_SHOCK 0 // 0 for off, 1 for on
-#define IC_SOD_SHOCK_DIRECTION 0 // 0 for horizontal, 1 for vertical
+#include "global_parameters.h"
 
-#define IC_ENTROPY_PERTUBATION 1 // 0 for off, 1 for on
+#define IC_SOD_SHOCK 0 // 0 for off, 1 for on
+#define IC_SOD_SHOCK_DIRECTION 1 // 0 for horizontal, 1 for vertical
+
+#define IC_ENTROPY_PERTUBATION 0 // 0 for off, 1 for on
 #define IC_N_ENTROPY_PERTUBATION 2 // the number of gaussians for the entropy pertubation
 // Placement of gaussian between 0 and 1 in each direction for inside the grid
 #define IC_ENTROPY_CENTRE_Z {0.2, 0.6}
@@ -17,9 +19,22 @@
 #define IC_DENSITY_CENTRE_Y {0.5, 0.6}
 #define IC_ENTROPY_CENTRE_X {0.5, 0.6}
 
+#define IC_OSCILLATION_MODES 1 // 0 for off, 1 for on
+#define IC_OSCILLATION_MODES_N_NUM 3 // the number of oscillation modes in the z-direction
+#define IC_OSCILLATION_MODES_M_NUM 2 // the number of oscillation modes in the y-direction
+#define IC_OSCILLATION_MODES_N {1,2,3} // the oscillation modes in the z-direction
+#define IC_OSCILLATION_MODES_M {1,4} // the oscillation modes in the y-direction
+#define IC_OSCILLATION_MODES_PHI {0.0, 0.0} // the phase shift of the oscillation modes in the x-direction
 
-#if (IC_SOD_SHOCK + IC_ENTROPY_PERTUBATION + IC_DENSITY_PERTUBATION) > 1
+
+#if (IC_SOD_SHOCK + IC_ENTROPY_PERTUBATION + IC_DENSITY_PERTUBATION + IC_OSCILLATION_MODES) > 1
     #error "You can only have one initialization type"
 #endif
+
+// Background
+#define CONSTANT_BACKGROUND 0 // 0 for non-constant background, 1 for constant background
+#define CONSTANT_BACKGROUND_DENSITY 1.0e-1 // Constant background density
+#define CONSTANT_BACKGROUND_PRESSURE 1.0e13 // Constant background pressure
+#define CONSTANT_BACKGROUND_TEMPERATURE 1.0e6 // Constant background temperature
 
 #endif // INITIALIZATION_H__

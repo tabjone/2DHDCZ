@@ -18,8 +18,7 @@ void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *
     // Getting grid info
     int nz_full = grid_info->nz_full;
 
-    // Setting damping factor
-    #if VERTICAL_BOUNDARY_TYPE == 0
+    #if HARD_WALL_VERTICAL == 1
         int nz_ghost = grid_info->nz_ghost;
 
         // No damping inside grid
@@ -41,37 +40,31 @@ void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *
                 damping_factor[i] = 0.0;
             }
         }
-    #elif VERTICAL_BOUNDARY_TYPE == 1
-        // Soft wall
+    #endif // HARD_WALL_VERTICAL
+
+    #if SOFT_WALL_VERTICAL == 1
         // Getting grid info
         int nz_ghost = grid_info->nz_ghost;
         // Calculate what SOFT_WALL_HEIGHT_PERCENTAGE of the domain is
         // Bottom r
-        FLOAT_P bottom_r;
+
+        FLOAT_P bottom_r, top_r;
         if (mpi_info->rank == 0)
         {
             // Broadcast the bottom r to all processes
-            MPI_Bcast(&bg->r[nz_ghost], 1, MPI_FLOAT_P, 0, MPI_COMM_WORLD);
+            
             bottom_r = bg->r[nz_ghost];
         }
-        else
-        {
-            // Receive the bottom r from process 0
-            MPI_Bcast(&bottom_r, 1, MPI_FLOAT_P, 0, MPI_COMM_WORLD);
-        }
-        // Top r
-        FLOAT_P top_r;
         if (mpi_info->rank == mpi_info->size-1)
         {
             // Broadcast the top r to all processes
-            MPI_Bcast(&bg->r[nz_full-nz_ghost-1], 1, MPI_FLOAT_P, mpi_info->size-1, MPI_COMM_WORLD);
+            
             top_r = bg->r[nz_full-nz_ghost-1];
         }
-        else
-        {
-            // Receive the top r from process 0
-            MPI_Bcast(&top_r, 1, MPI_FLOAT_P, mpi_info->size-1, MPI_COMM_WORLD);
-        }
+
+        MPI_Bcast(&bottom_r, 1, MPI_FLOAT_P, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&top_r, 1, MPI_FLOAT_P, mpi_info->size-1, MPI_COMM_WORLD);
+
 
         FLOAT_P damped_domain = (top_r - bottom_r) * SOFT_WALL_HEIGHT_PERCENTAGE;
         // Calculate z0 for the bottom and top
@@ -137,12 +130,12 @@ void calculate_damping_mpi(FLOAT_P *damping_factor, struct BackgroundVariables *
             damping_factor[i] = w;
             i--;
         }
-         
-    #elif VERTICAL_BOUNDARY_TYPE == 2
-        // No damping
+    #endif // SOFT_WALL_VERTICAL
+
+    #if PERIODIC_BOUNDARY_VERTICAL == 1 || NO_BOUNDARY_VERTICAL == 1
         for (int i = 0; i < nz_full; i++)
         {
             damping_factor[i] = 1.0;
         }
-    #endif // VERTICAL_BOUNDARY_TYPE
+    #endif // PERIODIC_BOUNDARY_VERTICAL
 }

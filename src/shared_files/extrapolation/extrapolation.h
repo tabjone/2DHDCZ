@@ -3,6 +3,7 @@
 
 #include "shared_files.h"
 #include "global_parameters.h"
+#include "global_boundary.h"
 
 void extrapolate_background(struct BackgroundVariables *bg, int nz_full, int nz_ghost, FLOAT_P dz);
 

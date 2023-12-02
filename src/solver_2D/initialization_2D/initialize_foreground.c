@@ -27,6 +27,8 @@ void initialize_foreground(struct ForegroundVariables2D *fg, struct BackgroundVa
             #elif IC_SOD_SHOCK_DIRECTION == 1
                 sod_shock_vertical(fg, bg, grid_info);
             #endif // IC_SOD_SHOCK_DIRECTION
+        #elif IC_OSCILLATION_MODES == 1
+            initialization_2D_oscillation_modes(fg, bg, grid_info, mpi_info);
         #endif // IC_TYPE
 
     #elif MPI_ON == 1
@@ -36,10 +38,12 @@ void initialize_foreground(struct ForegroundVariables2D *fg, struct BackgroundVa
             //initialize_foreground_density_pertubation_mpi(fg, bg, grid_info);
         #elif IC_SOD_SHOCK == 1
             #if IC_SOD_SHOCK_DIRECTION == 0
-                 //sod_shock_horizontal_mpi(fg, bg, grid_info);
+                sod_shock_horizontal_mpi(fg, bg, grid_info, mpi_info);
             #elif IC_SOD_SHOCK_DIRECTION == 1
-                //sod_shock_vertical_mpi(fg, bg, grid_info);
+                sod_shock_vertical_mpi(fg, bg, grid_info, mpi_info);
             #endif // IC_SOD_SHOCK_DIRECTION
+        #elif IC_OSCILLATION_MODES == 1
+            initialization_2D_oscillation_modes(fg, bg, grid_info, mpi_info);
         #endif // IC_TYPE
     #endif // MPI_ON
 }

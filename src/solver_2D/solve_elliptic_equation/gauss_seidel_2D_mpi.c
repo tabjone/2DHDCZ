@@ -56,25 +56,25 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
 
     communicate_p_gauss_seidel(pnew, grid_info, mpi_info);
 
-    #if VERTICAL_BOUNDARY_TYPE == 2
-        int i_start = 0;
-        int i_end = nz;
-    #else
-        int i_start = 1;
-        int i_end = nz+1;
+    int i_start = 1;
+    int i_end = nz+1;
 
+    // Non-periodic boundary
+    #if PERIODIC_BOUNDARY_VERTICAL == 0
         if (!mpi_info->has_neighbor_below) // Boundary zero
         {
+            i_start = 2;
             for (int j = 0; j < ny; j++)
             {
-                pnew[1][j] = 0.0;
+                pnew[1][j] = LOWER_PRESSURE_BOUNDARY;
             }
         }
         if (!mpi_info->has_neighbor_above) // Boundary zero
         {
+            i_end = nz;
             for (int j = 0; j < ny; j++)
             {
-                pnew[nz][j] = 0.0;
+                pnew[nz][j] = UPPER_PRESSURE_BOUNDARY;
             }
         }
     #endif // VERTICAL_BOUNDARY_TYPE
@@ -85,7 +85,7 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
     FLOAT_P tolerance_criteria = DBL_MAX;
 
     // Periodic boundary conditions
-    int i_plus, i_minus, j_plus, j_minus;
+    int j_plus, j_minus;
 
     int iter = 0;
     
@@ -105,13 +105,6 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
     
         for (int i = i_start; i < i_end; i++)
         {
-            #if VERTICAL_BOUNDARY_TYPE == 2
-                i_plus = periodic_boundary(i+1, nz);
-                i_minus = periodic_boundary(i-1, nz);
-            #else
-                i_plus = i+1;
-                i_minus = i-1;
-            #endif // VERTICAL_BOUNDARY_TYPE
             for (int j = 0; j < ny; j++)
             {
                 j_plus = periodic_boundary(j+1, ny);
@@ -120,7 +113,7 @@ void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct
                 //pnew[i][j] = (b[i][j] - a*(p[i_plus][j] + pnew[i_minus][j]) - c*(p[i][j_plus] + pnew[i][j_minus]))/g;
                 // Jacobi
                 //printf("i_minus=%d, i_plus=%d\n", i_minus, i_plus);
-                pnew[i][j] = (b[i-i_start][j] - a*(p[i_plus][j] + p[i_minus][j]) - c*(p[i][j_plus] + p[i][j_minus]))/g;
+                pnew[i][j] = (b[i-1][j] - a*(p[i+1][j] + p[i-1][j]) - c*(p[i][j_plus] + p[i][j_minus]))/g;
                 
                 // Finding maximum absolute value of pnew
                 abs_pnew = fabs(pnew[i][j]);

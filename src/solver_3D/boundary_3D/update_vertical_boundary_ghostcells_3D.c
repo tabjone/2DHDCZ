@@ -3,9 +3,11 @@
 void update_vertical_boundary_ghostcells_3D(FLOAT_P ***array, struct GridInfo3D *grid_info, struct MpiInfo *mpi_info)
 {
     int nz_ghost = grid_info->nz_ghost;
-    int nz_full = grid_info->nz_full;
+    int nz = grid_info->nz;
     int ny = grid_info->ny;
     int nx = grid_info->nx;
+
+    MPI_Status status;
 
     #if MPI_ON == 1
         // Sending and receiving ghost cells
@@ -13,6 +15,7 @@ void update_vertical_boundary_ghostcells_3D(FLOAT_P ***array, struct GridInfo3D 
     #endif // MPI_ON
 
     #if VERTICAL_BOUNDARY_TYPE != 2
+        int nz_full = grid_info->nz_full;
         // If not periodic boundary extrapolate ghost cells at top and bottom
         if (!mpi_info->has_neighbor_below)
         {
@@ -41,7 +44,7 @@ void update_vertical_boundary_ghostcells_3D(FLOAT_P ***array, struct GridInfo3D 
                 // Recieve from top
                 MPI_Recv(&array[0][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, size-1, 0, MPI_COMM_WORLD, &status);
                 // Send to top
-                MPI_Send(&array[nz_ghost][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, size-1, 1, MPI_COMM_WORLD)
+                MPI_Send(&array[nz_ghost][0][0], nz_ghost*ny*nx, MPI_FLOAT_P, size-1, 1, MPI_COMM_WORLD);
             }
         #else
             // If not mpi just do periodic boundary function

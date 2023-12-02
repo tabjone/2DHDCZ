@@ -5,6 +5,7 @@
 #include <math.h>
 #include "global_parameters.h"
 #include "../rhs_functions/rhs_functions.h"
+#include "global_boundary.h"
 
 void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo2D *grid_info);
 

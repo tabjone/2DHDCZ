@@ -1,4 +1,5 @@
 #include "solar_s_initialization.h"
+#include <math.h>
 
 void solar_s_background_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_info, int grid_nz_full, int grid_nz_ghost, FLOAT_P grid_dz, FLOAT_P grid_z0, FLOAT_P grid_z1, FLOAT_P grid_nz)
 {
@@ -198,11 +199,11 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
         // Constant background
         for (int i = 0; i < grid_nz_full; i++)
         {
-            bg->rho0[i] = 1.0e-1;
+            bg->rho0[i] = CONSTANT_BACKGROUND_DENSITY;
+            bg->p0[i] = CONSTANT_BACKGROUND_PRESSURE;
+            bg->T0[i] = CONSTANT_BACKGROUND_TEMPERATURE;
             bg->grad_s0[i] = 0.0;
-            bg->T0[i] = 1.0e6;
             bg->g[i] = 0.0;
-            bg->p0[i] = 1.0e13;
         }
     #endif // CONSTANT_BACKGROUND
 
