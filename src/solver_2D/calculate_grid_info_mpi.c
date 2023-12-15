@@ -44,9 +44,7 @@ void calculate_grid_info_mpi(struct MpiInfo *mpi_info, struct GridInfo2D **grid_
 
     FLOAT_P z_offset = (my_offset) * dz;
 
-    FLOAT_P z0, z1, y0, y1;
-
-    
+    FLOAT_P z0, z1, y0, y1;    
 
     z0 = R_SUN * R_START + (my_offset) * dz;
     z1 = R_SUN * R_START + (my_offset + my_nz-1) * dz;

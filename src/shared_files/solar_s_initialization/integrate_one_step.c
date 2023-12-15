@@ -1,7 +1,7 @@
 #include "solar_s_initialization.h"
 #include <math.h>
 
-void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown)
+void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown, FLOAT_P dz)
 {
     // false for upward integration, true for downward integration
     FLOAT_P k = get_k_value(bg->r[i]);
@@ -26,28 +26,14 @@ void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown)
 
         bg->N_increment = bg->N_increment + 1;
     }
+    FLOAT_P dr = dz;
 
-    FLOAT_P dr1 = fabs(p_step * bg->m[i]/dm_dr);
-    FLOAT_P dr2 = fabs(p_step * bg->p0[i]/dp_dr);
-    FLOAT_P dr3 = fabs(p_step * bg->T0[i]/dT_dr);
-    FLOAT_P dr4 = fabs(p_step * bg->s0[i]/ds_dr);
-
-    FLOAT_P dr;
-    if (dr1 < dr2 && dr1 < dr3 && dr1 < dr4) {
-        dr = dr1;
-    } else if (dr2 < dr1 && dr2 < dr3 && dr2 < dr4) {
-        dr = dr2;
-    } else if (dr3 < dr1 && dr3 < dr2 && dr3 < dr4) {
-        dr = dr3;
-    } else {
-        dr = dr4;
-    }
     if (updown)
     {
         dr = -dr;
     }
     
-    bg->grad_s0[i] = ds_dr;
+    bg->grad_s0[i+1] = ds_dr;
     
     bg->r[i+1] = bg->r[i] + dr;
     bg->m[i+1] = bg->m[i] + dm_dr * dr;

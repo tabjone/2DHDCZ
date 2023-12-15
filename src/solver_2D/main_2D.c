@@ -48,9 +48,13 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         allocate_foreground_struct_2D(&fg, grid_info);
         allocate_foreground_struct_2D(&fg_previous, grid_info);
 
+
         // Initialize the background variables and saving it to file
         solar_s_background_initialization(bg, mpi_info, grid_info->nz_full, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1, grid_info->nz);
         save_background(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1);
+
+        printf("neig_above = %d, neig_below = %d\n", mpi_info->has_neighbor_above, mpi_info->has_neighbor_below);
+
         save_mpi_info(mpi_info);
         save_info(mpi_info);
         
@@ -74,6 +78,7 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
     
     #if SAVE_RHS == 1
         save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, 0);
+        save_elliptic_vars(fg_previous, bg, grid_info, mpi_info, precalc, 0);
     #endif // SAVE_RHS
 
     t_since_save = 0.0;
@@ -82,20 +87,25 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
     {
         dt = one_time_step(bg, fg_previous, fg, grid_info, mpi_info, precalc, dt_last, first_t == t);
         t += dt;
+
+
+        if (mpi_info->rank == 0)
+            printf("t = %.2f, dt=%.2f\n", t, dt);
         
         t_since_save += dt;
         dt_last = dt;
         
-        if (dt_last < 0.0001)
+        if (dt_last < 0.01)
         {
             break;
         }
         
         if (t_since_save > SAVE_INTERVAL && SAVE_ALL == 0)
         {
-            save_foreground(fg_previous, grid_info, mpi_info, save_nr, t);
+            save_foreground(fg, grid_info, mpi_info, save_nr, t);
             #if SAVE_RHS == 1
-                save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, save_nr);
+                save_rhs(fg, bg, grid_info, mpi_info, precalc, save_nr);
+                save_elliptic_vars(fg, bg, grid_info, mpi_info, precalc, save_nr);
             #endif // SAVE_RHS
             save_nr++;
             t_since_save = 0.0;
@@ -104,7 +114,8 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         {
             save_foreground(fg, grid_info, mpi_info, save_nr, t);
             #if SAVE_RHS == 1
-                save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, save_nr);
+                save_rhs(fg, bg, grid_info, mpi_info, precalc, save_nr);
+                save_elliptic_vars(fg, bg, grid_info, mpi_info, precalc, save_nr);
             #endif // SAVE_RHS
             save_nr++;
         }
@@ -113,14 +124,13 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         tmp_ptr = fg_previous;
         fg_previous = fg;
         fg = tmp_ptr;
-        if (mpi_info->rank == 0)
-            printf("t = %.2f\n", t);
     }
 
     // Save last time step
-    //save_foreground(fg_previous, grid_info, mpi_info, save_nr, t);
+    save_foreground(fg_previous, grid_info, mpi_info, save_nr, t);
     #if SAVE_RHS == 1
-        //save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, save_nr);
+        save_elliptic_vars(fg_previous, bg, grid_info, mpi_info, precalc, save_nr);
+        save_rhs(fg_previous, bg, grid_info, mpi_info, precalc, save_nr);
     #endif // SAVE_RHS
     
     deallocate_grid_info_struct_2D(grid_info);

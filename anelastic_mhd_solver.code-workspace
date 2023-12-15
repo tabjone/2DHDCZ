@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../../../mn/stornext/d10/data/tabjone/data"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"initialization_2d.h": "c",
+			"solve_elliptic_equation_3d.h": "c",
+			"boundary_3d.h": "c",
+			"io_functions.h": "c"
+		}
+	}
+}

@@ -3,6 +3,7 @@
 void initialization_2D_oscillation_modes(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
+    With T=0
     */
 
     // Getting grid info
@@ -21,6 +22,8 @@ void initialization_2D_oscillation_modes(struct ForegroundVariables2D *fg, struc
 
     FLOAT_P z, y;
     FLOAT_P sum_modes;
+
+    FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
 
     int oscillation_modes_n[IC_OSCILLATION_MODES_N_NUM] = IC_OSCILLATION_MODES_N;
     int oscillation_modes_m[IC_OSCILLATION_MODES_M_NUM] = IC_OSCILLATION_MODES_M;
@@ -41,12 +44,12 @@ void initialization_2D_oscillation_modes(struct ForegroundVariables2D *fg, struc
                 }
             }
             fg->s1[i][j] = 1.0e1 * sum_modes;
-            fg->p1[i][j] = 1.0e4 * sum_modes;
+            // Calculating p1 from first law of thermodynamics
+            fg->p1[i][j] = -bg->p0[i] * fg->s1[i][j]/c_p;
         }
     }
     update_vertical_boundary_ghostcells_2D(fg->p1, grid_info, mpi_info);
     update_vertical_boundary_ghostcells_2D(fg->s1, grid_info, mpi_info);
 
-    first_law_thermodynamics(fg, bg, grid_info);
     equation_of_state(fg, bg, grid_info);  
 }

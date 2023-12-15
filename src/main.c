@@ -18,20 +18,15 @@ int main(int argc, char *argv[])
     // Initialize MPI
     #if MPI_ON == 1
         // Check if there are neighbors above and below
+        mpi_info->has_neighbor_below = true;
+        mpi_info->has_neighbor_above = true;
         if (mpi_info->rank == 0)
         {
             mpi_info->has_neighbor_below = false;
-            mpi_info->has_neighbor_above = true;
         }
-        else if (mpi_info->rank == mpi_info->size - 1)
+        if (mpi_info->rank == mpi_info->size - 1)
         {
-            mpi_info->has_neighbor_below = true;
             mpi_info->has_neighbor_above = false;
-        }
-        else
-        {
-            mpi_info->has_neighbor_below = true;
-            mpi_info->has_neighbor_above = true;
         }
     #else
         mpi_info->has_neighbor_below = false;
@@ -58,9 +53,11 @@ int main(int argc, char *argv[])
 
     #if SAVE_RHS == 1
         char dir_name_rhs[100];
+        char dir_name_elliptic[100];
 
         // Use snprintf to create the directory path with the base directory and RUN_NAME
         snprintf(dir_name_rhs, sizeof(dir_name_rhs), "%s%s/rhs", SAVE_DIR, RUN_NAME);
+        snprintf(dir_name_elliptic, sizeof(dir_name_elliptic), "%s%s/elliptic_vars", SAVE_DIR, RUN_NAME);
         
         // Create directory
         if (mpi_info->rank == 0)
@@ -69,6 +66,15 @@ int main(int argc, char *argv[])
             if (stat(dir_name_rhs, &st) == -1) {
                 // If directory doesn't exist, create it with permissions set to rwxr-xr-x
                 if (mkdir(dir_name_rhs, 0755) == -1) {
+                    perror("Error creating directory");
+                    return 1;
+                }
+            }
+
+            // Check if directory exists
+            if (stat(dir_name_elliptic, &st) == -1) {
+                // If directory doesn't exist, create it with permissions set to rwxr-xr-x
+                if (mkdir(dir_name_elliptic, 0755) == -1) {
                     perror("Error creating directory");
                     return 1;
                 }

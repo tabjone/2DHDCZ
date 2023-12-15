@@ -28,10 +28,10 @@ void set_initial_integration_values(struct IntegrationVariables *i_var, FLOAT_P 
 
 FLOAT_P get_k_value(FLOAT_P r);
 
-void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown);
+void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown, FLOAT_P dz);
 
 void read_solar_s_data(const char* filename, FLOAT_P* r_over_R, FLOAT_P* rho0, FLOAT_P* p0, FLOAT_P* T0, hsize_t size);
 
-void solar_s_background_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_info, int grid_nz_full, int grid_nz_ghost, FLOAT_P grid_dz, FLOAT_P grid_z0, FLOAT_P grid_z1, FLOAT_P grid_nz);
+void solar_s_background_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_info, int grid_nz_full, int grid_nz_ghost, FLOAT_P grid_dz, FLOAT_P grid_z0, FLOAT_P grid_z1, int grid_nz);
 
 #endif // SOLAR_S_INITIALIZATION_SOLAR_S_INITIALIZATION_H_

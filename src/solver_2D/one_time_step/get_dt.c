@@ -51,21 +51,32 @@ FLOAT_P get_dt(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, F
     #elif TIME_ORDER == 3 && UPWIND_ORDER == 2
         C_max = 0.5;
     #endif // TIME_ORDER, UPWIND_ORDER
-
+    
     // CFL condition
-    FLOAT_P dt_gridpoint; // dt at each grid point
+    FLOAT_P max_vy = 0.0;
+    FLOAT_P max_vz = 0.0;
+
+    FLOAT_P vy, vz;
+
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < ny; j++)
         {
-            dt_gridpoint = CFL_CUT * C_max / (fabs(fg->vy[i][j])/dy + fabs(fg->vz[i][j])/dz);
-            if (dt_gridpoint < dt) 
+            vy = fabs(fg->vy[i][j]);
+            vz = fabs(fg->vz[i][j]);
+
+            if (vy > max_vy)
             {
-                dt = dt_gridpoint;  // update dt if the new value is smaller
+                max_vy = vy;
+            }
+            if (vz > max_vz)
+            {
+                max_vz = vz;
             }
         }
     }
-    
+
+    dt = CFL_CUT * C_max / (max_vy/dy + max_vz/dz);    
     
     // If this is the first timestep, we set dt to 0.1
     if (first_timestep && dt > 0.1 && MAX_DT > 0.1)

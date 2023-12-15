@@ -6,22 +6,26 @@
 
 #define MPI_ON 1 // 0 for MPI off, 1 for MPI on
 
-#define RUN_NAME "test_1" // Name of the run
+#define RUN_NAME "new_test15" // Name of the run
 #define SAVE_DIR "/mn/stornext/d10/data/tabjone/data/"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define T 1e7 // Simulation time in seconds
+#define BACKGROUND_INTEGRATION_STARTING_POINT 0.97 // Starting point for integration of background
+#define BACKGROUND_INTEGRATION_TOP 1.10 // Top point for integration of background
+#define BACKGROUND_INTEGRATION_BOTTOM 0.65 // Bottom point for integration of background
+
+#define T 1e5 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
-#define SAVE_INTERVAL 1e3 // Save interval in seconds
+#define SAVE_INTERVAL 1e2 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
 
-#define CFL_CUT 0.3 // CFL cut
+#define CFL_CUT 0.1 // CFL cut
 
 // Order of the scheme (only upwind 1,2, central 2,4, rk1,2 implemented so far)
-#define UPWIND_ORDER 2 // 1 for first order, 2 for second order
+#define UPWIND_ORDER 1 // 1 for first order, 2 for second order
 #define CENTRAL_ORDER 2 // 2 for second order, 4 for fourth order
-#define TIME_ORDER 3 // 1,2,3 for RK1, RK2, RK3
+#define TIME_ORDER 1 // 1,2,3 for RK1, RK2, RK3
 
 #define FLOAT_PRECISION 1 // 0 for float, 1 for double, 2 for long double
 
@@ -34,17 +38,17 @@
 // Grid size
 #define CZ_START 0.71 // In units of solar radii
 // R_START, R_END must be between 0.3 and 1.5
-#define R_START 0.70 // In units of solar radii
-#define R_END 0.90 // In units of solar radii
-#define X_SIZE 0.20 // In units of solar radii
-#define Y_SIZE 0.20 // In units of solar radii
+#define R_START 0.88 // In units of solar radii
+#define R_END 0.98 // In units of solar radii
+#define X_SIZE 0.1 // In units of solar radii
+#define Y_SIZE 0.1 // In units of solar radii
 #define NX 400 // Number of grid points in x-direction
 #define NY 200 // Number of grid points in y-direction
 #define NZ 200 // Number of grid points in z-direction
 
 // Gauss-Seidel tolerance, max iterations
-#define GS_TOL 1e-4 // Gauss-Seidel tolerance
-#define GS_MAX_ITER (int)5e7 // Gauss-Seidel max iterations
+#define GS_TOL 1e-5 // Gauss-Seidel tolerance
+#define GS_MAX_ITER (int)5e8 // Gauss-Seidel max iterations
 
 // Physical parameters
 #define DEL_AD 0.4 // Adiabatic temperature gradient
@@ -52,15 +56,15 @@
 #define NABLA_AD 0.4 // Adiabatic temperature gradient
 
 // Background parameters
-#define SUPERAD_PARAM 0.07 // superadiabacicity parameter in CZ
+#define SUPERAD_PARAM 0.0 // superadiabacicity parameter in CZ
 #define p_step 0.1 // Number for determining step-size in space
 
 
-#define GRAVITY_ON 1 // 0 for gravity off, 1 for gravity on
+#define GRAVITY_ON 0 // 0 for gravity off, 1 for gravity on
 #define ADVECTION_ON 1 // 0 for advection off, 1 for advection on
 #define GAS_PRESSURE_ON 1 // 0 for gas pressure off, 1 for gas pressure on
-#define VISCOSITY_ON 1 // 0 for viscosity off, 1 for viscosity on
-#define THERMAL_DIFFUSIVITY_ON 1 // 0 for thermal diffusivity off, 1 for thermal diffusivity on
+#define VISCOSITY_ON 0 // 0 for viscosity off, 1 for viscosity on
+#define THERMAL_DIFFUSIVITY_ON 0 // 0 for thermal diffusivity off, 1 for thermal diffusivity on
 #define BFIELD_ON 0 // 0 for B-field off, 1 for B-field on
 
 #define DEBUG 1

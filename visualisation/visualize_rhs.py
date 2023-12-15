@@ -53,12 +53,19 @@ def read_rhs(file_path):
         rhs_vz = np.array(f['rhs_vz'])
         rhs_vy = np.array(f['rhs_vy'])
         rhs_s1 = np.array(f['rhs_s1'])
+        rhs_p1 = np.array(f['rhs_p1'])
+        ds1_dy_vy = np.array(f['ds1_dy_vy'])
+        ds1_dz_vz = np.array(f['ds1_dz_vz'])
+        dvy_dy_vy = np.array(f['dvy_dy_vy'])
+        dvy_dz_vz = np.array(f['dvy_dz_vz'])
+        dvz_dy_vy = np.array(f['dvz_dy_vy'])
+        dvz_dz_vz = np.array(f['dvz_dz_vz'])
 
-    variables = {"rhs_vz": rhs_vz, "rhs_vy": rhs_vy, "rhs_s1": rhs_s1}
+    variables = {"rhs_vz": rhs_vz, "rhs_vy": rhs_vy, "rhs_s1": rhs_s1, "rhs_p1": rhs_p1, "ds1_dy_vy": ds1_dy_vy, "ds1_dz_vz": ds1_dz_vz, "dvy_dy_vy": dvy_dy_vy, "dvy_dz_vz": dvy_dz_vz, "dvz_dy_vy": dvz_dy_vy, "dvz_dz_vz": dvz_dz_vz}
     return variables
 
 def read_rhs_mpi(snap, n_procs, folder):
-    variables_list = {key: [] for key in ['rhs_vz', 'rhs_vy', 'rhs_s1']}
+    variables_list = {key: [] for key in ['rhs_vz', 'rhs_vy', 'rhs_s1', 'rhs_p1', 'ds1_dy_vy', 'ds1_dz_vz', 'dvy_dy_vy', 'dvy_dz_vz', 'dvz_dy_vy', 'dvz_dz_vz']}
 
     for i in range(n_procs):
         variable = read_rhs("{}rhs{}_{}.h5".format(folder, snap, i))

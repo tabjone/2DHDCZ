@@ -31,7 +31,8 @@ void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVa
     {
         for (int j = 0; j < ny; j++)
         {
-            rhs[i][j] = rhs_elliptic_eq_2D(bg, fg_prev, grid_info, precalc, i+nz_ghost, j);
+            // NB. Dette er endret fra fg-prev til fg
+            rhs[i][j] = rhs_elliptic_eq_2D(bg, fg, grid_info, precalc, i+nz_ghost, j);
         }
     }
     #if MPI_ON == 0

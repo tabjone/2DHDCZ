@@ -44,6 +44,10 @@ void initialize_foreground(struct ForegroundVariables2D *fg, struct BackgroundVa
             #endif // IC_SOD_SHOCK_DIRECTION
         #elif IC_OSCILLATION_MODES == 1
             initialization_2D_oscillation_modes(fg, bg, grid_info, mpi_info);
+        #elif IC_ZEROS == 1
+            initialize_foreground_zeros(fg, grid_info);
+        #else
+            new_test_init(fg, bg, grid_info, mpi_info);
         #endif // IC_TYPE
     #endif // MPI_ON
 }

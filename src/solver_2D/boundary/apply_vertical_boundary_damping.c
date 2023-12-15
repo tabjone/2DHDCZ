@@ -34,18 +34,18 @@ void apply_vertical_boundary_damping(struct ForegroundVariables2D *fg, struct Ba
     {
         for (int j = 0; j < ny; j++)
         {
-            *fg->s1[nz_full-nz_ghost-1] = UPPER_ENTROPY_BOUNDARY;
-            *fg->p1[nz_full-nz_ghost-1] = UPPER_PRESSURE_BOUNDARY;
-            *fg->vz[nz_full-nz_ghost-1] = 0.0;
+            *fg->s1[nz_full-nz_ghost-1][j] = UPPER_ENTROPY_BOUNDARY;
+            *fg->p1[nz_full-nz_ghost-1][j] = UPPER_PRESSURE_BOUNDARY;
+            *fg->vz[nz_full-nz_ghost-1][j] = 0.0;
         }
     }
     if (!mpi_info->has_neighbor_below)
     {
         for (int j = 0; j < ny; j++)
         {
-            *fg->s1[nz_ghost] = LOWER_ENTROPY_BOUNDARY;
-            *fg->p1[nz_ghost] = LOWER_PRESSURE_BOUNDARY;
-            *fg->vz[nz_ghost] = 0.0;
+            *fg->s1[nz_ghost][j] = LOWER_ENTROPY_BOUNDARY;
+            *fg->p1[nz_ghost][j] = LOWER_PRESSURE_BOUNDARY;
+            *fg->vz[nz_ghost][j] = 0.0;
         }
     }
 

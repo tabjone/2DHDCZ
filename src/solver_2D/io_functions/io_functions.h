@@ -21,5 +21,8 @@ void read_dataset_line(hid_t dataset, const char* name, hid_t datatype, FLOAT_P 
 
 void save_rhs(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc, int save_nr);
 void save_info(struct MpiInfo *mpi_info);
+void save_elliptic_vars(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc, int save_nr);
+
+void save_array(FLOAT_P **array, int nz, int ny, char file_path);
 
 #endif // IO_FUNCTIONS_H__

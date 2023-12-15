@@ -43,12 +43,15 @@ def read_fg_mpi(snap, n_procs, folder):
         infos.append(info)
 
         for key in variables_list.keys():
-            if i == 0:
-                variables_list[key].append(variable[key][:-info['nz_ghost']])
-            elif i == n_procs - 1:
-                variables_list[key].append(variable[key][info['nz_ghost']:])
+            if n_procs ==1:
+                variables_list[key].append(variable[key])
             else:
-                variables_list[key].append(variable[key][info['nz_ghost']:-info['nz_ghost']])
+                if i == 0:
+                    variables_list[key].append(variable[key][:-info['nz_ghost']])
+                elif i == n_procs - 1:
+                    variables_list[key].append(variable[key][info['nz_ghost']:])
+                else:
+                    variables_list[key].append(variable[key][info['nz_ghost']:-info['nz_ghost']])
 
     # Concatenating the data for each variable
     total_variables = {key: np.concatenate(variables_list[key], axis=0) for key in variables_list.keys()}
@@ -69,12 +72,15 @@ def read_bg_mpi(n_procs, folder):
         infos.append(info)
 
         for key in variables_list.keys():
-            if i == 0:
-                variables_list[key].append(variable[key][:-info['nz_ghost']])
-            elif i == n_procs - 1:
-                variables_list[key].append(variable[key][info['nz_ghost']:])
+            if n_procs ==1:
+                variables_list[key].append(variable[key])
             else:
-                variables_list[key].append(variable[key][info['nz_ghost']:-info['nz_ghost']])
+                if i == 0:
+                    variables_list[key].append(variable[key][:-info['nz_ghost']])
+                elif i == n_procs - 1:
+                    variables_list[key].append(variable[key][info['nz_ghost']:])
+                else:
+                    variables_list[key].append(variable[key][info['nz_ghost']:-info['nz_ghost']])
 
     # Concatenating the data for each variable
     total_variables = {key: np.concatenate(variables_list[key], axis=0) for key in variables_list.keys()}
@@ -155,7 +161,7 @@ class Visualize_Foreground:
 
         self.n_procs = read_mpi_info(folder+"mpi_info.h5")
         
-        if self.n_procs > 1:
+        if self.n_procs >= 1:
             exit_flag = False  # Flag to indicate when to exit the while loop
             while True:
                 for i in range(self.n_procs):
@@ -184,7 +190,7 @@ class Visualize_Foreground:
         
     def set_plot_params(self):
         self.num_quivers = 10
-        if self.n_procs > 1:
+        if self.n_procs >= 1:
             variables, info = read_fg_mpi(self.num_snaps-1, self.n_procs, self.folder)
         else:
             variables, info = read_fg(self.folder+f"snap{self.num_snaps-1}.h5")
@@ -232,7 +238,7 @@ class Visualize_Foreground:
             }     
 
     def plot(self, fig, ax, snap_nr, key):
-        if self.n_procs > 1:
+        if self.n_procs >= 1:
             if self.delta:
                 variables_new, info = variables, info = read_fg_mpi(snap_nr, self.n_procs, self.folder)
                 variables_old, info = variables, info = read_fg_mpi(snap_nr-1, self.n_procs, self.folder)
@@ -286,6 +292,9 @@ class Visualize_Foreground:
         
         ax.set_xlabel("x [Solar radii]", fontsize=self.font_size)
         ax.set_ylabel("z [Solar radii]", fontsize=self.font_size)
+
+        #ax.set_xlim(0.01, 0.03)
+        #ax.set_ylim(0.94, 0.97)
 
         if self.plot_params[key][2] == None:
             vmax = np.max(np.abs(d))
@@ -423,6 +432,25 @@ class Visualize_Foreground:
         plt.plot(t, s)
         plt.xlabel("t [s]")
         plt.ylabel("Max Entropy [erg/K]")
+        plt.show()
+
+    def plot_v_of_t(self):
+        t = np.zeros(self.num_snaps)
+        vy = np.zeros(self.num_snaps)
+        vz = np.zeros(self.num_snaps)
+        for i in range(self.num_snaps):
+            if self.n_procs > 1:
+                variables, info = read_fg_mpi(i, self.n_procs, self.folder)
+            else:
+                variables, info = read_fg(self.folder + "{i}.h5")
+            t[i] = info["t"]
+            vy[i] = np.max(np.abs(variables["vy"]))
+            vz[i] = np.max(np.abs(variables["vz"]))
+        plt.plot(t, vy, label="y-velocity")
+        plt.plot(t, vz, label="z-velocity")
+        plt.xlabel("t [s]")
+        plt.ylabel("Max Velocity [cm/s]")
+        plt.legend()
         plt.show()
 
 if __name__ == "__main__":

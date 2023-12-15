@@ -32,4 +32,6 @@ void initialize_foreground_entropy_pertubation_mpi(struct ForegroundVariables2D 
 
 void initialization_2D_oscillation_modes(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
 
+void new_test_init(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
+
 #endif // INITIALIZATION_H

@@ -1,9 +1,29 @@
 #include "solar_s_initialization.h"
 #include <math.h>
 
-void solar_s_background_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_info, int grid_nz_full, int grid_nz_ghost, FLOAT_P grid_dz, FLOAT_P grid_z0, FLOAT_P grid_z1, FLOAT_P grid_nz)
+void solar_s_background_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_info, int grid_nz_full, int grid_nz_ghost, FLOAT_P grid_dz, FLOAT_P grid_z0, FLOAT_P grid_z1, int grid_nz)
 {
-    // Creating arrays for solar_s data and allocating memory
+    // Start by initializing the background radius array
+    for (int l = 0; l < grid_nz_full; l++)
+    {
+        bg->r[l] = grid_z0 + (l-grid_nz_ghost) * grid_dz;
+    }
+
+    // Creating radius array for integration
+    // If we need more points we pad around this array
+    FLOAT_P *r_integration;
+    int nz_ghost = grid_nz_ghost;
+    int nz_full = NZ + 2*nz_ghost;
+
+
+    allocate_1D_array(&r_integration, nz_full);
+    
+    for (int l = 0; l < nz_full; l++)
+    {
+        r_integration[l] = R_START*R_SUN + (l-nz_ghost) * grid_dz;
+    }
+
+    // Loading in the solar S data
     int solar_s_size = 2482;
     FLOAT_P *r_over_R_solar_s, *rho_solar_s, *p_solar_s, *T_solar_s;
 
@@ -15,38 +35,48 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
     // Reading solar_s data
     read_solar_s_data("additional_files/solar_s.h5", r_over_R_solar_s, rho_solar_s, p_solar_s, T_solar_s, solar_s_size);
 
-    // Setting CZ start and finding the closest radius to that in the solar_s data
-    int cz_start_index = 0;
-    while (r_over_R_solar_s[cz_start_index] > CZ_START)
+    // Finding the index closest to integration start and interpolating to get the exact value
+    int integration_start_index = 0;
+    while (r_over_R_solar_s[integration_start_index] > R_END)
     {
-        cz_start_index++;
+        integration_start_index++;
     }
-    cz_start_index--;
+    FLOAT_P integration_start = R_END * R_SUN;
 
-    // Using CGS units for Solar S data, then converting to SI if UNITS == 1
-    FLOAT_P R_SUN_CGS = 6.957e10; // solar radius in CGS
+    FLOAT_P r_before = r_over_R_solar_s[integration_start_index]  * R_SUN;
+    FLOAT_P r_after = r_over_R_solar_s[integration_start_index-1] * R_SUN;
+    FLOAT_P rho0_before = rho_solar_s[integration_start_index];
+    FLOAT_P rho0_after = rho_solar_s[integration_start_index-1];
+    FLOAT_P p0_before = p_solar_s[integration_start_index];
+    FLOAT_P p0_after = p_solar_s[integration_start_index-1];
+    FLOAT_P T0_before = T_solar_s[integration_start_index];
+    FLOAT_P T0_after = T_solar_s[integration_start_index-1];
 
-    // Variables for start of integration
-    FLOAT_P r_i = r_over_R_solar_s[cz_start_index] * R_SUN_CGS;
-    FLOAT_P p0_i = p_solar_s[cz_start_index];
-    FLOAT_P T0_i = T_solar_s[cz_start_index];
-    FLOAT_P rho0_i = rho_solar_s[cz_start_index];
-    
-    // Finding the mass at the start of CZ by cumulative trapezoidal integration
-    FLOAT_P m_i = 0.0; 
+    // Interpolating to get the exact value at integration_start
+    FLOAT_P r_initial = integration_start;
+    FLOAT_P rho0_initial = rho0_before + (rho0_after - rho0_before) / (r_after - r_before) * (integration_start - r_before);
+    FLOAT_P p0_initial = p0_before + (p0_after - p0_before) / (r_after - r_before) * (integration_start - r_before);
+    FLOAT_P T0_initial = T0_before + (T0_after - T0_before) / (r_after - r_before) * (integration_start - r_before);
+
+    FLOAT_P C = 4 * M_PI * pow(R_SUN,3);
+    FLOAT_P m_initial = 0.0;
     FLOAT_P dr;
-    FLOAT_P C = 4*M_PI*pow(R_SUN_CGS,3);
-    for (int i = solar_s_size-2; i >= cz_start_index; i--) {
-        dr =  r_over_R_solar_s[i]-r_over_R_solar_s[i+1];
-        m_i += C * 0.5 * (rho_solar_s[i]*pow(r_over_R_solar_s[i], 2) + rho_solar_s[i+1]*pow(r_over_R_solar_s[i+1], 2)) * dr;
+    // Backward integration of Solar S data (data is in reverse order)
+    for (int i = solar_s_size-2; i > integration_start_index-1; i--)
+    {
+        dr = r_over_R_solar_s[i] - r_over_R_solar_s[i+1];
+        m_initial += C * 0.5 * (rho_solar_s[i]*pow(r_over_R_solar_s[i], 2) + rho_solar_s[i+1]*pow(r_over_R_solar_s[i+1], 2)) * dr;
     }
+
+    // Small mass between integration_start and r_initial
+    m_initial += C * 0.5 * (rho0_initial*pow(integration_start/R_SUN, 2) + rho_solar_s[integration_start_index]*pow(r_over_R_solar_s[integration_start_index], 2)) * (integration_start/R_SUN - r_over_R_solar_s[integration_start_index]);
 
     #if UNITS == 1
         // Convert from CGS to SI
-        r_i *= 1e-2;
-        p0_i *= 1e3;
-        rho0_i *= 1e-1;
-        m_i *= 1e-3;
+        r_initial *= 1e-2; // NOPE, With current setup I need to do this for all values in the array for both bg->r and r_integration
+        p0_initial *= 1e3;
+        rho0_initial *= 1e-1;
+        m_initial *= 1e-3;
     #endif
 
     // Deallocating solar_s arrays
@@ -55,163 +85,92 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
     deallocate_1D_array(p_solar_s);
     deallocate_1D_array(T_solar_s);
 
-    // Creating struct for holding upward integration variables
-    struct IntegrationVariables i_var_up;
-    i_var_up.N = 100; // Initial size of arrays
-    i_var_up.N_increment = 2; // For dynamic array resizing
+    // Create arrays for integration variables
+    FLOAT_P *p0, *T0, *rho0, *grad_s0, *g, *m;
+    allocate_1D_array(&p0, nz_full);
+    allocate_1D_array(&T0, nz_full);
+    allocate_1D_array(&rho0, nz_full);
+    allocate_1D_array(&grad_s0, nz_full);
+    allocate_1D_array(&g, nz_full);
+    allocate_1D_array(&m, nz_full);
 
-    // Allocating and setting initial values for integration arrays
-    allocate_integration_variables(&i_var_up);
-    set_initial_integration_values(&i_var_up, r_i, p0_i, T0_i, rho0_i, m_i);
+    FLOAT_P r_star = K_B / (MU * M_U);
+    FLOAT_P c_p = r_star /(1.0-1.0/GAMMA);
 
-    // Creating struct for holding downward integration variables
-    struct IntegrationVariables i_var_down;
-    i_var_down.N = 100;
-    i_var_down.N_increment = 2;
+    FLOAT_P dp_dr, dT_dr, ds_dr, dm_dr, k, nabla_star;
 
-    // Allocating and setting initial values for integration arrays
-    allocate_integration_variables(&i_var_down);
-    set_initial_integration_values(&i_var_down, r_i, p0_i, T0_i, rho0_i, m_i);
+    // Setting initial values for integration arrays
+    p0[nz_full-1] = p0_initial;
+    T0[nz_full-1] = T0_initial;
+    rho0[nz_full-1] = rho0_initial;
 
-    // Integration variables for last point
-    FLOAT_P dp_dr, nabla_star, k;
+    rho0[nz_full-1] = M_U * MU / K_B * p0[nz_full-1]/T0[nz_full-1];
+    m[nz_full-1] = m_initial;
 
-    // Upward integration
-    int i = 0;
-    while (i_var_up.r[i] < R_SUN * 0.99)
-    {   
-        integrate_one_step(&i_var_up, i, false);
-        i++;
-    }
-
-    // Calculating entropy gradient in last point
-    k = get_k_value(i_var_up.r[i]);
+    k = get_k_value(r_initial);
     nabla_star = NABLA_AD + k;
+    dp_dr = - G * m_initial /pow(r_initial,2) * rho0_initial;
 
-    dp_dr = - G * i_var_up.m[i] /pow(i_var_up.r[i],2) * i_var_up.rho0[i];
-    i_var_up.grad_s0[i] = (nabla_star-NABLA_AD) / (i_var_up.rho0[i] * i_var_up.T0[i]) * dp_dr;
+    grad_s0[nz_full-1] = c_p * (nabla_star - NABLA_AD) / p0_initial * dp_dr;
+    g[nz_full-1] = G * m[nz_full-1] / pow(r_integration[nz_full-1],2);
+    
+    // Integrating downward
+    dr = r_integration[nz_full-2] - r_integration[nz_full-1];
 
-    // Downward integration
-    int j = 0;
-    while (i_var_down.r[j] > R_SUN * 0.5)
-    {   
-        integrate_one_step(&i_var_down, j, true); 
-        j++;
-    }
-
-    // Calculating entropy gradient in last point
-    k = get_k_value(i_var_down.r[j]);
-    nabla_star = NABLA_AD + k;
-
-    dp_dr = - G * i_var_down.m[j] /pow(i_var_down.r[j],2) * i_var_down.rho0[j];
-
-    i_var_down.grad_s0[j] = (nabla_star-NABLA_AD) / (i_var_down.rho0[j] * i_var_down.T0[j]) * dp_dr;
-
-    // Total number of points in upward and downward integration
-    int nz = i+j;
-
-    // Combining the upward and downward integration arrays
-    FLOAT_P *r = malloc(sizeof(FLOAT_P)*(nz));
-    FLOAT_P *p0 = malloc(sizeof(FLOAT_P)*(nz));
-    FLOAT_P *T0 = malloc(sizeof(FLOAT_P)*(nz));
-    FLOAT_P *rho0 = malloc(sizeof(FLOAT_P)*(nz));
-    FLOAT_P *grad_s0 = malloc(sizeof(FLOAT_P)*(nz));
-    FLOAT_P *g = malloc(sizeof(FLOAT_P)*(nz));
-
-    for (int jj = j; jj > 0; jj--)
+    for (int j = nz_full-2; j >= 0; j--)
     {
-        r[j-jj] = i_var_down.r[jj];
-        p0[j-jj] = i_var_down.p0[jj];
-        T0[j-jj] = i_var_down.T0[jj];
-        grad_s0[j-jj] = i_var_down.grad_s0[jj];
-        rho0[j-jj] = i_var_down.rho0[jj];
-        g[j-jj] = G * i_var_down.m[jj] / pow(i_var_down.r[jj],2);
+        k = get_k_value(r_integration[j+1]);
+        nabla_star = NABLA_AD + k;
+
+        dm_dr = 4 * M_PI * pow(r_integration[j+1],2) * rho0[j+1];
+        dp_dr = - G * m[j+1] /pow(r_integration[j+1],2) * rho0[j+1];
+        dT_dr = nabla_star * T0[j+1]/p0[j+1] * dp_dr;
+        ds_dr = c_p * (nabla_star - NABLA_AD) / p0[j+1] * dp_dr;
+
+        grad_s0[j] = ds_dr;
+        m[j] = dm_dr * dr + m[j+1];
+        p0[j] = dp_dr * dr + p0[j+1];
+        T0[j] = dT_dr * dr + T0[j+1];
+        rho0[j] = M_U * MU / K_B * p0[j]/T0[j]; //ideal gas law
+
+        g[j] = G * m[j] / pow(r_integration[j],2); 
     }
-
-    for (int ii = j; ii < nz; ii++)
-    {
-        r[ii] = i_var_up.r[ii-j];
-        p0[ii] = i_var_up.p0[ii-j];
-        T0[ii] = i_var_up.T0[ii-j];
-        grad_s0[ii] = i_var_up.grad_s0[ii-j];
-        rho0[ii] = i_var_up.rho0[ii-j];
-        g[ii] = G * i_var_up.m[ii-j] / pow(i_var_up.r[ii-j],2);
-    }
-
-    // Deallocating integration arrays
-    deallocate_integration_variables(&i_var_up);
-    deallocate_integration_variables(&i_var_down);
-
-    // Initialize background radius array
-    for (i = 0; i < grid_nz_full-grid_nz_ghost; i++)
-    {
-        bg->r[i+grid_nz_ghost] = grid_z0 + i * (grid_z1 - grid_z0) / (grid_nz-1.0);
-    }
-
-    for (int l = 0; l < grid_nz_ghost; l++)
-    {
-        bg->r[l] = bg->r[grid_nz_ghost]-(grid_nz_ghost-l)*grid_dz;
-        bg->r[grid_nz_full - grid_nz_ghost+l] = bg->r[grid_nz_full-grid_nz_ghost-1]+(l+1)*grid_dz;
-    }
-
-    // Interpolating the background variables to the grid
-    FLOAT_P x0, x1;
-    for (i = 0; i < grid_nz_full; i++)
-    {
-        // Handle edge cases
-        if (bg->r[i] < r[0])
-        {
-            bg->p0[i] = p0[0];
-            bg->T0[i] = T0[0];
-            bg->rho0[i] = rho0[0];
-            bg->grad_s0[i] = grad_s0[0];
-            bg->g[i] = g[0];
-        }
-        else if (bg->r[i] > r[nz-1])
-        {
-            bg->p0[i] = p0[nz-1];
-            bg->T0[i] = T0[nz-1];
-            bg->rho0[i] = rho0[nz-1];
-            bg->grad_s0[i] = grad_s0[nz-1];
-            bg->g[i] = g[nz-1];
-        }
-        else
-        {
-            int k = 0;
-            while (bg->r[i] > r[k])
-            {
-                k++;
-            }
-            x0 = r[k-1];
-            x1 = r[k];
-            bg->p0[i] = interpolate_1D_linear(x0, x1, p0[k-1], p0[k], bg->r[i]);
-            bg->T0[i] = interpolate_1D_linear(x0, x1, T0[k-1], T0[k], bg->r[i]);
-            bg->rho0[i] = interpolate_1D_linear(x0, x1, rho0[k-1], rho0[k], bg->r[i]);
-            bg->grad_s0[i] = interpolate_1D_linear(x0, x1, grad_s0[k-1], grad_s0[k], bg->r[i]);
-            bg->g[i] = interpolate_1D_linear(x0, x1, g[k-1], g[k], bg->r[i]);
-        }
-    }
-
-    // Extrapolating background variables to ghost cells
-    //extrapolate_background(bg, grid_nz_full, grid_nz_ghost, grid_dz);
 
     #if CONSTANT_BACKGROUND == 1
         // Constant background
         for (int i = 0; i < grid_nz_full; i++)
         {
-            bg->rho0[i] = CONSTANT_BACKGROUND_DENSITY;
-            bg->p0[i] = CONSTANT_BACKGROUND_PRESSURE;
-            bg->T0[i] = CONSTANT_BACKGROUND_TEMPERATURE;
-            bg->grad_s0[i] = 0.0;
-            bg->g[i] = 0.0;
+            rho0[i] = CONSTANT_BACKGROUND_DENSITY;
+            p0[i] = CONSTANT_BACKGROUND_PRESSURE;
+            T0[i] = CONSTANT_BACKGROUND_TEMPERATURE;
+            grad_s0[i] = 0.0;
+            g[i] = 0.0;
         }
     #endif // CONSTANT_BACKGROUND
 
-    // Deallocating full integration arrays
-    free(r);
-    free(p0);
-    free(T0);
-    free(rho0);
-    free(grad_s0);
-    free(g);
+    // Setting the background variables
+    int l = 0;
+    while (bg->r[0] > r_integration[l])
+    {
+        l++;
+    }
+
+    for (int i = 0; i < grid_nz_full; i++)
+    {
+        bg->r[i] = r_integration[l+i];
+        bg->p0[i] = p0[l+i];
+        bg->T0[i] = T0[l+i];
+        bg->rho0[i] = rho0[l+i];
+        bg->grad_s0[i] = grad_s0[l+i];
+        bg->g[i] = g[l+i];
+    }
+
+    // Deallocating integration arrays
+    deallocate_1D_array(r_integration);
+    deallocate_1D_array(p0);
+    deallocate_1D_array(T0);
+    deallocate_1D_array(rho0);
+    deallocate_1D_array(grad_s0);
+    deallocate_1D_array(g);
+    deallocate_1D_array(m);
 }
