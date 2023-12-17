@@ -3,19 +3,17 @@
 
 void solar_s_background_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_info, int grid_nz_full, int grid_nz_ghost, FLOAT_P grid_dz, FLOAT_P grid_z0, FLOAT_P grid_z1, int grid_nz)
 {
-    // Start by initializing the background radius array
+    int nz_ghost = grid_nz_ghost;
+    int nz_full = NZ + 2*nz_ghost;
+
+    // Initializing background radius array
     for (int l = 0; l < grid_nz_full; l++)
     {
         bg->r[l] = grid_z0 + (l-grid_nz_ghost) * grid_dz;
     }
 
-    // Creating radius array for integration
-    // If we need more points we pad around this array
+    // Creating radius array for integration that spans entire domain (equal to bg->r if only 1 process)
     FLOAT_P *r_integration;
-    int nz_ghost = grid_nz_ghost;
-    int nz_full = NZ + 2*nz_ghost;
-
-
     allocate_1D_array(&r_integration, nz_full);
     
     for (int l = 0; l < nz_full; l++)
@@ -23,7 +21,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
         r_integration[l] = R_START*R_SUN + (l-nz_ghost) * grid_dz;
     }
 
-    // Loading in the solar S data
+    // Allocating arrays for solar_s data
     int solar_s_size = 2482;
     FLOAT_P *r_over_R_solar_s, *rho_solar_s, *p_solar_s, *T_solar_s;
 
@@ -35,29 +33,33 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
     // Reading solar_s data
     read_solar_s_data("additional_files/solar_s.h5", r_over_R_solar_s, rho_solar_s, p_solar_s, T_solar_s, solar_s_size);
 
-    // Finding the index closest to integration start and interpolating to get the exact value
+    // Since the solar_s datapoints most likely will not match the grid points exactly, we need to interpolate to get the exact values at the grid point where we start the integration
+
+    // Finding the index of the first datapoint that is inside the integration domain
     int integration_start_index = 0;
-    while (r_over_R_solar_s[integration_start_index] > R_END)
+    while (r_over_R_solar_s[integration_start_index] > r_integration[nz_full-1]/R_SUN)
     {
         integration_start_index++;
     }
-    FLOAT_P integration_start = R_END * R_SUN;
 
-    FLOAT_P r_before = r_over_R_solar_s[integration_start_index]  * R_SUN;
-    FLOAT_P r_after = r_over_R_solar_s[integration_start_index-1] * R_SUN;
-    FLOAT_P rho0_before = rho_solar_s[integration_start_index];
-    FLOAT_P rho0_after = rho_solar_s[integration_start_index-1];
+    FLOAT_P r_before = r_over_R_solar_s[integration_start_index]  * R_SUN; // inside domain
+    FLOAT_P r_after = r_over_R_solar_s[integration_start_index-1] * R_SUN; // outside domain
+    FLOAT_P rho0_before = rho_solar_s[integration_start_index];  // not used, we use ideal gas law
+    FLOAT_P rho0_after = rho_solar_s[integration_start_index-1]; // not used, we use ideal gas law
     FLOAT_P p0_before = p_solar_s[integration_start_index];
     FLOAT_P p0_after = p_solar_s[integration_start_index-1];
     FLOAT_P T0_before = T_solar_s[integration_start_index];
     FLOAT_P T0_after = T_solar_s[integration_start_index-1];
 
     // Interpolating to get the exact value at integration_start
-    FLOAT_P r_initial = integration_start;
-    FLOAT_P rho0_initial = rho0_before + (rho0_after - rho0_before) / (r_after - r_before) * (integration_start - r_before);
-    FLOAT_P p0_initial = p0_before + (p0_after - p0_before) / (r_after - r_before) * (integration_start - r_before);
-    FLOAT_P T0_initial = T0_before + (T0_after - T0_before) / (r_after - r_before) * (integration_start - r_before);
+    FLOAT_P r_initial = r_integration[nz_full-1];
 
+    FLOAT_P p0_initial = interpolate_1D_linear(r_before, r_after, p0_before, p0_after, r_initial);
+    FLOAT_P T0_initial = interpolate_1D_linear(r_before, r_after, T0_before, T0_after, r_initial);
+    //FLOAT_P rho0_initial = interpolate_1D_linear(r_before, r_after, rho0_before, rho0_after, r_initial);
+    FLOAT_P rho0_initial = M_U * MU / K_B * p0_initial/T0_initial; // Ideal gas law
+ 
+    // Finding the initial mass
     FLOAT_P C = 4 * M_PI * pow(R_SUN,3);
     FLOAT_P m_initial = 0.0;
     FLOAT_P dr;
@@ -69,7 +71,8 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
     }
 
     // Small mass between integration_start and r_initial
-    m_initial += C * 0.5 * (rho0_initial*pow(integration_start/R_SUN, 2) + rho_solar_s[integration_start_index]*pow(r_over_R_solar_s[integration_start_index], 2)) * (integration_start/R_SUN - r_over_R_solar_s[integration_start_index]);
+    dr = r_initial/R_SUN - r_over_R_solar_s[integration_start_index];
+    m_initial += C * 0.5 * (rho0_initial*pow(r_initial/R_SUN, 2) + rho_solar_s[integration_start_index]*pow(r_over_R_solar_s[integration_start_index], 2)) * dr;
 
     #if UNITS == 1
         // Convert from CGS to SI
@@ -94,6 +97,7 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
     allocate_1D_array(&g, nz_full);
     allocate_1D_array(&m, nz_full);
 
+    // Specific heat ratio
     FLOAT_P r_star = K_B / (MU * M_U);
     FLOAT_P c_p = r_star /(1.0-1.0/GAMMA);
 
@@ -103,24 +107,24 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
     p0[nz_full-1] = p0_initial;
     T0[nz_full-1] = T0_initial;
     rho0[nz_full-1] = rho0_initial;
-
-    rho0[nz_full-1] = M_U * MU / K_B * p0[nz_full-1]/T0[nz_full-1];
     m[nz_full-1] = m_initial;
 
-    k = get_k_value(r_initial);
-    nabla_star = NABLA_AD + k;
-    dp_dr = - G * m_initial /pow(r_initial,2) * rho0_initial;
+    k = get_k_value(r_integration[nz_full-1]); // Superadiabacity
+    nabla_star = NABLA_AD + k; // temperature gradient
+    dp_dr = - G * m[nz_full-1] /pow(r_initial,2) * rho0[nz_full-1];
 
-    grad_s0[nz_full-1] = c_p * (nabla_star - NABLA_AD) / p0_initial * dp_dr;
+    // setting initial values for gravity and entropy gradient
+    grad_s0[nz_full-1] = c_p * (nabla_star - NABLA_AD) / p0[nz_full-1] * dp_dr;
     g[nz_full-1] = G * m[nz_full-1] / pow(r_integration[nz_full-1],2);
     
     // Integrating downward
-    dr = r_integration[nz_full-2] - r_integration[nz_full-1];
+    dr = r_integration[nz_full-2] - r_integration[nz_full-1]; // = -dz
 
+    // MAYBE WO SHOULD SET r=r_integration[j+1]-dz/2.0 INSTEAD OF r=r_integration[j+1] so we get the midpoint?
     for (int j = nz_full-2; j >= 0; j--)
     {
-        k = get_k_value(r_integration[j+1]);
-        nabla_star = NABLA_AD + k;
+        k = get_k_value(r_integration[j+1]); // Superadiabacity
+        nabla_star = NABLA_AD + k; // temperature gradient
 
         dm_dr = 4 * M_PI * pow(r_integration[j+1],2) * rho0[j+1];
         dp_dr = - G * m[j+1] /pow(r_integration[j+1],2) * rho0[j+1];
