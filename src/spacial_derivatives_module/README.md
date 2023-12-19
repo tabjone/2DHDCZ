@@ -1,1 +1,0 @@
-Drit i precalc j_plus, j_minus. Det er dårlig for cache coherence uansett. Enten lag ghost cells is ny (beste løsning) eller lag inline funksjon for periodic_boundary
