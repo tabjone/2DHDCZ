@@ -2,7 +2,7 @@
 #include "math.h"
 
 #include "../derivatives_2D/derivatives_2D.h"
-#include "../../shared_files/array_memory_management/array_memory_management.h"
+#include "../../array_utilities/array_memory_management/array_memory_management.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif // M_PI
