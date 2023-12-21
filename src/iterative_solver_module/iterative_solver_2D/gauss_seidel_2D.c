@@ -58,9 +58,9 @@ void gauss_seidel_2D_(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previ
     #endif // VERTICAL_BOUNDARY_TYPE
 
     int iter = 0;
-    while (tolerance_criteria > GS_TOL)
+    while (tolerance_criteria > ITERATIVE_SOLVER_TOLERANCE)
     {
-        if (iter > GS_MAX_ITER)
+        if (iter > ITERATIVE_SOLVER_MAX_ITERATIONS)
         {
             break;
         }

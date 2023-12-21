@@ -58,9 +58,9 @@ void jacobi_2D(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_sol
     #endif // VERTICAL_BOUNDARY_TYPE
 
     int iter = 0;
-    while (tolerance_criteria > GS_TOL)
+    while (tolerance_criteria > ITERATIVE_SOLVER_TOLERANCE)
     {
-        if (iter > GS_MAX_ITER)
+        if (iter > ITERATIVE_SOLVER_MAX_ITERATIONS)
         {
             break;
         }
@@ -78,7 +78,7 @@ void jacobi_2D(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_sol
                 j_plus = periodic_boundary(j+1, ny);
                 j_minus = periodic_boundary(j-1, ny);
 
-                current_solution[i][j] = (rhs[i][j] - a*(previous_solution[i+1][j] + current_solution[i-1][j]) - c*(previous_solution[i][j_plus] + current_solution[i][j_minus]))/g;
+                current_solution[i][j] = (rhs[i][j] - a*(previous_solution[i+1][j] + previous_solution[i-1][j]) - c*(previous_solution[i][j_plus] + previous_solution[i][j_minus]))/g;
                 
                 // Finding maximum absolute value of current_solution
                 local_abs_current = fabs(current_solution[i][j]);
