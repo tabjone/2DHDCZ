@@ -1,0 +1,111 @@
+#include <mpi.h>
+#include <float.h>
+#include "global_float_precision.h"
+#include "global_boundary.h"
+#include "../../MPI_module/MPI_module.h"
+#include "../../array_utilities/array_copy/array_copy.h"
+
+static inline int periodic_boundary(int i, int limit) {
+    return (i + limit-1) % (limit-1);}
+
+void jacobi_2D(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_solution, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiInfo *mpi_info)
+{
+    /*
+    Solves the Poisson equation using the Jacobi method
+
+    Parameters
+    ----------
+    rhs : FLOAT_P **
+        Right hand side of the Poisson equation
+    current_solution : FLOAT_P **
+        Solution of the Poisson equation at current iteration
+    previous_solution : FLOAT_P **
+        Solution of the Poisson equation at previous iteration
+    nz : int
+        Number of grid points in z-direction
+    nz_ghost : int
+        Number of ghost points in z-direction
+    ny : int
+        Number of grid points in y-direction
+    dz : FLOAT_P
+        Grid spacing in z-direction
+    dy : FLOAT_P
+        Grid spacing in y-direction
+    mpi_info : struct MpiInfo
+        Struct containing MPI information
+    */
+
+    // Stencil values
+    FLOAT_P a = 1.0/(dz*dz);
+    FLOAT_P c = 1.0/(dy*dy);
+    FLOAT_P g = -2.0*(a+c);
+
+    // Tolerance parameters
+    FLOAT_P local_abs_difference, my_global_abs_difference, global_abs_difference;;
+    FLOAT_P local_abs_current, my_global_abs_current, global_abs_current;
+    FLOAT_P tolerance_criteria = DBL_MAX;
+
+    // Periodic boundary conditions in y-direction
+    int j_plus, j_minus;
+
+    int i_start = 1; // For periodic boundary we also solve on the boundary
+    int i_end = nz+1; // For periodic boundary we also solve on the boundary
+    #if PERIODIC_BOUNDARY_VERTICAL == 0
+        if (!mpi_info->has_neighbor_below)
+        {i_start = 2;} // When not periodic, we do not solve on the boundary
+        if (!mpi_info->has_neighbor_above)
+        {i_end = nz;} // When not periodic, we do not solve on the boundary
+    #endif // VERTICAL_BOUNDARY_TYPE
+
+    int iter = 0;
+    while (tolerance_criteria > GS_TOL)
+    {
+        if (iter > GS_MAX_ITER)
+        {
+            break;
+        }
+        my_global_abs_difference = 0.0;
+        my_global_abs_current = 0.0;
+
+        // Copy current_solution to previous_solution and communicate ghost cells
+        copy_2D_array(current_solution, previous_solution, 0, nz+2, 0, ny);
+        communicate_2D_ghost_above_below(previous_solution, mpi_info, nz, 1, ny);
+    
+        for (int i = i_start; i < i_end; i++)
+        {
+            for (int j = 0; j < ny; j++)
+            {
+                j_plus = periodic_boundary(j+1, ny);
+                j_minus = periodic_boundary(j-1, ny);
+
+                current_solution[i][j] = (rhs[i][j] - a*(previous_solution[i+1][j] + current_solution[i-1][j]) - c*(previous_solution[i][j_plus] + current_solution[i][j_minus]))/g;
+                
+                // Finding maximum absolute value of current_solution
+                local_abs_current = fabs(current_solution[i][j]);
+
+                if (local_abs_current > my_global_abs_current)
+                {
+                    my_global_abs_current = local_abs_current;
+                }
+
+                // Finding maximum difference between previous_solution and current_solution
+                local_abs_difference = fabs(current_solution[i][j] - previous_solution[i][j]);
+                
+                if (local_abs_difference > my_global_abs_difference)
+                {
+                    my_global_abs_difference = local_abs_difference;
+                }
+            }
+        }
+
+        // Find biggest abs_difference and abs_current of all processes
+        MPI_Allreduce(&my_global_abs_difference, &global_abs_difference, 1, MPI_FLOAT_P, MPI_MAX, MPI_COMM_WORLD);
+        MPI_Allreduce(&my_global_abs_current, &global_abs_current, 1, MPI_FLOAT_P, MPI_MAX, MPI_COMM_WORLD);
+
+        tolerance_criteria = global_abs_difference/global_abs_current;
+        iter++;
+    }
+
+    if (mpi_info->rank == 0)
+        {printf("Jacobi converged after iterations: %d\n", iter);}
+}
