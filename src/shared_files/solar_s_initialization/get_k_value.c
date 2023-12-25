@@ -1,5 +1,6 @@
 #include "global_parameters.h"
 #include "global_constants.h"
+#include "global_float_precision.h"
 
 #include <math.h>
 

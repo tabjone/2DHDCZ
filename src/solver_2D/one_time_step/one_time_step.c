@@ -1,3 +1,8 @@
+#include "../../spacial_derivatives_module/spacial_derivatives_module.h"
+#include "global_float_precision.h"
+#include "../../data_structures/background_data/background_variables_struct.h"
+#include "../../data_structures/foreground_data/foreground_data_2D/foreground_variables_struct_2D.h"
+#include "../../data_structures/grid_info/grid_info_2D/grid_info_struct_2D.h"
 #include "one_time_step.h"
 
 FLOAT_P one_time_step(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc, FLOAT_P dt_last, bool first_timestep)

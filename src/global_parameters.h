@@ -6,26 +6,26 @@
 
 #define MPI_ON 1 // 0 for MPI off, 1 for MPI on
 
-#define RUN_NAME "new_test15" // Name of the run
+#define RUN_NAME "test_new_test" // Name of the run
 #define SAVE_DIR "/mn/stornext/d10/data/tabjone/data/"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
 
-#define BACKGROUND_INTEGRATION_STARTING_POINT 0.97 // Starting point for integration of background
+#define BACKGROUND_INTEGRATION_STARTING_POINT 0.985 // Starting point for integration of background
 #define BACKGROUND_INTEGRATION_TOP 1.10 // Top point for integration of background
 #define BACKGROUND_INTEGRATION_BOTTOM 0.65 // Bottom point for integration of background
 
-#define T 1e5 // Simulation time in seconds
+#define T 1e6 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
-#define SAVE_INTERVAL 1e2 // Save interval in seconds
+#define SAVE_INTERVAL 1e3 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
 
 #define CFL_CUT 0.1 // CFL cut
 
 // Order of the scheme (only upwind 1,2, central 2,4, rk1,2 implemented so far)
-#define UPWIND_ORDER 1 // 1 for first order, 2 for second order
+#define UPWIND_ORDER 2 // 1 for first order, 2 for second order
 #define CENTRAL_ORDER 2 // 2 for second order, 4 for fourth order
-#define TIME_ORDER 1 // 1,2,3 for RK1, RK2, RK3
+#define TIME_ORDER 3 // 1,2,3 for RK1, RK2, RK3
 
 #define FLOAT_PRECISION 1 // 0 for float, 1 for double, 2 for long double
 
@@ -38,7 +38,7 @@
 // Grid size
 #define CZ_START 0.71 // In units of solar radii
 // R_START, R_END must be between 0.3 and 1.5
-#define R_START 0.88 // In units of solar radii
+#define R_START 0.78 // In units of solar radii
 #define R_END 0.98 // In units of solar radii
 #define X_SIZE 0.1 // In units of solar radii
 #define Y_SIZE 0.1 // In units of solar radii
@@ -56,11 +56,11 @@
 #define NABLA_AD 0.4 // Adiabatic temperature gradient
 
 // Background parameters
-#define SUPERAD_PARAM 0.0 // superadiabacicity parameter in CZ
-#define p_step 0.1 // Number for determining step-size in space
+#define SUPERAD_PARAM 0.01 // superadiabacicity parameter in CZ
+#define p_step 0.001 // Number for determining step-size in space
 
 
-#define GRAVITY_ON 0 // 0 for gravity off, 1 for gravity on
+#define GRAVITY_ON 1 // 0 for gravity off, 1 for gravity on
 #define ADVECTION_ON 1 // 0 for advection off, 1 for advection on
 #define GAS_PRESSURE_ON 1 // 0 for gas pressure off, 1 for gas pressure on
 #define VISCOSITY_ON 0 // 0 for viscosity off, 1 for viscosity on
@@ -72,22 +72,6 @@
 
 // Do not change anything below this line
 // --------------------------------------
-
-#if FLOAT_PRECISION == 0
-    #define FLOAT_P float
-    #define H5_FLOAT_P H5T_NATIVE_FLOAT
-    #define MPI_FLOAT_P MPI_FLOAT
-#elif FLOAT_PRECISION == 1
-    #define FLOAT_P double
-    #define H5_FLOAT_P H5T_NATIVE_DOUBLE
-    #define MPI_FLOAT_P MPI_DOUBLE
-#elif FLOAT_PRECISION == 2
-    #define FLOAT_P long double
-    #define H5_FLOAT_P H5T_NATIVE_LDOUBLE
-    #define MPI_FLOAT_P MPI_LONG_DOUBLE
-#else
-    #error "Invalid FLOAT_PRECISION type specified."
-#endif // FLOAT_PRECISION
 
 #if UPWIND_ORDER > 2
     #error "Upwind order > 2 not implemented."

@@ -1,6 +1,6 @@
 #include "io_functions.h"
 
-void save_array(FLOAT_P **array, int nz, int ny, char file_path)
+void save_array(FLOAT_P **array, int nz, int ny, const char file_path)
 {
     hsize_t dims[2] = {nz, ny};
     hid_t file, dataspace_2d;

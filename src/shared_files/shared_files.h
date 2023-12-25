@@ -1,10 +1,8 @@
 #ifndef SHARED_FILES_SHARED_FILES_H_
 #define SHARED_FILES_SHARED_FILES_H_
 
-int periodic_boundary(int i, int limit);
-
 #include "hdf5.h"
-
+#include "global_float_precision.h"
 #include "./structs/structs.h"
 
 #include "./array_memory_management/array_memory_management.h"
@@ -13,7 +11,7 @@ int periodic_boundary(int i, int limit);
 #include "./interpolation/interpolation.h"
 #include "./extrapolation/extrapolation.h"
 #include "./array_copy/array_copy.h"
-#include "./mpi_functions/mpi_functions.h"
+#include "../MPI_module/MPI_module.h"
 
 
 #endif // SHARED_FILES_SHARED_FILES_H_

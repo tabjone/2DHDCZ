@@ -1,7 +1,7 @@
 #include <stdlib.h>
-#include "../../array_utilities/array_memory_management/array_memory_management.h"
+#include "array_utilities/array_memory_management/array_memory_management.h"
 #include "foreground_variables_struct_3D.h"
-#include "../grid_info/grid_info_3D/grid_info_struct_3D.h"
+#include "data_strcures/grid_info/grid_info_3D/grid_info_struct_3D.h"
 
 void allocate_foreground_struct_3D(struct ForegroundVariables3D **fg, struct GridInfo3D *grid_info)
 {

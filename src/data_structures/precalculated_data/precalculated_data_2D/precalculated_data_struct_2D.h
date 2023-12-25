@@ -1,11 +1,9 @@
-#ifndef PRECALCULATED_VARIABLES_H__
-#define PRECALCULATED_VARIABLES_H__
+#ifndef PRECALCULATED_DATA_STRUCT_2D_H
+#define PRECALCULATED_DATA_STRUCT_2D_H
 
-#include "global_parameters.h"
-#include "global_constants.h"
-#include "shared_files.h"
+#include "global_float_precision.h"
 
-struct PrecalculatedVariables
+struct PrecalculatedVariables2D
 {
     FLOAT_P *one_over_rho0;
     FLOAT_P *grad_T0;
@@ -16,11 +14,6 @@ struct PrecalculatedVariables
     FLOAT_P *VIS_COEFF_over_rho0;
     FLOAT_P *VIS_COEFF_over_T0_rho0;
     FLOAT_P *THERM_COEFF_over_T0_rho0;
-
-    int *j_plus;
-    int *j_minus;
-    int *j_plus2;
-    int *j_minus2;
 
     FLOAT_P two_VIS_COEFF;
     FLOAT_P one_over_8dydydz;
@@ -34,7 +27,4 @@ struct PrecalculatedVariables
     FLOAT_P one_over_4dydz;
 };
 
-void allocate_calculate_precalc_struct(struct PrecalculatedVariables **pv, struct BackgroundVariables *bg, struct GridInfo2D *grid_info);
-void deallocate_precalc_struct(struct PrecalculatedVariables *pv);
-
-#endif // PRECALCULATED_VARIABLES_H__
+#endif // PRECALCULATED_DATA_STRUCT_2D_H

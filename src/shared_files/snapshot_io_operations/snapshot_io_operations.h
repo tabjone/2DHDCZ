@@ -4,6 +4,8 @@
 #include <hdf5.h>
 #include <string.h>
 
+#include "../../MPI_module/MPI_module.h"
+#include "global_float_precision.h"
 #include "shared_files.h"
 
 hid_t create_write_dataset(hid_t group, const char* name, hid_t datatype, hid_t dataspace, void* data, const char* unit);

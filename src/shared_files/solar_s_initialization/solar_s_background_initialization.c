@@ -44,8 +44,6 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
 
     FLOAT_P r_before = r_over_R_solar_s[integration_start_index]  * R_SUN; // inside domain
     FLOAT_P r_after = r_over_R_solar_s[integration_start_index-1] * R_SUN; // outside domain
-    FLOAT_P rho0_before = rho_solar_s[integration_start_index];  // not used, we use ideal gas law
-    FLOAT_P rho0_after = rho_solar_s[integration_start_index-1]; // not used, we use ideal gas law
     FLOAT_P p0_before = p_solar_s[integration_start_index];
     FLOAT_P p0_after = p_solar_s[integration_start_index-1];
     FLOAT_P T0_before = T_solar_s[integration_start_index];
@@ -109,35 +107,46 @@ void solar_s_background_initialization(struct BackgroundVariables *bg, struct Mp
     rho0[nz_full-1] = rho0_initial;
     m[nz_full-1] = m_initial;
 
-    k = get_k_value(r_integration[nz_full-1]); // Superadiabacity
+    k = get_k_value(r_initial); // Superadiabacity
     nabla_star = NABLA_AD + k; // temperature gradient
-    dp_dr = - G * m[nz_full-1] /pow(r_initial,2) * rho0[nz_full-1];
+
+    dm_dr = 4 * M_PI * pow(r_initial,2) * rho0_initial;
+    dp_dr = - G * m_initial /pow(r_initial,2) * rho0_initial;
+    dT_dr = nabla_star * T0_initial/p0_initial * dp_dr;
+    ds_dr = k*c_p/ p0_initial * dp_dr;
 
     // setting initial values for gravity and entropy gradient
-    grad_s0[nz_full-1] = c_p * (nabla_star - NABLA_AD) / p0[nz_full-1] * dp_dr;
-    g[nz_full-1] = G * m[nz_full-1] / pow(r_integration[nz_full-1],2);
-    
-    // Integrating downward
-    dr = r_integration[nz_full-2] - r_integration[nz_full-1]; // = -dz
+    grad_s0[nz_full-1] = c_p * (nabla_star - NABLA_AD) / p0_initial * dp_dr;
+    g[nz_full-1] = G * m_initial / pow(r_initial,2);
 
-    // MAYBE WO SHOULD SET r=r_integration[j+1]-dz/2.0 INSTEAD OF r=r_integration[j+1] so we get the midpoint?
-    for (int j = nz_full-2; j >= 0; j--)
+    // Calculating for nz_full-2
+    dr = grid_dz; // = -dz
+
+    grad_s0[nz_full-2] = ds_dr;
+    m[nz_full-2] = m[nz_full-1] - dm_dr * dr;
+    p0[nz_full-2] = p0[nz_full-1] - dp_dr * dr;
+    T0[nz_full-2] = T0[nz_full-1] - dT_dr * dr;
+    rho0[nz_full-2] = M_U * MU / K_B * p0[nz_full-2]/T0[nz_full-2]; //ideal gas law
+    g[nz_full-2] = G * m[nz_full-2] / pow(r_integration[nz_full-2],2);
+
+
+    dr = grid_dz; // = -dz
+    for (int j = nz_full-2; j > 0; j--)
     {
         k = get_k_value(r_integration[j+1]); // Superadiabacity
         nabla_star = NABLA_AD + k; // temperature gradient
 
-        dm_dr = 4 * M_PI * pow(r_integration[j+1],2) * rho0[j+1];
-        dp_dr = - G * m[j+1] /pow(r_integration[j+1],2) * rho0[j+1];
-        dT_dr = nabla_star * T0[j+1]/p0[j+1] * dp_dr;
-        ds_dr = c_p * (nabla_star - NABLA_AD) / p0[j+1] * dp_dr;
+        dm_dr = 4 * M_PI * pow(r_integration[j],2) * rho0[j];
+        dp_dr = - G * m[j] /pow(r_integration[j],2) * rho0[j];
+        dT_dr = nabla_star * T0[j]/p0[j] * dp_dr;
+        ds_dr = k*c_p/ p0[j] * dp_dr;
 
         grad_s0[j] = ds_dr;
-        m[j] = dm_dr * dr + m[j+1];
-        p0[j] = dp_dr * dr + p0[j+1];
-        T0[j] = dT_dr * dr + T0[j+1];
-        rho0[j] = M_U * MU / K_B * p0[j]/T0[j]; //ideal gas law
-
-        g[j] = G * m[j] / pow(r_integration[j],2); 
+        m[j-1] = m[j+1] - dm_dr * 2*dr;
+        p0[j-1] = p0[j+1] - dp_dr * 2*dr;
+        T0[j-1] = T0[j+1] - dT_dr * 2*dr;
+        rho0[j-1] = M_U * MU / K_B * p0[j-1]/T0[j-1]; //ideal gas law
+        g[j-1] = G * m[j-1] / pow(r_integration[j-1],2);
     }
 
     #if CONSTANT_BACKGROUND == 1

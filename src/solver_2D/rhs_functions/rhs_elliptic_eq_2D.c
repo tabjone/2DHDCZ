@@ -1,4 +1,8 @@
-#include "rhs_functions.h"
+#include "../../spacial_derivatives_module/spacial_derivatives_module.h"
+#include "global_float_precision.h"
+#include "../../data_structures/background_data/background_variables_struct.h"
+#include "../../data_structures/foreground_data/foreground_data_2D/foreground_variables_struct_2D.h"
+#include "../../data_structures/grid_info/grid_info_2D/grid_info_struct_2D.h"
 
 FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables *precalc, int i, int j)
 {
@@ -39,20 +43,20 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
 
     // Calculate the derivatives
     // First derivatives
-    FLOAT_P dvy_dy = central_first_derivative_y(vy, precalc, i, j);
-    FLOAT_P dvy_dz = central_first_derivative_z(vy, precalc, i, j);
-    FLOAT_P dvz_dy = central_first_derivative_y(vz, precalc, i, j);
-    FLOAT_P dvz_dz = central_first_derivative_z(vz, precalc, i, j);
+    FLOAT_P dvy_dy = central_first_derivative_y_2D(vy, i, j, grid_info->ny, precalc->one_over_2dy);
+    FLOAT_P dvy_dz = central_first_derivative_z_2D(vy, i, j, precalc->one_over_2dz);
+    FLOAT_P dvz_dy = central_first_derivative_y_2D(vz, i, j, grid_info->ny, precalc->one_over_2dy);
+    FLOAT_P dvz_dz = central_first_derivative_z_2D(vz, i, j, precalc->one_over_2dz);
 
-    FLOAT_P drho1_dz = central_first_derivative_z(rho1, precalc, i, j);
+    FLOAT_P drho1_dz = central_first_derivative_z_2D(rho1, i, j, precalc->one_over_2dz);
 
     // Second derivatives
-    FLOAT_P dd_vy_ddy = central_second_derivative_y(vy, precalc, i, j);
-    FLOAT_P dd_vz_ddz = central_second_derivative_z(vz, precalc, i, j);
+    FLOAT_P dd_vy_ddy = central_second_derivative_y_2D(vy, i, j, grid_info->ny, precalc->one_over_dydy);
+    FLOAT_P dd_vz_ddz = central_second_derivative_z_2D(vz, i, j, precalc->one_over_dzdz);
 
     // Mixed derivatives
-    FLOAT_P dd_vy_dydz = central_second_derivative_yz(vy, precalc, i, j);
-    FLOAT_P dd_vz_dydz = central_second_derivative_yz(vz, precalc, i, j);
+    FLOAT_P dd_vy_dydz = central_second_derivative_yz_2D(vy, i, j, grid_info->ny, precalc->one_over_4dydz);
+    FLOAT_P dd_vz_dydz = central_second_derivative_yz_2D(vz, i, j, grid_info->ny, precalc->one_over_4dydz);
 
     // Squared of derivatives
     FLOAT_P dvy_dy_sqrd = dvy_dy*dvy_dy;
@@ -73,8 +77,8 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     #endif // ADVECTION_ON
 
     #if VISCOSITY_ON == 1
-        FLOAT_P ddd_vz_dydydz = central_third_derivative_yyz(vz, precalc, i, j);
-        FLOAT_P ddd_vy_dydzdz = central_third_derivative_yzz(vy, precalc, i, j);
+        FLOAT_P ddd_vz_dydydz = central_third_derivative_yyz_2D(vz, i, j, grid_info->ny, precalc->one_over_8dydydz);
+        FLOAT_P ddd_vy_dydzdz = central_third_derivative_yzz_2D(vy, i, j, grid_info->ny, precalc->one_over_8dydzdz);
 
         rhs += precalc->two_VIS_COEFF*(ddd_vy_dydzdz + ddd_vz_dydydz);
     #endif // VISCOSITY_ON

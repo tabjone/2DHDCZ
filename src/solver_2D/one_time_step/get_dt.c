@@ -1,5 +1,9 @@
-#include "one_time_step.h"
 #include <float.h>
+#include "global_float_precision.h"
+#include <math.h>
+#include <stdbool.h>
+#include "../../data_structures/foreground_data/foreground_data_2D/foreground_variables_struct_2D.h"
+#include "../../data_structures/grid_info/grid_info_2D/grid_info_struct_2D.h"
 
 FLOAT_P get_dt(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, FLOAT_P dt_last, bool first_timestep)
 {

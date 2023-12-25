@@ -1,7 +1,7 @@
 #include "global_float_precision.h"
 #include "global_parameters.h"
 #include "grid_info_struct_2D.h"
-#include "../../MPI_module/mpi_info_struct.h"
+#include "MPI_module/mpi_info_struct.h"
 
 void initialize_grid_info_2D(struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {

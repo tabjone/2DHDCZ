@@ -9,6 +9,4 @@ struct MpiInfo
     bool has_neighbor_below, has_neighbor_above;
 };
 
-void initialize_mpi_info_struct(struct MpiInfo **mpi_info_ptr);
-
 #endif // MPI_INFO_STRUCT_H__

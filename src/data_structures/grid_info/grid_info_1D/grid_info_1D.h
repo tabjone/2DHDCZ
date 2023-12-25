@@ -2,7 +2,7 @@
 #define GRID_INFO_1D_H
 
 #include "grid_info_struct_1D.h"
-#include "../../MPI_module/mpi_info_struct.h"
+#include "MPI_module/mpi_info_struct.h"
 
 void allocate_grid_info_struct_1D(struct GridInfo1D **grid_info);
 void deallocate_grid_info_struct_1D(struct GridInfo1D *grid_info);

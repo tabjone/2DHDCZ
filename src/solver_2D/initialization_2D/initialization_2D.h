@@ -4,7 +4,7 @@
 #include "shared_files.h"
 #include "../functions.h"
 #include "global_parameters.h"
-#include "initialization.h"
+#include "global_initialization.h"
 #include "global_boundary.h"
 
 #include "../one_time_step/one_time_step.h"

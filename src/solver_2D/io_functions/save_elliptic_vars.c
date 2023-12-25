@@ -3,6 +3,7 @@
 
 void save_elliptic_vars(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc, int save_nr)
 {
+    /*
     int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;
@@ -140,4 +141,5 @@ void save_elliptic_vars(struct ForegroundVariables2D *fg, struct BackgroundVaria
     deallocate_2D_array(rhs);
     deallocate_2D_array(rhs_manual);
     deallocate_2D_array(third_term);
+    */
 }

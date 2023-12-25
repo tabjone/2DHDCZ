@@ -6,12 +6,10 @@
 #include "global_parameters.h"
 #include "../rhs_functions/rhs_functions.h"
 #include "global_boundary.h"
+#include "../../iterative_solver_module/iterative_solver_module.h"
 
-void gauss_seidel_2D(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo2D *grid_info);
 
 void solve_elliptic_equation(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc);
 
-void communicate_p_gauss_seidel(FLOAT_P **array, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
-void gauss_seidel_2D_mpi(FLOAT_P **b, FLOAT_P **p1, FLOAT_P **initial_p1, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
 
 #endif // SOLVE_ELLIPTIC_EQUATION_H__

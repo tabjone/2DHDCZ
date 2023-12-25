@@ -7,7 +7,9 @@
 #include "shared_files.h"
 #include <math.h>
 #include <stdlib.h>
-#include "initialization.h"
+#include "global_initialization.h"
+#include "global_float_precision.h"
+#include "../../MPI_module/MPI_module.h"
 
 struct IntegrationVariables
 {

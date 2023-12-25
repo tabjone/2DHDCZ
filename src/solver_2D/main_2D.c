@@ -3,15 +3,22 @@
 
 int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
 {
+    /*
+    This is a GOD function. It should be simplified and split into smaller functions.
+    */
+
+
     FLOAT_P t, dt, dt_last, t_since_save;
     FLOAT_P first_t;
     int save_nr;
 
+    printf("0\n");
     // Declare the background variables, foreground variables and grid info
     struct BackgroundVariables *bg;
     struct ForegroundVariables2D *fg, *fg_previous, *tmp_ptr;
     struct GridInfo2D *grid_info = NULL;
     
+    // Function load_snapshot_2D()
     #if LOAD == 1
         // Loading snapshot
 
@@ -33,24 +40,22 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         printf("time = %f\n", t);
         save_nr = LOAD_SNAP_NUMBER + 1;
 
+    // Function initialize_simulation_2D()
     #elif LOAD == 0
         // Initializing the simulation
         save_nr = 0;
-
-        #if MPI_ON == 0
-            calculate_grid_info(&grid_info, mpi_info);
-        #elif MPI_ON == 1
-            calculate_grid_info_mpi(mpi_info, &grid_info);
-        #endif // MPI_ON
-
+        printf("1\n");
+        calculate_grid_info_mpi(mpi_info, &grid_info);
+        printf("2\n");
         // Allocating memory for the background and foreground variables
         allocate_background_struct(&bg, grid_info->nz_full);
         allocate_foreground_struct_2D(&fg, grid_info);
         allocate_foreground_struct_2D(&fg_previous, grid_info);
 
-
+        printf("3\n");
         // Initialize the background variables and saving it to file
         solar_s_background_initialization(bg, mpi_info, grid_info->nz_full, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1, grid_info->nz);
+
         save_background(bg, mpi_info, grid_info->nz_full, grid_info->nz, grid_info->nz_ghost, grid_info->dz, grid_info->z0, grid_info->z1);
 
         printf("neig_above = %d, neig_below = %d\n", mpi_info->has_neighbor_above, mpi_info->has_neighbor_below);
@@ -95,7 +100,7 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         t_since_save += dt;
         dt_last = dt;
         
-        if (dt_last < 0.01)
+        if (dt_last < 0.1)
         {
             break;
         }

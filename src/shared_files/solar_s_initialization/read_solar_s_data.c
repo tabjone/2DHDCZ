@@ -1,5 +1,6 @@
 #include "hdf5.h"
 #include "global_parameters.h"
+#include "global_float_precision.h"
 
 void read_solar_s_data(const char* filename, FLOAT_P* r_over_R, FLOAT_P* rho0, FLOAT_P* p0, FLOAT_P* T0, hsize_t size)
 {

@@ -10,7 +10,6 @@ void initialization_2D_oscillation_modes(struct ForegroundVariables2D *fg, struc
     int nz_full = grid_info->nz_full;
     int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;
-    FLOAT_P z_offset = grid_info->z_offset;
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
     FLOAT_P z0 = grid_info->z0;

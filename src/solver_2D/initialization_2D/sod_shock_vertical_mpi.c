@@ -19,7 +19,6 @@ void sod_shock_vertical_mpi(struct ForegroundVariables2D *fg, struct BackgroundV
     // Getting grid info
     int nz_full = grid_info->nz_full;
     int nz_ghost = grid_info->nz_ghost;
-    int nz = grid_info->nz;
     int ny = grid_info->ny;
 
     FLOAT_P dz = grid_info->dz;

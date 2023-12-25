@@ -1,5 +1,8 @@
-#include "rhs_functions.h"
-#include "global_parameters.h"
+#include "../../spacial_derivatives_module/spacial_derivatives_module.h"
+#include "global_float_precision.h"
+#include "../../data_structures/background_data/background_variables_struct.h"
+#include "../../data_structures/foreground_data/foreground_data_2D/foreground_variables_struct_2D.h"
+#include "../../data_structures/grid_info/grid_info_2D/grid_info_struct_2D.h"
 
 FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables *precalc, int i, int j)
 {
@@ -38,9 +41,9 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P **vz = fg->vz;
 
     // Calculate the derivatives
-    FLOAT_P dp1_dz = central_first_derivative_z(p1, precalc, i, j);
-    FLOAT_P dvz_dy = upwind_first_derivative_y(vz, vy, precalc, i, j);
-    FLOAT_P dvz_dz = upwind_first_derivative_z(vz, vz, precalc, i, j);
+    FLOAT_P dp1_dz = central_first_derivative_z_2D(p1, i, j, precalc->one_over_2dz);
+    FLOAT_P dvz_dy = upwind_first_derivative_y_2D(vz, vy, i, j, grid_info->ny, precalc->one_over_dy, precalc->one_over_2dy);
+    FLOAT_P dvz_dz = upwind_first_derivative_z_2D(vz, vz, i, j, precalc->one_over_dz, precalc->one_over_2dz);
 
     #if GAS_PRESSURE_ON == 1
         rhs -= one_over_rho0[i] * dp1_dz;
@@ -57,8 +60,8 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
 
     #if VISCOSITY_ON == 1
 
-        FLOAT_P dd_vz_dy = central_second_derivative_y(vz, precalc, i, j);
-        FLOAT_P dd_vy_dydz = central_second_derivative_yz(vy, precalc, i, j);
+        FLOAT_P dd_vz_dy = central_second_derivative_y_2D(vz, i, j, grid_info->ny, precalc->one_over_dydy);
+        FLOAT_P dd_vy_dydz = central_second_derivative_yz_2D(vy, i, j, grid_info->ny, precalc->one_over_4dydz);
 
         rhs += precalc->VIS_COEFF_over_rho0[i]*(dd_vz_dy + dd_vy_dydz);
     #endif // VISCOSITY_ON

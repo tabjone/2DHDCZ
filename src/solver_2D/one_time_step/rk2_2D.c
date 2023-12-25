@@ -1,4 +1,4 @@
-#include "one_time_step.h"
+
 
 FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc, FLOAT_P dt_last, bool first_timestep)
 {

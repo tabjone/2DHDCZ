@@ -12,7 +12,7 @@ void integrate_one_step(struct IntegrationVariables *bg, int i, bool updown, FLO
     FLOAT_P dT_dr = nabla_star * bg->T0[i]/bg->p0[i] * dp_dr;
     FLOAT_P r_star = K_B / (MU * M_U);
     FLOAT_P c_p = r_star /(1.0-1.0/GAMMA);
-    FLOAT_P ds_dr = - c_p * (nabla_star - NABLA_AD) / bg->p0[i] * dp_dr;
+    FLOAT_P ds_dr = c_p * (nabla_star - NABLA_AD) / bg->p0[i] * dp_dr;
 
     if ((i+1) % bg->N == 0 && i != 0)
     {

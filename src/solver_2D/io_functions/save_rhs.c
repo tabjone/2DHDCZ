@@ -3,6 +3,7 @@
 
 void save_rhs(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables *precalc, int save_nr)
 {
+    /*
     // Create arrays to hold all rhs functions
     FLOAT_P **rhs_vy, **rhs_vz, **rhs_s1, **rhs_p1;
     FLOAT_P **ds1_dy_vy, **ds1_dz_vz;
@@ -101,4 +102,5 @@ void save_rhs(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, 
     deallocate_2D_array(dvy_dz_vz);
     deallocate_2D_array(dvz_dy_vy);
     deallocate_2D_array(dvz_dz_vz);
+    */
 }

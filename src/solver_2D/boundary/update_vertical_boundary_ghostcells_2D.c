@@ -6,13 +6,11 @@ void update_vertical_boundary_ghostcells_2D(FLOAT_P **array, struct GridInfo2D *
     int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;
 
-    int size = mpi_info->size;
-
-    MPI_Status status;
+    
 
     #if MPI_ON == 1
         // Sending and receiving ghost cells
-        communicate_2D_ghost_above_below(array, grid_info, mpi_info);
+        communicate_2D_ghost_above_below(array, mpi_info, nz, nz_ghost, ny);
     #endif // MPI_ON
     
     // All non periodic boundary conditions should extrapolate ghost cells
@@ -32,6 +30,8 @@ void update_vertical_boundary_ghostcells_2D(FLOAT_P **array, struct GridInfo2D *
     // Handle case of periodic boundary
     #if PERIODIC_BOUNDARY_VERTICAL == 1
         #if MPI_ON == 1
+            MPI_Status status;
+            int size = mpi_info->size;
             // Send and recieve to/from bottom
             if (!mpi_info->has_neighbor_above)
             {
