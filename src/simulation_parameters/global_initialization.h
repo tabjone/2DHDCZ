@@ -1,8 +1,6 @@
 #ifndef GLOBAL_INITIALIZATION_H__
 #define GLOBAL_INITIALIZATION_H__
 
-#include "global_parameters.h"
-
 #define IC_SOD_SHOCK 0 // 0 for off, 1 for on
 #define IC_SOD_SHOCK_DIRECTION 1 // 0 for horizontal, 1 for vertical
 

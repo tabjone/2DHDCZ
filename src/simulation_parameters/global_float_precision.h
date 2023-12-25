@@ -2,6 +2,7 @@
 #define GLOBAL_FLOAT_PRECISION_H_
 
 #include <mpi.h>
+#include <hdf5.h>
 
 #define FLOAT_PRECISION 1 // 0 for float, 1 for double, 2 for long double
 

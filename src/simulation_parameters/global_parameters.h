@@ -1,9 +1,6 @@
 #ifndef GLOBAL_PARAMETERS_H__
 #define GLOBAL_PARAMETERS_H__
 
-#include "hdf5.h"
-#include <mpi.h>
-
 #define MPI_ON 1 // 0 for MPI off, 1 for MPI on
 
 #define RUN_NAME "test_new_test" // Name of the run

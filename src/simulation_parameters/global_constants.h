@@ -1,8 +1,6 @@
 #ifndef GLOBAL_CONSTANTS_H__
 #define GLOBAL_CONSTANTS_H__
 
-#include "global_parameters.h"
-#include "stdio.h"
 #include "math.h"
 
 #ifndef M_PI
