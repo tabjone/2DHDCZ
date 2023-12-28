@@ -1,4 +1,4 @@
-#include "derivatives_2D.h"
+#include "global_float_precision.h"
 #include "global_parameters.h"
 
 static inline int periodic_boundary(int i, int limit) {

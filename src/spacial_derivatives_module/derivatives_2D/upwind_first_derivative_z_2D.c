@@ -1,4 +1,4 @@
-#include "derivatives_2D.h"
+#include "global_float_precision.h"
 #include "global_parameters.h"
 
 FLOAT_P upwind_first_derivative_z_2D(FLOAT_P **array, FLOAT_P **velocity, int i, int j, FLOAT_P one_over_dz, FLOAT_P one_over_2dz)

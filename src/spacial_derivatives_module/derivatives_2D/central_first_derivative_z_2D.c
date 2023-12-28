@@ -1,4 +1,4 @@
-#include "derivatives_2D.h"
+#include "global_float_precision.h"
 
 FLOAT_P central_first_derivative_z_2D(FLOAT_P **array, int i, int j, FLOAT_P one_over_2dz)
 {
