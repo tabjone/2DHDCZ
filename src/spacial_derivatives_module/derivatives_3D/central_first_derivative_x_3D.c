@@ -1,6 +1,9 @@
-#include "spacial_derivatives_3D.h"
+#include "global_float_precision.h"
 
-FLOAT_P central_first_derivative_y_3D(FLOAT_P ***array, int i, int j, int k, FLOAT_P dy, int ny)
+static inline int periodic_boundary(int i, int limit) {
+    return (i + limit-1) % (limit-1);}
+
+FLOAT_P central_first_derivative_x_3D(FLOAT_P ***array, int i, int j, int k, int nx, FLOAT_P one_over_2dx)
 {
     /*
     Calculates the central first derivative of a 2D array at a point (i, j) in the y-direction.
@@ -18,8 +21,8 @@ FLOAT_P central_first_derivative_y_3D(FLOAT_P ***array, int i, int j, int k, FLO
     ny : int
         The number of points in the y-direction.
     */
-    int j_minus = periodic_boundary(j-1, ny);
-    int j_plus = periodic_boundary(j+1, ny);
+    int k_minus = periodic_boundary(k-1, nx);
+    int k_plus = periodic_boundary(k+1, nx);
 
-    return (array[i][j_plus][k] - array[i][j_minus][k]) / (2.0 * dy);
+    return (array[i][j][k_plus] - array[i][j][k_minus]) * one_over_2dx;
 }

@@ -1,6 +1,10 @@
-#include "spacial_derivatives_3D.h"
+#include "global_float_precision.h"
+#include "global_parameters.h"
 
-FLOAT_P upwind_first_derivative_y_3D(FLOAT_P ***array, FLOAT_P ***velocity, int i, int j, int k, FLOAT_P dy, int ny)
+static inline int periodic_boundary(int i, int limit) {
+    return (i + limit-1) % (limit-1);}
+
+FLOAT_P upwind_first_derivative_y_3D(FLOAT_P ***array, FLOAT_P ***velocity, int i, int j, int k, int ny, FLOAT_P one_over_dy, FLOAT_P one_over_2dy)
 {
     /*
     Calculates the central first derivative of a 2D array at a point (i, j) in the y-direction.
@@ -27,11 +31,11 @@ FLOAT_P upwind_first_derivative_y_3D(FLOAT_P ***array, FLOAT_P ***velocity, int 
     #if UPWIND_ORDER == 1
         if (velocity[i][j][k] >= 0)
         {
-            return (array[i][j][k] - array[i][j_minus][k])/dy;
+            return (array[i][j][k] - array[i][j_minus][k]) * one_over_dy;
         }
         else
         {
-            return (array[i][j_plus][k] - array[i][j][k])/dy;
+            return (array[i][j_plus][k] - array[i][j][k]) * one_over_dy;
         }
     #elif UPWIND_ORDER == 2
         int j_minus2 = periodic_boundary(j-2, ny);
@@ -39,11 +43,11 @@ FLOAT_P upwind_first_derivative_y_3D(FLOAT_P ***array, FLOAT_P ***velocity, int 
 
         if (velocity[i][j][k] >= 0)
         {
-            return (3.0*array[i][j][k] -4.0*array[i][j_minus][k] + array[i][j_minus2][k])/(2.0*dy);
+            return (3.0*array[i][j][k] -4.0*array[i][j_minus][k] + array[i][j_minus2][k]) * one_over_2dy;
         }
         else
         {
-            return (-3.0*array[i][j][k] + 4.0*array[i][j_plus][k] - array[i][j_plus2][k])/(2.0*dy);
+            return (-3.0*array[i][j][k] + 4.0*array[i][j_plus][k] - array[i][j_plus2][k]) * one_over_2dy;
         }
     #endif // UPWIND_ORDER
 }
