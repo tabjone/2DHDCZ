@@ -1,7 +1,7 @@
 #include "global_float_precision.h"
 #include "global_parameters.h"
 
-FLOAT_P upwind_first_derivative_z_3D(FLOAT_P ***array, FLOAT_P ***velocity, int i, int j, int k, int nz, FLOAT_P one_over_dz, FLOAT_P one_over_2dz)
+FLOAT_P upwind_first_derivative_z_3D(FLOAT_P ***array, FLOAT_P ***velocity, int i, int j, int k, FLOAT_P one_over_dz, FLOAT_P one_over_2dz)
 {
     /*
     Calculates the central first derivative of a 3D array at a point (i, j, k) in the z-direction.
