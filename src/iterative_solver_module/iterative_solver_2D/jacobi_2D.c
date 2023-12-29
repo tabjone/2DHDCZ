@@ -2,8 +2,10 @@
 #include <float.h>
 #include "global_float_precision.h"
 #include "global_boundary.h"
-#include "../../MPI_module/MPI_module.h"
-#include "../../array_utilities/array_copy/array_copy.h"
+#include "global_parameters.h"
+#include "MPI_module/MPI_module.h"
+#include "array_utilities/array_copy/array_copy.h"
+#include <math.h>
 
 static inline int periodic_boundary(int i, int limit) {
     return (i + limit-1) % (limit-1);}

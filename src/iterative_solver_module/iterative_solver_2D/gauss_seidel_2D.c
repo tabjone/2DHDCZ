@@ -2,13 +2,15 @@
 #include <float.h>
 #include "global_float_precision.h"
 #include "global_boundary.h"
-#include "../../MPI_module/MPI_module.h"
-#include "../../array_utilities/array_copy/array_copy.h"
+#include "global_parameters.h"
+#include "MPI_module/MPI_module.h"
+#include "array_utilities/array_copy/array_copy.h"
+#include <math.h>
 
 static inline int periodic_boundary(int i, int limit) {
     return (i + limit-1) % (limit-1);}
 
-void gauss_seidel_2D_(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_solution, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiIinfo *mpi_info)
+void gauss_seidel_2D(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_solution, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiInfo *mpi_info)
 {
     /*
     Solves the Poisson equation using the Gauss-Seidel method

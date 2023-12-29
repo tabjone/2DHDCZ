@@ -1,13 +1,11 @@
 #include "global_float_precision.h"
 #include "global_boundary.h"
-#include "../../array_utilities/array_memory_management/array_memory_management.h"
-#include "../../MPI_module/MPI_module.h"
+#include "global_parameters.h"
+#include "array_utilities/array_memory_management/array_memory_management.h"
+#include "MPI_module/MPI_module.h"
 #include "iterative_solver_2D.h"
 
-static inline int periodic_boundary(int i, int limit) {
-    return (i + limit-1) % (limit-1);}
-
-void iterative_solver_2D(FLOAT_P **rhs, FLOAT_P **final_solution, FLOAT_P **initial_guess, FLOAT_P, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiInfo *mpi_info)
+void iterative_solver_2D(FLOAT_P **rhs, FLOAT_P **final_solution, FLOAT_P **initial_guess, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiInfo *mpi_info)
 {
     /*
     Solves the Poisson equation using an iterative method (Jacobi, Gauss-Seidel)
