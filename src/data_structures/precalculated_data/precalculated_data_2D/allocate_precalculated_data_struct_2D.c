@@ -5,8 +5,6 @@
 
 void allocate_precalculate_data_struct_2D(struct PrecalculatedVariables2D **pv, int nz_full)
 {
-    int nz_full = grid_info->nz_full;
-
     // Allocate memory for the struct
     *pv = (struct PrecalculatedVariables2D *)malloc(sizeof(struct PrecalculatedVariables2D));
     // HANDLE MALLOC FAILURE
