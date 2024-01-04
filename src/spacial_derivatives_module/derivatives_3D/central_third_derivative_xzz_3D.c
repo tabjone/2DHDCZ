@@ -3,7 +3,7 @@
 static inline int periodic_boundary(int i, int limit) {
     return (i + limit-1) % (limit-1);}
 
-void central_third_derivative_xzz_3D(FLOAT_P ***array, int i, int j, int k, int nx, FLOAT_P one_over_8dxdzdz)
+FLOAT_P central_third_derivative_xzz_3D(FLOAT_P ***array, int i, int j, int k, int nx, FLOAT_P one_over_8dxdzdz)
 {
     /*
     Calculates the central third derivative of a 3D array at a point (i, j, k) in the xzz direction.

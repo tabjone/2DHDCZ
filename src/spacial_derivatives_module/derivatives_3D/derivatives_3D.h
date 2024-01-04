@@ -20,12 +20,12 @@ FLOAT_P central_second_derivative_xz_3D(FLOAT_P ***array, int i, int j, int k, i
 FLOAT_P central_second_derivative_yz_3D(FLOAT_P ***array, int i, int j, int k, int ny, FLOAT_P one_over_4dydz);
 
 // Third derivatives
-void central_third_derivative_xxy_3D(FLOAT_P ***array, int i, int j, int k, int nx, int ny, FLOAT_P one_over_8dxdxdy);
-void central_third_derivative_xxz_3D(FLOAT_P ***array, int i, int j, int k, int nx, FLOAT_P one_over_8dxdxdz);
-void central_third_derivative_xyy_3D(FLOAT_P ***array, int i, int j, int k, int nx, int ny, FLOAT_P one_over_8dxdydy);
-void central_third_derivative_xyz_3D(FLOAT_P ***array, int i, int j, int k, int nx, int ny, FLOAT_P one_over_8dxdydz);
-void central_third_derivative_xzz_3D(FLOAT_P ***array, int i, int j, int k, int nx, FLOAT_P one_over_8dxdzdz);
-void central_third_derivative_yyz_3D(FLOAT_P ***array, int i, int j, int k, int ny, FLOAT_P one_over_8dydydz);
-void central_third_derivative_yzz_3D(FLOAT_P ***array, int i, int j, int k, int ny, FLOAT_P one_over_8dydzdz);
+FLOAT_P central_third_derivative_xxy_3D(FLOAT_P ***array, int i, int j, int k, int nx, int ny, FLOAT_P one_over_8dxdxdy);
+FLOAT_P central_third_derivative_xxz_3D(FLOAT_P ***array, int i, int j, int k, int nx, FLOAT_P one_over_8dxdxdz);
+FLOAT_P central_third_derivative_xyy_3D(FLOAT_P ***array, int i, int j, int k, int nx, int ny, FLOAT_P one_over_8dxdydy);
+FLOAT_P central_third_derivative_xyz_3D(FLOAT_P ***array, int i, int j, int k, int nx, int ny, FLOAT_P one_over_8dxdydz);
+FLOAT_P central_third_derivative_xzz_3D(FLOAT_P ***array, int i, int j, int k, int nx, FLOAT_P one_over_8dxdzdz);
+FLOAT_P central_third_derivative_yyz_3D(FLOAT_P ***array, int i, int j, int k, int ny, FLOAT_P one_over_8dydydz);
+FLOAT_P central_third_derivative_yzz_3D(FLOAT_P ***array, int i, int j, int k, int ny, FLOAT_P one_over_8dydzdz);
 
 #endif // DERIVATIVES_3D_H
