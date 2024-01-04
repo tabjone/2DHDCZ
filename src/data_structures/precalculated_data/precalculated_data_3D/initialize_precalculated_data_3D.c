@@ -43,6 +43,7 @@ void initialize_precalculated_data_3D(struct PrecalculatedVariables3D *pv, struc
     pv->two_VIS_COEFF = 2.0*VISCOSITY_COEFF;
     
     pv->one_over_8dxdxdy = 1.0/(8.0*dx*dx*dy);
+    pv->one_over_8dxdxdz = 1.0/(8.0*dx*dx*dz);
     pv->one_over_8dxdydy = 1.0/(8.0*dx*dy*dy);
     pv->one_over_8dxdydz = 1.0/(8.0*dx*dy*dz);
     pv->one_over_8dxdzdz = 1.0/(8.0*dx*dz*dz);

@@ -29,6 +29,7 @@ struct PrecalculatedVariables3D
     FLOAT_P one_over_4dydz;
     FLOAT_P one_over_4dxdz;
     FLOAT_P one_over_8dxdxdy;
+    FLOAT_P one_over_8dxdxdz;
     FLOAT_P one_over_8dxdydy;
     FLOAT_P one_over_8dxdydz;
     FLOAT_P one_over_8dxdzdz;
