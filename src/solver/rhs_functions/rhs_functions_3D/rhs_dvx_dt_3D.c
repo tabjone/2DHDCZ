@@ -39,8 +39,6 @@ FLOAT_P rhs_dvx_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
     // Getting the grid info
     int nx = grid_info->nx;
     int ny = grid_info->ny;
-    int nz = grid_info->nz;
-    int nz_full = grid_info->nz_full;
     
     // Creating pointers to foreground arrays
     FLOAT_P ***p1 = fg->p1;

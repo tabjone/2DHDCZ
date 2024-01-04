@@ -39,8 +39,6 @@ FLOAT_P rhs_ds1_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
     // Getting the grid info
     int nx = grid_info->nx;
     int ny = grid_info->ny;
-    int nz = grid_info->nz;
-    int nz_full = grid_info->nz_full;
 
     // Creating pointers to foreground arrays
     FLOAT_P ***vx = fg->vx;
@@ -49,7 +47,7 @@ FLOAT_P rhs_ds1_dt_3D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P ***s1 = fg->s1;
 
     // Creating pointers to background arrays
-    FLOAT_P *grad_s0 = precalc->grad_s0;
+    FLOAT_P *grad_s0 = bg->grad_s0;
 
     // Calculate the derivatives
     FLOAT_P ds1_dx, ds1_dy, ds1_dz;

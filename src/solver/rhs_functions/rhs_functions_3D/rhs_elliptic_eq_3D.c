@@ -39,7 +39,6 @@ FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVari
     // Getting the grid info
     int nx = grid_info->nx;
     int ny = grid_info->ny;
-    int nz = grid_info->nz;
 
     // Creating pointers to foreground arrays
     FLOAT_P ***rho1 = fg->rho1;
@@ -64,21 +63,21 @@ FLOAT_P rhs_elliptic_eq_3D(struct BackgroundVariables *bg, struct ForegroundVari
     dd_vy_dxdy = central_second_derivative_xy_3D(vy, i, j, k, nx, ny, precalc->one_over_4dxdy);
 
     // First derivatives
-    FLOAT_P d_rho1_dz = central_first_derivative_z_3D(rho1, i, j, k, dz, nz);
-    FLOAT_P dvx_dx = central_first_derivative_x_3D(vx, i, j, k, dx, nx);
-    FLOAT_P dvx_dy = central_first_derivative_y_3D(vx, i, j, k, dy, ny);
-    FLOAT_P dvx_dz = central_first_derivative_z_3D(vx, i, j, k, dz, nz);
-    FLOAT_P dvy_dx = central_first_derivative_x_3D(vy, i, j, k, dx, nx);
-    FLOAT_P dvy_dy = central_first_derivative_y_3D(vy, i, j, k, dy, ny);
-    FLOAT_P dvy_dz = central_first_derivative_z_3D(vy, i, j, k, dz, nz);
-    FLOAT_P dvz_dx = central_first_derivative_x_3D(vz, i, j, k, dx, nx);
-    FLOAT_P dvz_dy = central_first_derivative_y_3D(vz, i, j, k, dy, ny);
-    FLOAT_P dvz_dz = central_first_derivative_z_3D(vz, i, j, k, dz, nz);
+    FLOAT_P d_rho1_dz = central_first_derivative_z_3D(rho1, i, j, k, precalc->one_over_2dz);
+    FLOAT_P dvx_dx = central_first_derivative_x_3D(vx, i, j, k, nx, precalc->one_over_2dx);
+    FLOAT_P dvx_dy = central_first_derivative_y_3D(vx, i, j, k, ny, precalc->one_over_2dy);
+    FLOAT_P dvx_dz = central_first_derivative_z_3D(vx, i, j, k, precalc->one_over_2dz);
+    FLOAT_P dvy_dx = central_first_derivative_x_3D(vy, i, j, k, nx, precalc->one_over_2dx);
+    FLOAT_P dvy_dy = central_first_derivative_y_3D(vy, i, j, k, ny, precalc->one_over_2dy);
+    FLOAT_P dvy_dz = central_first_derivative_z_3D(vy, i, j, k, precalc->one_over_2dz);
+    FLOAT_P dvz_dx = central_first_derivative_x_3D(vz, i, j, k, nx, precalc->one_over_2dx);
+    FLOAT_P dvz_dy = central_first_derivative_y_3D(vz, i, j, k, ny, precalc->one_over_2dy);
+    FLOAT_P dvz_dz = central_first_derivative_z_3D(vz, i, j, k, precalc->one_over_2dz);
 
     // Second derivatives
-    FLOAT_P dd_vx_ddx = central_second_derivative_x_3D(vx, i, j, k, dx, nx);
-    FLOAT_P dd_vy_ddy = central_second_derivative_y_3D(vy, i, j, k, dy, ny);
-    FLOAT_P dd_vz_ddz = central_second_derivative_z_3D(vz, i, j, k, dz, nz);
+    FLOAT_P dd_vx_ddx = central_second_derivative_x_3D(vx, i, j, k, nx, precalc->one_over_dxdx);
+    FLOAT_P dd_vy_ddy = central_second_derivative_y_3D(vy, i, j, k, ny, precalc->one_over_dydy);
+    FLOAT_P dd_vz_ddz = central_second_derivative_z_3D(vz, i, j, k, precalc->one_over_dzdz);
 
     #if GRAVITY_ON == 1
         rhs -= g[i]*d_rho1_dz + rho1[i][j][k]*grad_g[i];
