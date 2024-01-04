@@ -6,3 +6,6 @@
 *.DS_Store
 **/.vscode/
 **/.ipynb_checkpoints/
+visualisation/**/*.pdf
+visualisation/**/*.txt
+__pycache__/
