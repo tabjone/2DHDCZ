@@ -83,7 +83,7 @@ void initialize_foreground_random_oscillations_1D(struct ForegroundVariables1D *
     FLOAT_P sum;
     int rnd_num;
 
-    FLOAT_P z, y;
+    FLOAT_P z;
 
     FLOAT_P len_sum;
 
@@ -104,7 +104,7 @@ void initialize_foreground_random_oscillations_1D(struct ForegroundVariables1D *
             if (rnd_num <=3)
             {
                 len_sum += 1.0;
-                sum += A * sin(2.0 * M_PI * (ky[k] * y/Ly + kz[l] * z/Lz) + phi);
+                sum += A * sin(2.0 * M_PI * (kz[l] * z/Lz) + phi);
             }
         }
         sum = sum / len_sum;
@@ -145,13 +145,12 @@ void initialize_foreground_random_oscillations_1D(struct ForegroundVariables1D *
             fg->s1[i] *= -2.0 / (1.0 + exp(-1.5*(i - nz_ghost - nz))) + 1.0;
             fg->p1[i] *= -2.0 / (1.0 + exp(-1.5*(i - nz_ghost - nz))) + 1.0;
         }
-
     }
+
     communicate_1D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost);
     communicate_1D_ghost_above_below(fg->p1, mpi_info, nz, nz_ghost);
     equation_of_state_1D(fg, bg, grid_info);  
 
     deallocate_1D_array(Hp);
-    deallocate_1D_array(ky);
     deallocate_1D_array(kz);
 }

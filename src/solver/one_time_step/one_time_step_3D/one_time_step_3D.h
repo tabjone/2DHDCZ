@@ -10,7 +10,7 @@
 #include "data_structures/grid_info/grid_info_3D/grid_info_struct_3D.h"
 #include "data_structures/precalculated_data/precalculated_data_3D/precalculated_data_struct_3D.h"
 #include "MPI_module/MPI_module.h"
-#include "../rhs_functions_3D/rhs_functions_3D.h"
+#include "solver/rhs_functions/rhs_functions_3D/rhs_functions_3D.h"
 
 FLOAT_P get_dt_3D(struct ForegroundVariables3D *fg, struct GridInfo3D *grid_info, FLOAT_P dt_last, bool first_timestep);
 

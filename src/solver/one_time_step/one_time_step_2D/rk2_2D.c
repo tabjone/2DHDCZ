@@ -29,7 +29,6 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     // Getting grid info
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
-    int nz = grid_info->nz;
     int ny = grid_info->ny;
 
     // Calculating dt
@@ -91,7 +90,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     }
 
     // Updating mid calculation variables
-    first_law_thermodynamics_2D(fg, bg, grid_info);
+    first_law_of_thermodynamics_2D(fg, bg, grid_info);
     equation_of_state_2D(fg, bg, grid_info);
 
     // Calculating p1
@@ -126,7 +125,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
 
     // Solving algebraic equations
-    first_law_thermodynamics_2D(fg, bg, grid_info);
+    first_law_of_thermodynamics_2D(fg, bg, grid_info);
     equation_of_state_2D(fg, bg, grid_info);
 
     // Calculating p1

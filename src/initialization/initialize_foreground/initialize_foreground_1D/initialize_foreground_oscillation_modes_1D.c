@@ -44,8 +44,8 @@ void initialize_foreground_oscillation_modes_1D(struct ForegroundVariables1D *fg
         fg->s1[i] = 1.0e1 * sum_modes;
         // Calculating p1 from first law of thermodynamics
         fg->p1[i] = -bg->p0[i] * fg->s1[i]/c_p;
-        }
     }
+
     communicate_1D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost);
     communicate_1D_ghost_above_below(fg->p1, mpi_info, nz, nz_ghost);
 

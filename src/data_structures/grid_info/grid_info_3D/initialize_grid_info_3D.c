@@ -2,6 +2,7 @@
 #include "global_parameters.h"
 #include "grid_info_struct_3D.h"
 #include "MPI_module/mpi_info_struct.h"
+#include "global_constants.h"
 
 void initialize_grid_info_3D(struct GridInfo3D *grid_info, struct MpiInfo *mpi_info)
 {
@@ -59,8 +60,6 @@ void initialize_grid_info_3D(struct GridInfo3D *grid_info, struct MpiInfo *mpi_i
 
     int nz_full = my_nz + 2*nz_ghost;
     
-    allocate_grid_info_struct_3D(&grid_info);
-
     grid_info->z0 = z0;
     grid_info->z1 = z1;
     grid_info->y0 = y0;

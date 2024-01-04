@@ -30,15 +30,14 @@ void solve_elliptic_equation_1D(struct BackgroundVariables *bg, struct Foregroun
     int nz_ghost = grid_info->nz_ghost;
     int nz = grid_info->nz;
     FLOAT_P dz = grid_info->dz;
-    FLOAT_P dy = grid_info->dy;
 
-    FLOAT_P **rhs;
+    FLOAT_P *rhs;
     allocate_1D_array(&rhs, nz);
 
     // Solve inside the grid
     for (int i = 0; i < nz; i++)
     {
-        rhs[i][j] = rhs_elliptic_eq_1D(bg, fg, grid_info, precalc, i+nz_ghost);
+        rhs[i] = rhs_elliptic_eq_1D(bg, fg, grid_info, precalc, i+nz_ghost);
     }
 
     iterative_solver_1D(rhs, fg->p1, fg_prev->p1, nz, nz_ghost, dz, mpi_info);

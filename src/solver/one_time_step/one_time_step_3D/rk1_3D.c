@@ -29,7 +29,6 @@ FLOAT_P rk1_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     // Getting grid info
     int nx = grid_info->nx;
     int ny = grid_info->ny;
-    int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
 
@@ -74,7 +73,7 @@ FLOAT_P rk1_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     }
 
     // Solving algebraic equations.
-    first_law_thermodynamics_3D(fg, bg, grid_info);
+    first_law_of_thermodynamics_3D(fg, bg, grid_info);
     equation_of_state_3D(fg, bg, grid_info);
     
     // Solving elliptic equation

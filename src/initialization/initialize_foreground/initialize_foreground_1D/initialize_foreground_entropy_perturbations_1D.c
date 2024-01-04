@@ -39,9 +39,9 @@ void initialize_foreground_entropy_perturbations_1D(struct ForegroundVariables1D
     FLOAT_P amplitude = 1.0e1;
     FLOAT_P sigma_z = 0.1*dz*NZ;
 
-    FLOAT_P centre_z[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Z;
+    FLOAT_P centre_z[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_Z;
 
-    for (int i = 0; i < IC_N_ENTROPY_PERTUBATION; i++)
+    for (int i = 0; i < IC_N_ENTROPY_PERTURBATION; i++)
     {
         centre_z[i] *= dz * NZ;
     }
@@ -54,7 +54,7 @@ void initialize_foreground_entropy_perturbations_1D(struct ForegroundVariables1D
     // Inside the grid
     for (int i = nz_ghost; i < nz_full-nz_ghost; i++)
     {
-        for (int n = 0; n < IC_N_ENTROPY_PERTUBATION; n++)
+        for (int n = 0; n < IC_N_ENTROPY_PERTURBATION; n++)
         {
             // Entropy perturbation
             fg->s1[i] += gaussian_1D((i-nz_ghost)*dz+z_offset, centre_z[n], sigma_z, amplitude);

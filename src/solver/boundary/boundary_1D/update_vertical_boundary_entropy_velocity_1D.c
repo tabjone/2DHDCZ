@@ -10,7 +10,6 @@ void update_vertical_boundary_entropy_velocity_1D(struct ForegroundVariables1D *
     int nz_ghost = grid_info->nz_ghost;
 
     communicate_1D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost);
-    communicate_1D_ghost_above_below(fg->vy, mpi_info, nz, nz_ghost);
     communicate_1D_ghost_above_below(fg->vz, mpi_info, nz, nz_ghost);
     
     // All non periodic boundary conditions should extrapolate ghost cells
@@ -19,13 +18,11 @@ void update_vertical_boundary_entropy_velocity_1D(struct ForegroundVariables1D *
         // If not periodic boundary extrapolate ghost cells at top and bottom
         if (!mpi_info->has_neighbor_below)
         {
-            extrapolate_1D_array_antisymmetric_down(fg->vy, nz_ghost);
             extrapolate_1D_array_constant_down(fg->vz, nz_ghost);
             extrapolate_1D_array_constant_down(fg->s1, nz_ghost);
         }
         if (!mpi_info->has_neighbor_above)
         {
-            extrapolate_1D_array_antisymmetric_up(fg->vy, nz_full, nz_ghost);
             extrapolate_1D_array_constant_up(fg->vz, nz_full, nz_ghost);
             extrapolate_1D_array_constant_up(fg->s1, nz_full, nz_ghost);
         }

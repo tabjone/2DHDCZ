@@ -1,16 +1,22 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdio.h>
 #include <mpi.h>
-
+#include "global_parameters.h"
+#include <stdlib.h>
 #include "functions.h"
+
+#include "MPI_module/MPI_module.h"
 
 int main_run(int argc, char *argv[])
 {
-    struct MpiInfo *mpi_info;
-    mpi_info = malloc(sizeof(struct MpiInfo));
-
     MPI_Init(&argc, &argv);
+    
+    struct MpiInfo *mpi_info;
+    initialize_mpi_info_struct(&mpi_info);
+
+    
     MPI_Comm_size(MPI_COMM_WORLD, &mpi_info->size);
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_info->rank);
 
@@ -44,7 +50,7 @@ int main_run(int argc, char *argv[])
         if (stat(dir_name, &st) == -1) {
             // If directory doesn't exist, create it with permissions set to rwxr-xr-x
             if (mkdir(dir_name, 0755) == -1) {
-                perror("Error creating directory");
+                printf("Error creating directory\n");
                 return 1;
             }
         }
@@ -85,15 +91,9 @@ int main_run(int argc, char *argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     
     #if DIMENSIONS == 1
-        printf("Not implemented yet\n");
+        main_1D(argc, argv, mpi_info);
     #elif DIMENSIONS == 2
-        #if MPI_ON == 0
-            if (mpi_info->rank==0){
-                printf("Starting\n");
-                main_2D(argc, argv, mpi_info);}
-        #else
-            main_2D(argc, argv, mpi_info);
-        #endif // MPI_ON
+        main_2D(argc, argv, mpi_info);
     #elif DIMENSIONS == 3
         main_3D(argc, argv, mpi_info);
     #endif // DIMENSIONS

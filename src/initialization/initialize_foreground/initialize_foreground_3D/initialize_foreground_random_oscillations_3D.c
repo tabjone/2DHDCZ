@@ -101,7 +101,7 @@ void initialize_foreground_random_oscillations_3D(struct ForegroundVariables3D *
     FLOAT_P sum;
     int rnd_num;
 
-    FLOAT_P z, y;
+    FLOAT_P z, y, x;
 
     FLOAT_P len_sum;
 

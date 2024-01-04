@@ -55,7 +55,7 @@ FLOAT_P rhs_dvz_dt_1D(struct BackgroundVariables *bg, struct ForegroundVariables
 
     // Advective term
     #if ADVECTION_ON == 1
-        rhs -= vz[i][j]*dvz_dz;
+        rhs -= vz[i]*dvz_dz;
     #endif // ADVECTION_ON
 
     return rhs;

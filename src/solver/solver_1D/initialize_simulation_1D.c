@@ -4,8 +4,7 @@
 #include "data_structures/precalculated_data/precalculated_data_1D/precalculated_data_1D.h"
 #include "initialization/initialize_background/solar_s_initialization/solar_s_initialization.h"
 #include "io_operations/io_operations.h"
-#include "initialization_1D/initialization_1D.h"
-#include "io_functions_1D/io_functions_1D.h"
+#include "initialization/initialize_foreground/initialize_foreground_1D/initialize_foreground_1D.h"
 
 #include <stdio.h>
 
@@ -24,7 +23,7 @@ void initialize_simulation_1D(struct BackgroundVariables **bg, struct Foreground
 
     // Initializing background, foreground and precalculated data structs
     solar_s_initialization(*bg, mpi_info, (*grid_info)->nz_full, (*grid_info)->nz_ghost, (*grid_info)->dz, (*grid_info)->z0);
-    initialize_foreground(*fg_previous, *bg, *grid_info, mpi_info);
+    initialize_foreground_1D(*fg_previous, *bg, *grid_info, mpi_info);
     initialize_precalculated_data_1D(*precalc, *bg, *grid_info);
     // Saving parameters to file
     save_background(*bg, mpi_info, (*grid_info)->nz_full, (*grid_info)->nz, (*grid_info)->nz_ghost, (*grid_info)->dz, (*grid_info)->z0, (*grid_info)->z1);

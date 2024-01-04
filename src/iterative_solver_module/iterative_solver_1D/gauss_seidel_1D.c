@@ -67,7 +67,7 @@ void gauss_seidel_1D(FLOAT_P *rhs, FLOAT_P *current_solution, FLOAT_P *previous_
             current_solution[i] = (rhs[i] - a*(previous_solution[i+1] + current_solution[i-1]))/g;
                 
             // Finding maximum absolute value of current_solution
-            local_abs_current = fabs(current_solution[i][j]);
+            local_abs_current = fabs(current_solution[i]);
 
             if (local_abs_current > my_global_abs_current)
             {
@@ -75,7 +75,7 @@ void gauss_seidel_1D(FLOAT_P *rhs, FLOAT_P *current_solution, FLOAT_P *previous_
             }
 
             // Finding maximum difference between previous_solution and current_solution
-            local_abs_difference = fabs(current_solution[i][j] - previous_solution[i][j]);
+            local_abs_difference = fabs(current_solution[i] - previous_solution[i]);
             
             if (local_abs_difference > my_global_abs_difference)
             {

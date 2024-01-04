@@ -35,7 +35,7 @@ void solve_elliptic_equation_3D(struct BackgroundVariables *bg, struct Foregroun
     FLOAT_P dy = grid_info->dy;
     FLOAT_P dx = grid_info->dx;
 
-    FLOAT_P **rhs;
+    FLOAT_P ***rhs;
     allocate_3D_array(&rhs, nz, ny, nx);
 
     // Solve inside the grid
@@ -45,7 +45,7 @@ void solve_elliptic_equation_3D(struct BackgroundVariables *bg, struct Foregroun
         {
             for (int k = 0; k < nx; k++)
             {
-                rhs[i][j] = rhs_elliptic_eq_3D(bg, fg, grid_info, precalc, i+nz_ghost, j, k);
+                rhs[i][j][k] = rhs_elliptic_eq_3D(bg, fg, grid_info, precalc, i+nz_ghost, j, k);
             }
         }
     }

@@ -3,7 +3,7 @@
 
 #include "global_float_precision.h"
 
-struct PrecalculatedVariables2D
+struct PrecalculatedVariables1D
 {
     FLOAT_P *one_over_rho0;
     FLOAT_P *grad_T0;

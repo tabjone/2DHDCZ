@@ -38,20 +38,15 @@ void save_foreground_1D(struct ForegroundVariables1D *fg, struct GridInfo1D *gri
     // Getting grid info
     FLOAT_P z0 = grid_info->z0;
     FLOAT_P z1 = grid_info->z1;
-    FLOAT_P y0 = grid_info->y0;
-    FLOAT_P y1 = grid_info->y1;
     int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
-    int ny = grid_info->ny;
-    FLOAT_P dy = grid_info->dy;
     FLOAT_P dz = grid_info->dz;
-
 
     hid_t file, group_grid_data, group_variables;
     hid_t dataspace_scalar, dataspace_1D;
 
-    hsize_t dims[2] = {nz_full, ny};
+    hsize_t dims[1] = {nz_full};
     herr_t status;
 
     // Create new default file 
@@ -120,17 +115,17 @@ void save_foreground_1D(struct ForegroundVariables1D *fg, struct GridInfo1D *gri
     }
     
     #if UNITS == 0
-        create_write_dataset(group_variables, "T1", H5_FLOAT_P, dataspace_1D, fg->T1[0], "K");
-        create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_1D, fg->p1[0], "dyn/cm^2");
-        create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_1D, fg->rho1[0], "g/cm^3");
-        create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_1D, fg->s1[0], "erg/K");
-        create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_1D, fg->vz[0], "cm/s");
+        create_write_dataset(group_variables, "T1", H5_FLOAT_P, dataspace_1D, fg->T1, "K");
+        create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_1D, fg->p1, "dyn/cm^2");
+        create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_1D, fg->rho1, "g/cm^3");
+        create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_1D, fg->s1, "erg/K");
+        create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_1D, fg->vz, "cm/s");
     #else
-        create_write_dataset(group_variables, "T1", H5_FLOAT_P, dataspace_1D, fg->T1[0], "K");
-        create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_1D, fg->p1[0], "Pa/m^2");
-        create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_1D, fg->rho1[0], "kg/m^3");
-        create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_1D, fg->s1[0], "J/K");
-        create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_1D, fg->vz[0], "m/s");
+        create_write_dataset(group_variables, "T1", H5_FLOAT_P, dataspace_1D, fg->T1, "K");
+        create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_1D, fg->p1, "Pa/m^2");
+        create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_1D, fg->rho1, "kg/m^3");
+        create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_1D, fg->s1, "J/K");
+        create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_1D, fg->vz, "m/s");
     #endif // UNITS == 0
 
     status = H5Gclose(group_variables);

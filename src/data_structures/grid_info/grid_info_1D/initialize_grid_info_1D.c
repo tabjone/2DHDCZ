@@ -1,5 +1,6 @@
 #include "global_float_precision.h"
 #include "global_parameters.h"
+#include "global_constants.h"
 #include "grid_info_struct_1D.h"
 #include "MPI_module/mpi_info_struct.h"
 
@@ -51,8 +52,6 @@ void initialize_grid_info_1D(struct GridInfo1D *grid_info, struct MpiInfo *mpi_i
 
     int nz_full = my_nz + 2*nz_ghost;
     
-    allocate_grid_info_struct_2D(&grid_info);
-
     grid_info->z0 = z0;
     grid_info->z1 = z1;
     grid_info->nz = my_nz;

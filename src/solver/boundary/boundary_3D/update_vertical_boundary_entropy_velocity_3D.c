@@ -9,6 +9,7 @@ void update_vertical_boundary_entropy_velocity_3D(struct ForegroundVariables3D *
     int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;
+    int nx = grid_info->nx;
 
     communicate_3D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost, ny, nx);
     communicate_3D_ghost_above_below(fg->vx, mpi_info, nz, nz_ghost, ny, nx);

@@ -7,11 +7,10 @@
 #endif // M_PI
 
 #include "global_float_precision.h"
-#include "../../array_utilities/array_memory_management/array_memory_management.h"
-#include "../mpi_info_struct.h"
-#include "../communication/communication.h"
+#include "array_utilities/array_memory_management/array_memory_management.h"
+#include "../MPI_module.h"
 
-int test_communication_1D(struct MpiInfo *mpi_info, int nz, int nz_ghost, FLOAT_P epsilon)
+int test_communication_1D_non_periodic(struct MpiInfo *mpi_info, int nz, int nz_ghost, FLOAT_P epsilon)
 {
     FLOAT_P *array;
     allocate_1D_array(&array, nz+2*nz_ghost);
@@ -94,10 +93,10 @@ void test_communication_1D()
     int my_test, test;
 
     #if PERIODIC_BOUNDARY_VERTICAL == 0
-        my_test = test_communication_1D(mpi_info, nz, nz_ghost, epsilon);
+        my_test = test_communication_1D_non_periodic(mpi_info, nz, nz_ghost, epsilon);
     
     #else
-        my_test = ....
+        //my_test = ....
     #endif // PERIODIC_BOUNDARY_VERTICAL
 
     MPI_Allreduce(&my_test, &test, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);

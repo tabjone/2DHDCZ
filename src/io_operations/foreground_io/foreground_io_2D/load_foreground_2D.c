@@ -89,5 +89,5 @@ FLOAT_P load_foreground_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *
     H5Fclose(file);
 
     return time;
-    */
+    */return 1.0;
 }

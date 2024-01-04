@@ -35,9 +35,9 @@ void apply_vertical_boundary_damping_1D(struct ForegroundVariables1D *fg, struct
     }
     if (!mpi_info->has_neighbor_below)
     {
-        fg->s1[nz_ghost][j] = LOWER_ENTROPY_BOUNDARY;
-        fg->p1[nz_ghost][j] = LOWER_PRESSURE_BOUNDARY;
-        fg->vz[nz_ghost][j] = 0.0;
+        fg->s1[nz_ghost] = LOWER_ENTROPY_BOUNDARY;
+        fg->p1[nz_ghost] = LOWER_PRESSURE_BOUNDARY;
+        fg->vz[nz_ghost] = 0.0;
     }
 
     /*

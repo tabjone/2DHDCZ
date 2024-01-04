@@ -27,7 +27,6 @@ FLOAT_P get_dt_1D(struct ForegroundVariables1D *fg, struct GridInfo1D *grid_info
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
     FLOAT_P dz = grid_info->dz;
-    FLOAT_P dy = grid_info->dy;
 
     FLOAT_P dt;
     
@@ -63,14 +62,11 @@ FLOAT_P get_dt_1D(struct ForegroundVariables1D *fg, struct GridInfo1D *grid_info
 
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
-        for (int j = 0; j < ny; j++)
-        {
-            vz = fabs(fg->vz[i][j]);
+        vz = fabs(fg->vz[i]);
 
-            if (vz > max_vz)
-            {
-                max_vz = vz;
-            }
+        if (vz > max_vz)
+        {
+            max_vz = vz;
         }
     }
 

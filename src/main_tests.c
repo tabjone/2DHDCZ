@@ -11,7 +11,7 @@ int main_tests(int argc, char *argv[])
     #endif // TESTS_DERIVATIVES_MODULE
 
     #if TEST_MPI_MODULE == 1
-        test_communication();
+        test_communication_1D();
         //test_mpi_info_struct();
     #endif // TESTS_MPI_MODULE
 

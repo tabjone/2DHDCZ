@@ -29,7 +29,7 @@ void iterative_solver_1D(FLOAT_P *rhs, FLOAT_P *final_solution, FLOAT_P *initial
     */
 
     // Initializing previous_solution and current_solution
-    FLOAT_P **current_solution, **previous_solution;
+    FLOAT_P *current_solution, *previous_solution;
     allocate_1D_array(&current_solution, nz+2);
     allocate_1D_array(&previous_solution, nz+2);
     

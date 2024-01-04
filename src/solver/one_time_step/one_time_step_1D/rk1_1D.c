@@ -27,7 +27,6 @@ FLOAT_P rk1_1D(struct BackgroundVariables *bg, struct ForegroundVariables1D *fg_
     */
 
     // Getting grid info
-    int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
 
@@ -43,7 +42,6 @@ FLOAT_P rk1_1D(struct BackgroundVariables *bg, struct ForegroundVariables1D *fg_
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         fg->s1[i] = fg_prev->s1[i] + dt*rhs_ds1_dt_1D(bg, fg_prev, grid_info, precalc, i);
-        fg->vy[i] = fg_prev->vy[i] + dt*rhs_dvy_dt_1D(bg, fg_prev, grid_info, precalc, i);
         fg->vz[i] = fg_prev->vz[i] + dt*rhs_dvz_dt_1D(bg, fg_prev, grid_info, precalc, i);
     }
 
@@ -58,7 +56,7 @@ FLOAT_P rk1_1D(struct BackgroundVariables *bg, struct ForegroundVariables1D *fg_
     }
 
     // Solving algebraic equations.
-    first_law_thermodynamics_1D(fg, bg, grid_info);
+    first_law_of_thermodynamics_1D(fg, bg, grid_info);
     equation_of_state_1D(fg, bg, grid_info);
     
     // Solving elliptic equation

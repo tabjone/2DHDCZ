@@ -36,7 +36,7 @@ void initialize_foreground_oscillation_modes_2D(struct ForegroundVariables2D *fg
 
     int oscillation_modes_n[IC_OSCILLATION_MODES_N_NUM] = IC_OSCILLATION_MODES_N;
     int oscillation_modes_m[IC_OSCILLATION_MODES_M_NUM] = IC_OSCILLATION_MODES_M;
-    FLOAT_P oscillation_modes_phi[IC_OSCILLATION_MODES_M_NUM] = IC_OSCILLATION_MODES_PHI;
+    FLOAT_P oscillation_modes_phi_m[IC_OSCILLATION_MODES_M_NUM] = IC_OSCILLATION_MODES_PHI_M;
 
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
@@ -49,7 +49,7 @@ void initialize_foreground_oscillation_modes_2D(struct ForegroundVariables2D *fg
             {
                 for (int l = 0; l < IC_OSCILLATION_MODES_M_NUM; l++)
                 {
-                    sum_modes += sin(2.0 * M_PI * oscillation_modes_n[k] * z/Lz) * sin(2.0 * M_PI * oscillation_modes_m[l] * y/Ly + oscillation_modes_phi[l]);
+                    sum_modes += sin(2.0 * M_PI * oscillation_modes_n[k] * z/Lz) * sin(2.0 * M_PI * oscillation_modes_m[l] * y/Ly + oscillation_modes_phi_m[l]);
                 }
             }
             fg->s1[i][j] = 1.0e1 * sum_modes;

@@ -3,7 +3,7 @@
 
 #define MPI_ON 1 // 0 for MPI off, 1 for MPI on
 
-#define RUN_NAME "test_new_test" // Name of the run
+#define RUN_NAME "test_hello_4" // Name of the run
 #define SAVE_DIR "/mn/stornext/d10/data/tabjone/data/"
 #define LOAD 0 // 0 for not loading, 1 for loading
 #define LOAD_SNAP_NUMBER 0 // Snap number to load
@@ -14,7 +14,7 @@
 
 #define T 1e6 // Simulation time in seconds
 #define MAX_DT 1e3 // Maximum time step in seconds
-#define SAVE_INTERVAL 1e3 // Save interval in seconds
+#define SAVE_INTERVAL 1e1 // Save interval in seconds
 #define SAVE_ALL 0 // 0 for saving on interval above, 1 for saving all time steps
 
 #define CFL_CUT 0.1 // CFL cut
@@ -40,12 +40,13 @@
 #define X_SIZE 0.1 // In units of solar radii
 #define Y_SIZE 0.1 // In units of solar radii
 #define NX 400 // Number of grid points in x-direction
-#define NY 200 // Number of grid points in y-direction
-#define NZ 200 // Number of grid points in z-direction
+#define NY 150 // Number of grid points in y-direction
+#define NZ 150 // Number of grid points in z-direction
 
-// Gauss-Seidel tolerance, max iterations
-#define GS_TOL 1e-5 // Gauss-Seidel tolerance
-#define GS_MAX_ITER (int)5e8 // Gauss-Seidel max iterations
+// Iterative solver parameters
+#define ITERATIVE_SOLVER_TYPE 1 // 0 for Jacobi, 1 for Gauss-Seidel, 2 for SOR (not implemented)
+#define ITERATIVE_SOLVER_TOLERANCE 1e-5 // Iterative solver tolerance
+#define ITERATIVE_SOLVER_MAX_ITERATIONS (int)5e8 // Iterative solver max iterations
 
 // Physical parameters
 #define DEL_AD 0.4 // Adiabatic temperature gradient
@@ -60,8 +61,8 @@
 #define GRAVITY_ON 1 // 0 for gravity off, 1 for gravity on
 #define ADVECTION_ON 1 // 0 for advection off, 1 for advection on
 #define GAS_PRESSURE_ON 1 // 0 for gas pressure off, 1 for gas pressure on
-#define VISCOSITY_ON 0 // 0 for viscosity off, 1 for viscosity on
-#define THERMAL_DIFFUSIVITY_ON 0 // 0 for thermal diffusivity off, 1 for thermal diffusivity on
+#define VISCOSITY_ON 1 // 0 for viscosity off, 1 for viscosity on
+#define THERMAL_DIFFUSIVITY_ON 1 // 0 for thermal diffusivity off, 1 for thermal diffusivity on
 #define BFIELD_ON 0 // 0 for B-field off, 1 for B-field on
 
 #define DEBUG 1

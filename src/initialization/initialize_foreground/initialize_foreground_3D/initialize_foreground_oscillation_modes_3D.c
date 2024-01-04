@@ -67,7 +67,8 @@ void initialize_foreground_oscillation_modes_3D(struct ForegroundVariables3D *fg
                 // Calculating p1 from first law of thermodynamics
                 fg->p1[i][j][k] = -bg->p0[i] * fg->s1[i][j][k]/c_p;
             }
-        }   
+        }
+    }   
     communicate_3D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost, ny, nx);
     communicate_3D_ghost_above_below(fg->p1, mpi_info, nz, nz_ghost, ny, nx);
 

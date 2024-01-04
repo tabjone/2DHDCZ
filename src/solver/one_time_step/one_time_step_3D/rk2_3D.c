@@ -29,7 +29,6 @@ FLOAT_P rk2_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     // Getting grid info
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
-    int nz = grid_info->nz;
     int ny = grid_info->ny;
     int nx = grid_info->nx;
 
@@ -43,10 +42,10 @@ FLOAT_P rk2_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     dt = reduced_dt;
     
     // Slopes
-    FLOAT_P **k1_s1, **k2_s1;
-    FLOAT_P **k1_vx, **k2_vx;
-    FLOAT_P **k1_vy, **k2_vy;
-    FLOAT_P **k1_vz, **k2_vz;
+    FLOAT_P ***k1_s1, ***k2_s1;
+    FLOAT_P ***k1_vx, ***k2_vx;
+    FLOAT_P ***k1_vy, ***k2_vy;
+    FLOAT_P ***k1_vz, ***k2_vz;
 
     // Allocate memory for k1, k2
     allocate_3D_array(&k1_s1, nz_full, ny, nx);
@@ -106,7 +105,7 @@ FLOAT_P rk2_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     }
 
     // Updating mid calculation variables
-    first_law_thermodynamics_3D(fg, bg, grid_info);
+    first_law_of_thermodynamics_3D(fg, bg, grid_info);
     equation_of_state_3D(fg, bg, grid_info);
 
     // Calculating p1
@@ -149,7 +148,7 @@ FLOAT_P rk2_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     update_vertical_boundary_entropy_velocity_3D(fg, grid_info, mpi_info);
 
     // Solving algebraic equations
-    first_law_thermodynamics_3D(fg, bg, grid_info);
+    first_law_of_thermodynamics_3D(fg, bg, grid_info);
     equation_of_state_3D(fg, bg, grid_info);
 
     // Calculating p1

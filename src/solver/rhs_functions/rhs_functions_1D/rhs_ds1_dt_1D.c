@@ -33,8 +33,8 @@ FLOAT_P rhs_ds1_dt_1D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P rhs = 0.0; // This is the return value
 
     // Creating pointers to foreground arrays
-    FLOAT_P **vz = fg->vz;
-    FLOAT_P **s1 = fg->s1;
+    FLOAT_P *vz = fg->vz;
+    FLOAT_P *s1 = fg->s1;
 
     // Creating pointers to background arrays
     FLOAT_P *grad_s0 = bg->grad_s0;
@@ -42,7 +42,7 @@ FLOAT_P rhs_ds1_dt_1D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P ds1_dz = upwind_first_derivative_z_1D(s1, vz, i, precalc->one_over_dz, precalc->one_over_2dz);
 
     #if ADVECTION_ON == 1
-        rhs -= vz[i][j]*(ds1_dz + grad_s0[i]);
+        rhs -= vz[i]*(ds1_dz + grad_s0[i]);
     #endif // ADVECTION_ON
 
     #if THERMAL_DIFFUSIVITY_ON == 1

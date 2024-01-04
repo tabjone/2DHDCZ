@@ -28,7 +28,6 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
 
     // Getting grid info
     int ny = grid_info->ny;
-    int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
 
@@ -66,7 +65,7 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     }
 
     // Solving algebraic equations.
-    first_law_thermodynamics_2D(fg, bg, grid_info);
+    first_law_of_thermodynamics_2D(fg, bg, grid_info);
     equation_of_state_2D(fg, bg, grid_info);
     
     // Solving elliptic equation

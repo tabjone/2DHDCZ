@@ -33,6 +33,7 @@ void initialize_foreground_entropy_perturbations_3D(struct ForegroundVariables3D
 
     // Getting grid info
     int nz_full = grid_info->nz_full;
+    int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int ny = grid_info->ny;
     int nx = grid_info->nx;
@@ -50,11 +51,11 @@ void initialize_foreground_entropy_perturbations_3D(struct ForegroundVariables3D
     FLOAT_P sigma_x = 0.1*dx*NX;
 
     // Getting centre of gaussians from initial conditions file
-    FLOAT_P centre_z[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Z;
-    FLOAT_P centre_y[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Y;
-    FLOAT_P centre_x[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_X;
+    FLOAT_P centre_z[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_Z;
+    FLOAT_P centre_y[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_Y;
+    FLOAT_P centre_x[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_X;
 
-    for (int i = 0; i < IC_N_ENTROPY_PERTUBATION; i++)
+    for (int i = 0; i < IC_N_ENTROPY_PERTURBATION; i++)
     {
         centre_z[i] *= dz * NZ;
         centre_y[i] *= dy * NY;
@@ -73,7 +74,7 @@ void initialize_foreground_entropy_perturbations_3D(struct ForegroundVariables3D
         {
             for (int k = 0; k < nx; k++)
             {
-                for (int n = 0; n < IC_N_ENTROPY_PERTUBATION; n++)
+                for (int n = 0; n < IC_N_ENTROPY_PERTURBATION; n++)
                 {
                     // Entropy pertubation
                     fg->s1[i][j][k] += gaussian_3D((i-nz_ghost)*dz+z_offset, j*dy, k*dz, centre_z[n], centre_y[n], centre_x[n], sigma_z, sigma_y, sigma_x, amplitude);

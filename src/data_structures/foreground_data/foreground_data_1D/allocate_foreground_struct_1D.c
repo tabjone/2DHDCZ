@@ -6,8 +6,6 @@
 void allocate_foreground_struct_1D(struct ForegroundVariables1D **fg, struct GridInfo1D *grid_info)
 {
     int nz_full = grid_info->nz_full;
-    int ny = grid_info->ny;
-
     
     *fg = (struct ForegroundVariables1D *)malloc(sizeof(struct ForegroundVariables1D));
 

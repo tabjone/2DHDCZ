@@ -1,13 +1,13 @@
 #ifndef GLOBAL_BOUNDARY_H__
 #define GLOBAL_BOUNDARY_H__
 
-#define HARD_WALL_VERTICAL 0
+#define HARD_WALL_VERTICAL 1
 
 #define SOFT_WALL_VERTICAL 0
 #define ALPHA_VERTICAL 0.5 // Soft wall parameter, 0 is no damping, 1 is linear damping, everything in between is exponential damping
 #define SOFT_WALL_HEIGHT_PERCENTAGE_VERTICAL 0.05 // Percentage of the domain that will be damped at the top and bottom
 
-#define PERIODIC_BOUNDARY_VERTICAL 1
+#define PERIODIC_BOUNDARY_VERTICAL 0
 #define NO_BOUNDARY_VERTICAL 0
 
 #define GHOST_CELLS_EXTRAPOLATION_VERTICAL 0 // 0 for constant, 1 for anti-symmetric

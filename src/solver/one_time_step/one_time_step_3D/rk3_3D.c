@@ -1,6 +1,7 @@
 #include "one_time_step_3D.h"
-#include "../equations_3D/equations_3D.h"
-#include "../boundary_3D/boundary_3D.h"
+#include "solver/equation_of_state/equation_of_state_3D/equation_of_state_3D.h"
+#include "solver/first_law_of_thermodynamics/first_law_of_thermodynamics_3D/first_law_of_thermodynamics_3D.h"
+#include "solver/boundary/boundary_3D/boundary_3D.h"
 
 FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_prev, struct ForegroundVariables3D *fg, struct GridInfo3D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables3D *precalc, FLOAT_P dt_last, bool first_timestep)
 {
@@ -28,7 +29,6 @@ FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     // Getting grid info
     int nx = grid_info->nx;
     int ny = grid_info->ny;
-    int nz = grid_info->nz;
     int nz_ghost = grid_info->nz_ghost;
     int nz_full = grid_info->nz_full;
 
@@ -41,15 +41,18 @@ FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     dt = reduced_dt;
 
     // Slopes
-    FLOAT_P **k1_s1, **k2_s1, **k3_s1;
-    FLOAT_P **k1_vx, **k2_vx, **k3_vx;
-    FLOAT_P **k1_vy, **k2_vy, **k3_vy;
-    FLOAT_P **k1_vz, **k2_vz, **k3_vz;
+    FLOAT_P ***k1_s1, ***k2_s1, ***k3_s1;
+    FLOAT_P ***k1_vx, ***k2_vx, ***k3_vx;
+    FLOAT_P ***k1_vy, ***k2_vy, ***k3_vy;
+    FLOAT_P ***k1_vz, ***k2_vz, ***k3_vz;
 
     // Allocate memory for k1, k2, k3
     allocate_3D_array(&k1_s1, nz_full, ny, nx);
     allocate_3D_array(&k2_s1, nz_full, ny, nx);
     allocate_3D_array(&k3_s1, nz_full, ny, nx);
+    allocate_3D_array(&k1_vx, nz_full, ny, nx);
+    allocate_3D_array(&k2_vx, nz_full, ny, nx);
+    allocate_3D_array(&k3_vx, nz_full, ny, nx);
     allocate_3D_array(&k1_vy, nz_full, ny, nx);
     allocate_3D_array(&k2_vy, nz_full, ny, nx);
     allocate_3D_array(&k3_vy, nz_full, ny, nx);
@@ -107,7 +110,7 @@ FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     }
 
     // Updating mid-calculation variables rho1 and T1
-    first_law_thermodynamics_3D(fg, bg, grid_info);
+    first_law_of_thermodynamics_3D(fg, bg, grid_info);
     equation_of_state_3D(fg, bg, grid_info);
     
     // Calculating pressure
@@ -150,7 +153,7 @@ FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     update_vertical_boundary_entropy_velocity_3D(fg, grid_info, mpi_info);
     
     // Updating mid-calculation variables rho1, T1
-    first_law_thermodynamics_3D(fg, bg, grid_info);
+    first_law_of_thermodynamics_3D(fg, bg, grid_info);
     equation_of_state_3D(fg, bg, grid_info);
 
     // Calculating pressure
@@ -192,7 +195,7 @@ FLOAT_P rk3_3D(struct BackgroundVariables *bg, struct ForegroundVariables3D *fg_
     update_vertical_boundary_entropy_velocity_3D(fg, grid_info, mpi_info);
 
     // Solving algebraic equations
-    first_law_thermodynamics_3D(fg, bg, grid_info);
+    first_law_of_thermodynamics_3D(fg, bg, grid_info);
     equation_of_state_3D(fg, bg, grid_info);
 
     // Solving elliptic equation

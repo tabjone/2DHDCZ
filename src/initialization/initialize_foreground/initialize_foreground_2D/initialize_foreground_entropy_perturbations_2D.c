@@ -43,10 +43,10 @@ void initialize_foreground_entropy_perturbations_2D(struct ForegroundVariables2D
     FLOAT_P sigma_z = 0.1*dz*NZ;
     FLOAT_P sigma_y = 0.1*dy*NY;
 
-    FLOAT_P centre_z[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Z;
-    FLOAT_P centre_y[IC_N_ENTROPY_PERTUBATION] = IC_ENTROPY_CENTRE_Y;
+    FLOAT_P centre_z[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_Z;
+    FLOAT_P centre_y[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_Y;
 
-    for (int i = 0; i < IC_N_ENTROPY_PERTUBATION; i++)
+    for (int i = 0; i < IC_N_ENTROPY_PERTURBATION; i++)
     {
         centre_z[i] *= dz * NZ;
         centre_y[i] *= dy * NY;
@@ -62,7 +62,7 @@ void initialize_foreground_entropy_perturbations_2D(struct ForegroundVariables2D
     {
         for (int j = 0; j < ny; j++)
         {
-            for (int n = 0; n < IC_N_ENTROPY_PERTUBATION; n++)
+            for (int n = 0; n < IC_N_ENTROPY_PERTURBATION; n++)
             {
                 // Entropy perturbation
                 fg->s1[i][j] += gaussian_2D((i-nz_ghost)*dz+z_offset, j*dy, centre_z[n], centre_y[n], sigma_z, sigma_y, amplitude);
