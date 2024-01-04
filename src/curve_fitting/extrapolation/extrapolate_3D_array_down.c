@@ -15,10 +15,13 @@ void extrapolate_3D_array_down(FLOAT_P ***array, int nz_ghost, int ny, int nx)
         A pointer to the GridInfo struct.
     */
 
-    #if EXTRAPOLATE_GHOST_CELLS == 0
+    #if GHOST_CELLS_EXTRAPOLATION_VERTICAL == 0
         // Constant extrapolation
         extrapolate_3D_array_constant_down(array, nz_ghost, ny, nx);
+    #elif GHOST_CELLS_EXTRAPOLATION_VERTICAL == 1
+        // Antisymmetric extrapolation
+        extrapolate_3D_array_antisymmetric_down(array, nz_ghost, ny, nx);
     #else
-        #error "Only constant extrapolation implemented."
-    #endif // EXTRAPOLATE_GHOST_CELLS == 0
+        #error "Extrapolating bla bla."
+    #endif // EXTRAPOLATE_GHOST_CELLS
 }
