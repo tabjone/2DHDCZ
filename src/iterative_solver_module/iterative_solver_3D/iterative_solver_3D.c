@@ -100,7 +100,10 @@ void iterative_solver_3D(FLOAT_P ***rhs, FLOAT_P ***final_solution, FLOAT_P ***i
     {
         for (int j = 0; j < ny; j++)
         {
-            final_solution[i + nz_ghost][j] = current_solution[i+1][j];
+            for (int k = 0; k < nx; k++)
+            {   
+                final_solution[i + nz_ghost][j][k] = current_solution[i+1][j][k];
+            }
         }
     }
     
