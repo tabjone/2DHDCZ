@@ -29,11 +29,7 @@ void save_foreground_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *gri
     // File path
     char file_path[150];
 
-    #if MPI_ON == 0
-        snprintf(file_path, sizeof(file_path), "%s%s/snap%d.h5", SAVE_DIR, RUN_NAME, snap_number);
-    #elif MPI_ON == 1
-        snprintf(file_path, sizeof(file_path), "%s%s/snap%d_%d.h5", SAVE_DIR, RUN_NAME, snap_number, mpi_info->rank);
-    #endif // MPI_ON
+    snprintf(file_path, sizeof(file_path), "%s%s/snap%d_%d.h5", SAVE_DIR, RUN_NAME, snap_number, mpi_info->rank);
   
     // Getting grid info
     FLOAT_P z0 = grid_info->z0;
