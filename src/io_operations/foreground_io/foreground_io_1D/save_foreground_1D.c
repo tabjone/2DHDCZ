@@ -29,11 +29,7 @@ void save_foreground_1D(struct ForegroundVariables1D *fg, struct GridInfo1D *gri
     // File path
     char file_path[150];
 
-    #if MPI_ON == 0
-        snprintf(file_path, sizeof(file_path), "%s%s/snap%d.h5", SAVE_DIR, RUN_NAME, snap_number);
-    #elif MPI_ON == 1
-        snprintf(file_path, sizeof(file_path), "%s%s/snap%d_%d.h5", SAVE_DIR, RUN_NAME, snap_number, mpi_info->rank);
-    #endif // MPI_ON
+    snprintf(file_path, sizeof(file_path), "%s%s/snap%d_%d.h5", SAVE_DIR, RUN_NAME, snap_number, mpi_info->rank);
   
     // Getting grid info
     FLOAT_P z0 = grid_info->z0;
@@ -109,7 +105,7 @@ void save_foreground_1D(struct ForegroundVariables1D *fg, struct GridInfo1D *gri
     // Add variables header
     add_string_attribute(group_variables, "header", variables_header);
 
-    dataspace_1D = H5Screate_simple(2, dims, NULL);
+    dataspace_1D = H5Screate_simple(1, dims, NULL);
     if (dataspace_1D < 0) {
         fprintf(stderr, "Failed to create dataspace\n");
     }
