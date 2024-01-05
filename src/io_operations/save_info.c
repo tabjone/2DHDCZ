@@ -68,7 +68,6 @@ void save_simulation_info(struct MpiInfo *mpi_info)
         FLOAT_P gamma = GAMMA;
         FLOAT_P nabla_ad = NABLA_AD;
         FLOAT_P superad_param = SUPERAD_PARAM;
-        FLOAT_P p_step_ = p_step;
         int gravity_on = GRAVITY_ON;
         int advection_on = ADVECTION_ON;
         int gas_pressure_on = GAS_PRESSURE_ON;
@@ -99,7 +98,6 @@ void save_simulation_info(struct MpiInfo *mpi_info)
         create_write_dataset(group_parameters, "GAMMA", H5_FLOAT_P, dataspace_parameters, &gamma, "Superadiabatic parameter");
         create_write_dataset(group_parameters, "NABLA_AD", H5_FLOAT_P, dataspace_parameters, &nabla_ad, "Adiabatic temperature gradient");
         create_write_dataset(group_parameters, "SUPERAD_PARAM", H5_FLOAT_P, dataspace_parameters, &superad_param, "Superadiabacicity parameter in CZ");
-        create_write_dataset(group_parameters, "p_step", H5_FLOAT_P, dataspace_parameters, &p_step_, "Number for determining step-size background integration");
         create_write_dataset(group_parameters, "GRAVITY_ON", H5T_NATIVE_INT, dataspace_parameters, &gravity_on, "0 for gravity off, 1 for gravity on");
         create_write_dataset(group_parameters, "ADVECTION_ON", H5T_NATIVE_INT, dataspace_parameters, &advection_on, "0 for advection off, 1 for advection on");
         create_write_dataset(group_parameters, "GAS_PRESSURE_ON", H5T_NATIVE_INT, dataspace_parameters, &gas_pressure_on, "0 for gas pressure off, 1 for gas pressure on");
