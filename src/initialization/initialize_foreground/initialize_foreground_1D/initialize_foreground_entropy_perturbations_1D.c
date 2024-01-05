@@ -36,7 +36,10 @@ void initialize_foreground_entropy_perturbations_1D(struct ForegroundVariables1D
     FLOAT_P z_offset = grid_info->z_offset;
     FLOAT_P dz = grid_info->dz;
 
-    FLOAT_P amplitude = 1.0e1;
+    // Spesific heat at constant pressure
+    FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
+
+    FLOAT_P amplitude = 0.1 * c_p;
     FLOAT_P sigma_z = 0.1*dz*NZ;
 
     FLOAT_P centre_z[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_Z;
@@ -47,9 +50,6 @@ void initialize_foreground_entropy_perturbations_1D(struct ForegroundVariables1D
     }
 
     initialize_foreground_zeros_1D(fg, grid_info); // Sets everything to zero so boundary and ghost cells are automatically zero
-
-    // Spesific heat at constant pressure
-    FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
 
     // Inside the grid
     for (int i = nz_ghost; i < nz_full-nz_ghost; i++)

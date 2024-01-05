@@ -44,8 +44,11 @@ void initialize_foreground_entropy_perturbations_3D(struct ForegroundVariables3D
     // Getting mpi info
     FLOAT_P z_offset = grid_info->z_offset;
 
+    // Spesific heat at constant pressure
+    FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
+
     // Setting up gaussians
-    FLOAT_P amplitude = 1.0e2;
+    FLOAT_P amplitude = 0.1 * c_p;
     FLOAT_P sigma_z = 0.1*dz*NZ;
     FLOAT_P sigma_y = 0.1*dy*NY;
     FLOAT_P sigma_x = 0.1*dx*NX;
@@ -63,9 +66,6 @@ void initialize_foreground_entropy_perturbations_3D(struct ForegroundVariables3D
     }
 
     initialize_foreground_zeros_3D(fg, grid_info); // Sets everything to zero so boundary and ghost cells are automatically zero
-
-    // Spesific heat at constant pressure
-    FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
 
     // Inside the grid
     for (int i = nz_ghost; i < nz_full-nz_ghost; i++)
