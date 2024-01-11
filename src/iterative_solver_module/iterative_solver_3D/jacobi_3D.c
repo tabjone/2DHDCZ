@@ -91,7 +91,7 @@ void jacobi_3D(FLOAT_P ***rhs, FLOAT_P ***current_solution, FLOAT_P ***previous_
                     k_minus = periodic_boundary(k-1, nx);
 
                     current_solution[i][j][k] = 
-                    (rhs[i][j][k] - 
+                    (rhs[i-1][j][k] - 
                     a*(previous_solution[i+1][j][k] + previous_solution[i-1][j][k])
                     -c*(previous_solution[i][j_plus][k] + previous_solution[i][j_minus][k]) 
                     -d*(previous_solution[i][j][k_plus] + previous_solution[i][j][k_minus]))/g;

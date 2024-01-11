@@ -64,7 +64,7 @@ void gauss_seidel_1D(FLOAT_P *rhs, FLOAT_P *current_solution, FLOAT_P *previous_
     
         for (int i = i_start; i < i_end; i++)
         {
-            current_solution[i] = (rhs[i] - a*(previous_solution[i+1] + current_solution[i-1]))/g;
+            current_solution[i] = (rhs[i-1] - a*(previous_solution[i+1] + current_solution[i-1]))/g;
                 
             // Finding maximum absolute value of current_solution
             local_abs_current = fabs(current_solution[i]);

@@ -80,7 +80,7 @@ void jacobi_2D(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_sol
                 j_plus = periodic_boundary(j+1, ny);
                 j_minus = periodic_boundary(j-1, ny);
 
-                current_solution[i][j] = (rhs[i][j] - a*(previous_solution[i+1][j] + previous_solution[i-1][j]) - c*(previous_solution[i][j_plus] + previous_solution[i][j_minus]))/g;
+                current_solution[i][j] = (rhs[i-1][j] - a*(previous_solution[i+1][j] + previous_solution[i-1][j]) - c*(previous_solution[i][j_plus] + previous_solution[i][j_minus]))/g;
                 
                 // Finding maximum absolute value of current_solution
                 local_abs_current = fabs(current_solution[i][j]);
