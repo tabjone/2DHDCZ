@@ -4,6 +4,7 @@
 #include "global_float_precision.h"
 #include "global_boundary.h"
 #include <mpi.h>
+#include <math.h>
 
 void calculate_damping_1D(FLOAT_P *damping_factor, struct BackgroundVariables *bg, struct GridInfo1D *grid_info, struct MpiInfo *mpi_info)
 {
@@ -71,7 +72,7 @@ void calculate_damping_1D(FLOAT_P *damping_factor, struct BackgroundVariables *b
         MPI_Bcast(&top_r, 1, MPI_FLOAT_P, mpi_info->size-1, MPI_COMM_WORLD);
 
 
-        FLOAT_P damped_domain = (top_r - bottom_r) * SOFT_WALL_HEIGHT_PERCENTAGE;
+        FLOAT_P damped_domain = (top_r - bottom_r) * SOFT_WALL_HEIGHT_PERCENTAGE_VERTICAL;
         // Calculate z0 for the bottom and top
         FLOAT_P z0_bot = bottom_r + damped_domain;
         FLOAT_P z0_top = top_r - damped_domain;
@@ -119,7 +120,7 @@ void calculate_damping_1D(FLOAT_P *damping_factor, struct BackgroundVariables *b
         while (bg->r[i]<= z0_bot)
         {
             // Calculating the weight
-            FLOAT_P w = pow((bg->r[i]-zb_bot)/(z0_bot-zb_bot),ALPHA);
+            FLOAT_P w = pow((bg->r[i]-zb_bot)/(z0_bot-zb_bot),ALPHA_VERTICAL);
             // Setting the damping factor
             damping_factor[i] = w;
             i++;
@@ -130,7 +131,7 @@ void calculate_damping_1D(FLOAT_P *damping_factor, struct BackgroundVariables *b
         while (bg->r[i]>= z0_top)
         {
             // Calculating the weight
-            FLOAT_P w = pow((zb_top-bg->r[i])/(zb_top-z0_top),ALPHA);
+            FLOAT_P w = pow((zb_top-bg->r[i])/(zb_top-z0_top),ALPHA_VERTICAL);
             // Setting the damping factor
             damping_factor[i] = w;
             i--;
