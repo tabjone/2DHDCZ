@@ -6,6 +6,8 @@
 #include "data_structures/grid_info/grid_info_2D/grid_info_struct_2D.h"
 #include "data_structures/precalculated_data/precalculated_data_2D/precalculated_data_struct_2D.h"
 
+#include "global_constants.h"
+
 FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc, int i, int j)
 {
     /*
@@ -72,19 +74,30 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     }
     #endif // GRAVITY_ON
 
+    FLOAT_P dvz_dy_upw = upwind_first_derivative_y_2D(vz, vy, i, j, grid_info->ny, precalc->one_over_dy, precalc->one_over_2dy);
+    FLOAT_P dvz_dz_upw = upwind_first_derivative_z_2D(vz, vz, i, j, precalc->one_over_dz, precalc->one_over_2dz);
+
+    FLOAT_P dd_vz_dydz_upw = upwind_y_second_derivative_yz_2D(vz, vy, i, j, grid_info->ny, 1.0/(2.0*grid_info->dz*grid_info->dy));
+
+    FLOAT_P dd_vy_dydz_upw = upwind_z_second_derivative_yz_2D(vy, vz, i, j, grid_info->ny, 1.0/(2.0*grid_info->dz*grid_info->dy));
+
     #if ADVECTION_ON == 1
     {
         rhs -= rho0[i] * ( vy[i][j]*dd_vy_ddy + vz[i][j]*dd_vz_ddz + dvy_dy_sqrd + dvz_dz_sqrd
-                          +2*dvz_dy*dvy_dz + vy[i][j]*dd_vz_dydz + vz[i][j]*dd_vy_dydz )
-               +grad_rho0[i] * (vy[i][j]*dvz_dy + vz[i][j]*dvz_dz);
+                          +2*dvz_dy*dvy_dz + vy[i][j]*dd_vz_dydz_upw + vz[i][j]*dd_vy_dydz_upw )
+               +grad_rho0[i] * (vy[i][j]*dvz_dy_upw + vz[i][j]*dvz_dz_upw);
     }
     #endif // ADVECTION_ON
 
     #if VISCOSITY_ON == 1
+        FLOAT_P ddd_vz_dzdzdz = central_third_derivative_z_2D(vz, i, j, precalc->one_over_2dzdzdz);
+        FLOAT_P ddd_vy_dydydy = central_third_derivative_y_2D(vy, i, j, grid_info->ny, precalc->one_over_2dydydy);
+
         FLOAT_P ddd_vz_dydydz = central_third_derivative_yyz_2D(vz, i, j, grid_info->ny, precalc->one_over_8dydydz);
         FLOAT_P ddd_vy_dydzdz = central_third_derivative_yzz_2D(vy, i, j, grid_info->ny, precalc->one_over_8dydzdz);
 
-        rhs += precalc->two_VIS_COEFF*(ddd_vy_dydzdz + ddd_vz_dydydz);
+
+        rhs += 4.0/3.0*VISCOSITY_COEFF*(ddd_vy_dydzdz + ddd_vz_dydydz + ddd_vz_dzdzdz + ddd_vy_dydydy);
     #endif // VISCOSITY_ON
     
     return rhs;
