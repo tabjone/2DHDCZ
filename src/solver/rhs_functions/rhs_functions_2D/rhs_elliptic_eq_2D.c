@@ -74,18 +74,11 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
     }
     #endif // GRAVITY_ON
 
-    FLOAT_P dvz_dy_upw = upwind_first_derivative_y_2D(vz, vy, i, j, grid_info->ny, precalc->one_over_dy, precalc->one_over_2dy);
-    FLOAT_P dvz_dz_upw = upwind_first_derivative_z_2D(vz, vz, i, j, precalc->one_over_dz, precalc->one_over_2dz);
-
-    FLOAT_P dd_vz_dydz_upw = upwind_y_second_derivative_yz_2D(vz, vy, i, j, grid_info->ny, 1.0/(2.0*grid_info->dz*grid_info->dy));
-
-    FLOAT_P dd_vy_dydz_upw = upwind_z_second_derivative_yz_2D(vy, vz, i, j, grid_info->ny, 1.0/(2.0*grid_info->dz*grid_info->dy));
-
     #if ADVECTION_ON == 1
     {
         rhs -= rho0[i] * ( vy[i][j]*dd_vy_ddy + vz[i][j]*dd_vz_ddz + dvy_dy_sqrd + dvz_dz_sqrd
-                          +2*dvz_dy*dvy_dz + vy[i][j]*dd_vz_dydz_upw + vz[i][j]*dd_vy_dydz_upw )
-               +grad_rho0[i] * (vy[i][j]*dvz_dy_upw + vz[i][j]*dvz_dz_upw);
+                          +2*dvz_dy*dvy_dz + vy[i][j]*dd_vz_dydz + vz[i][j]*dd_vy_dydz )
+               +grad_rho0[i] * (vy[i][j]*dvz_dy + vz[i][j]*dvz_dz);
     }
     #endif // ADVECTION_ON
 
