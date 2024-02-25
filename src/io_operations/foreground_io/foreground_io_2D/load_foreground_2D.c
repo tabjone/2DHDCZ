@@ -4,12 +4,10 @@
 #include <stdlib.h>
 
 FLOAT_P load_foreground_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, const char *file_path)
-{    
-    // There needs to be a function to read a dataset into a 2D array for a given address
-    /*
+{        
     FLOAT_P time;  
     herr_t status;
-    hid_t dataset_rho1, dataset_p1, dataset_s1, dataset_vy, dataset_vz;
+    hid_t dataset_rho1, dataset_p1, dataset_s1, dataset_T1, dataset_vy, dataset_vz;
 
     // Open the file
     hid_t file = H5Fopen(file_path, H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -26,7 +24,7 @@ FLOAT_P load_foreground_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *
         exit(1);
     }
 
-    hid_t dataset_T1 = H5Dopen(fg_group, "T1", H5P_DEFAULT);
+    dataset_T1 = H5Dopen(fg_group, "T1", H5P_DEFAULT);
     if (H5Dread(dataset_T1, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, &fg->T1[0][0]) < 0)
     fprintf(stderr, "Failed to read the T1 dataset\n");
 
@@ -89,5 +87,4 @@ FLOAT_P load_foreground_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *
     H5Fclose(file);
 
     return time;
-    */return 1.0;
 }
