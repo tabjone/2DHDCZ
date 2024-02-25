@@ -43,8 +43,11 @@ void jacobi_2D(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_sol
     FLOAT_P g = -2.0*(a+c);
 
     // Tolerance parameters
-    FLOAT_P local_abs_difference, my_global_abs_difference, global_abs_difference;;
-    FLOAT_P local_abs_current, my_global_abs_current, global_abs_current;
+    FLOAT_P iterative_difference;
+    FLOAT_P global_iterative_difference_sum_squares, local_iterative_difference_sum_squares;
+    FLOAT_P global_current_solution_sum_squares, local_current_solution_sum_squares;
+    FLOAT_P current_solution_norm, iterative_difference_norm;
+
     FLOAT_P tolerance_criteria = DBL_MAX;
 
     // Periodic boundary conditions in y-direction
@@ -66,8 +69,8 @@ void jacobi_2D(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_sol
         {
             break;
         }
-        my_global_abs_difference = 0.0;
-        my_global_abs_current = 0.0;
+        local_iterative_difference_sum_squares = 0.0;
+        local_current_solution_sum_squares = 0.0;
 
         // Copy current_solution to previous_solution and communicate ghost cells
         copy_2D_array(current_solution, previous_solution, 0, nz+2, 0, ny);
@@ -82,29 +85,20 @@ void jacobi_2D(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_sol
 
                 current_solution[i][j] = (rhs[i-1][j] - a*(previous_solution[i+1][j] + previous_solution[i-1][j]) - c*(previous_solution[i][j_plus] + previous_solution[i][j_minus]))/g;
                 
-                // Finding maximum absolute value of current_solution
-                local_abs_current = fabs(current_solution[i][j]);
-
-                if (local_abs_current > my_global_abs_current)
-                {
-                    my_global_abs_current = local_abs_current;
-                }
-
-                // Finding maximum difference between previous_solution and current_solution
-                local_abs_difference = fabs(current_solution[i][j] - previous_solution[i][j]);
-                
-                if (local_abs_difference > my_global_abs_difference)
-                {
-                    my_global_abs_difference = local_abs_difference;
-                }
+                iterative_difference = current_solution[i][j] - previous_solution[i][j];
+                local_iterative_difference_sum_squares += iterative_difference*iterative_difference;
+                local_current_solution_sum_squares += current_solution[i][j]*current_solution[i][j];
             }
         }
+        // Global sum of squares of difference between previous_solution and current_solution
+        MPI_Allreduce(&local_iterative_difference_sum_squares, &global_iterative_difference_sum_squares, 1, MPI_FLOAT_P, MPI_SUM, MPI_COMM_WORLD);
+        // Global sum of squares of current_solution
+        MPI_Allreduce(&local_current_solution_sum_squares, &global_current_solution_sum_squares, 1, MPI_FLOAT_P, MPI_SUM, MPI_COMM_WORLD);
 
-        // Find biggest abs_difference and abs_current of all processes
-        MPI_Allreduce(&my_global_abs_difference, &global_abs_difference, 1, MPI_FLOAT_P, MPI_MAX, MPI_COMM_WORLD);
-        MPI_Allreduce(&my_global_abs_current, &global_abs_current, 1, MPI_FLOAT_P, MPI_MAX, MPI_COMM_WORLD);
+        iterative_difference_norm = sqrt(global_iterative_difference_sum_squares);
+        current_solution_norm = sqrt(global_current_solution_sum_squares);
 
-        tolerance_criteria = global_abs_difference/global_abs_current;
+        tolerance_criteria = iterative_difference_norm / current_solution_norm;
         iter++;
     }
 

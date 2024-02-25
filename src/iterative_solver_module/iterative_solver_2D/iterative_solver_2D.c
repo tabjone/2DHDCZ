@@ -78,6 +78,8 @@ void iterative_solver_2D(FLOAT_P **rhs, FLOAT_P **final_solution, FLOAT_P **init
     #elif ITERATIVE_SOLVER_TYPE == 1
         gauss_seidel_2D(rhs, current_solution, previous_solution, nz, nz_ghost, ny, dz, dy, mpi_info);
     #endif // ITERATIVE_SOLVER_TYPE
+
+    communicate_2D_ghost_above_below(current_solution, mpi_info, nz, 1, ny);
     
     // Updating final_solution
     for (int i = 0; i < nz; i++)
