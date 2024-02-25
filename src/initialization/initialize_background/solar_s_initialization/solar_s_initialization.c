@@ -6,6 +6,7 @@
 #include "data_structures/background_data/background_variables_struct.h"
 #include "array_utilities/array_memory_management/array_memory_management.h"
 #include "global_constants.h"
+#include "global_initialization.h"
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif // M_PI
@@ -67,7 +68,7 @@ void solar_s_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_
     FLOAT_P r_initial = r_integration[nz_full-1];
     p0[nz_full-1] = p0_initial;
     T0[nz_full-1] = T0_initial;
-    rho0[nz_full-1] = rho0_initial;
+    rho0[nz_full-1] = get_rho_ideal_gas(p0_initial, T0_initial);
     m[nz_full-1] = m_initial;
 
     k = get_k_value(r_initial); // Superadiabacity
@@ -79,7 +80,7 @@ void solar_s_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_
     ds_dr = k*c_p/ p0_initial * dp_dr;
 
     // setting initial values for gravity and entropy gradient
-    grad_s0[nz_full-1] = c_p * (nabla_star - NABLA_AD) / p0_initial * dp_dr;
+    grad_s0[nz_full-1] = ds_dr;
     g[nz_full-1] = G * m_initial / pow(r_initial,2);
 
     // Doing first integration point by forward Euler
@@ -109,15 +110,20 @@ void solar_s_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_
         g[j-1] = G * m[j-1] / pow(r_integration[j-1],2);
     }
 
+    // Last point entropy gradient
+    k = get_k_value(r_integration[0]);
+    dp_dr = - G * m[0] /pow(r_integration[0],2) * rho0[0];
+    grad_s0[0] = k*c_p/ p0[0] * dp_dr;
+
     #if CONSTANT_BACKGROUND == 1
         // Constant background
         for (int i = 0; i < my_nz_full; i++)
         {
-            rho0[i] = CONSTANT_BACKGROUND_DENSITY;
-            p0[i] = CONSTANT_BACKGROUND_PRESSURE;
-            T0[i] = CONSTANT_BACKGROUND_TEMPERATURE;
+            p0[i] = p0_initial;
+            T0[i] = T0_initial;
+            rho0[i] = rho0_initial;
             grad_s0[i] = 0.0;
-            g[i] = 0.0;
+            g[i] = 0.0; // This is the only way to get hydrostatic equilibrium when p0=const
         }
     #endif // CONSTANT_BACKGROUND
 
