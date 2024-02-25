@@ -27,6 +27,6 @@ void first_law_of_thermodynamics_1D(struct ForegroundVariables1D *fg, struct Bac
 
     for (int i = 0; i < nz_full; i++)
     {
-        fg->T1[i] = bg->T0[i]*(fg->s1[i]/c_p + (GAMMA-1)/GAMMA * fg->p1[i]/bg->p0[i]);
+        fg->T1[i] = bg->T0[i] * (fg->s1[i]/c_p + (GAMMA-1.0)/GAMMA * fg->p1[i]/bg->p0[i]);
     }
 }

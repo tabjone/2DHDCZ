@@ -30,7 +30,7 @@ void first_law_of_thermodynamics_2D(struct ForegroundVariables2D *fg, struct Bac
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->T1[i][j] = bg->T0[i]*(fg->s1[i][j]/c_p + (GAMMA-1)/GAMMA * fg->p1[i][j]/bg->p0[i]);
+            fg->T1[i][j] = bg->T0[i]*(fg->s1[i][j]/c_p + (GAMMA-1.0)/GAMMA * fg->p1[i][j]/bg->p0[i]);
         }
     }
 }
