@@ -136,20 +136,20 @@ void save_foreground_3D(struct ForegroundVariables3D *fg, struct GridInfo3D *gri
     
     #if UNITS == 0
         create_write_dataset(group_variables, "T1", H5_FLOAT_P, dataspace_3d, fg->T1[0][0], "K");
-        create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_3d, fg->p1[0][0], "dyn/cm^2");
-        create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_3d, fg->rho1[0][0], "g/cm^3");
-        create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_3d, fg->s1[0][0], "erg/K");
-        create_write_dataset(group_variables, "vx", H5_FLOAT_P, dataspace_3d, fg->vx[0][0], "cm/s");
-        create_write_dataset(group_variables, "vy", H5_FLOAT_P, dataspace_3d, fg->vy[0][0], "cm/s");
-        create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_3d, fg->vz[0][0], "cm/s");
+        create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_3d, fg->p1[0][0], "dyn cm-2");
+        create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_3d, fg->rho1[0][0], "g cm-3");
+        create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_3d, fg->s1[0][0], "erg K-1 g-1");
+        create_write_dataset(group_variables, "vx", H5_FLOAT_P, dataspace_3d, fg->vx[0][0], "cm s-1");
+        create_write_dataset(group_variables, "vy", H5_FLOAT_P, dataspace_3d, fg->vy[0][0], "cm s-1");
+        create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_3d, fg->vz[0][0], "cm s-1");
     #else
         create_write_dataset(group_variables, "T1", H5_FLOAT_P, dataspace_3d, fg->T1[0][0], "K");
-        create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_3d, fg->p1[0][0], "Pa/m^2");
-        create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_3d, fg->rho1[0][0], "kg/m^3");
-        create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_3d, fg->s1[0][0], "J/K");
-        create_write_dataset(group_variables, "vx", H5_FLOAT_P, dataspace_3d, fg->vx[0][0], "m/s");
-        create_write_dataset(group_variables, "vy", H5_FLOAT_P, dataspace_3d, fg->vy[0][0], "m/s");
-        create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_3d, fg->vz[0][0], "m/s");
+        create_write_dataset(group_variables, "p1", H5_FLOAT_P, dataspace_3d, fg->p1[0][0], "Pa m-2");
+        create_write_dataset(group_variables, "rho1", H5_FLOAT_P, dataspace_3d, fg->rho1[0][0], "kg m-3");
+        create_write_dataset(group_variables, "s1", H5_FLOAT_P, dataspace_3d, fg->s1[0][0], "J K-1 kg-1");
+        create_write_dataset(group_variables, "vx", H5_FLOAT_P, dataspace_3d, fg->vx[0][0], "m s-1");
+        create_write_dataset(group_variables, "vy", H5_FLOAT_P, dataspace_3d, fg->vy[0][0], "m s-1");
+        create_write_dataset(group_variables, "vz", H5_FLOAT_P, dataspace_3d, fg->vz[0][0], "m s-1");
     #endif // UNITS
 
     status = H5Gclose(group_variables);

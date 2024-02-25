@@ -84,17 +84,17 @@ void save_background(struct BackgroundVariables *bg, struct MpiInfo *mpi_info, i
     #if UNITS == 0
         create_write_dataset(group_variables, "r", H5_FLOAT_P, dataspace_1d, bg->r, "cm");
         create_write_dataset(group_variables, "T0", H5_FLOAT_P, dataspace_1d, bg->T0, "K");
-        create_write_dataset(group_variables, "rho0", H5_FLOAT_P, dataspace_1d, bg->rho0, "g/cm^3");
-        create_write_dataset(group_variables, "p0", H5_FLOAT_P, dataspace_1d, bg->p0, "dyn/cm^2");
-        create_write_dataset(group_variables, "g", H5_FLOAT_P, dataspace_1d, bg->g, "cm/s^2");
-        create_write_dataset(group_variables, "grad_s0", H5_FLOAT_P, dataspace_1d, bg->grad_s0, "erg/(cm K)");
+        create_write_dataset(group_variables, "rho0", H5_FLOAT_P, dataspace_1d, bg->rho0, "g cm-3");
+        create_write_dataset(group_variables, "p0", H5_FLOAT_P, dataspace_1d, bg->p0, "dyn cm-2");
+        create_write_dataset(group_variables, "g", H5_FLOAT_P, dataspace_1d, bg->g, "cm s-2");
+        create_write_dataset(group_variables, "grad_s0", H5_FLOAT_P, dataspace_1d, bg->grad_s0, "erg cm-1 K-1 g-1");
     #else
         create_write_dataset(group_variables, "r", H5_FLOAT_P, dataspace_1d, bg->r, "m");
         create_write_dataset(group_variables, "T0", H5_FLOAT_P, dataspace_1d, bg->T0, "K");
-        create_write_dataset(group_variables, "rho0", H5_FLOAT_P, dataspace_1d, bg->rho0, "kg/m^3");
-        create_write_dataset(group_variables, "p0", H5_FLOAT_P, dataspace_1d, bg->p0, "Pa/m^2");
-        create_write_dataset(group_variables, "g", H5_FLOAT_P, dataspace_1d, bg->g, "m/s^2");
-        create_write_dataset(group_variables, "grad_s0", H5_FLOAT_P, dataspace_1d, bg->grad_s0, "J/K");
+        create_write_dataset(group_variables, "rho0", H5_FLOAT_P, dataspace_1d, bg->rho0, "kg m-3");
+        create_write_dataset(group_variables, "p0", H5_FLOAT_P, dataspace_1d, bg->p0, "Pa m-2");
+        create_write_dataset(group_variables, "g", H5_FLOAT_P, dataspace_1d, bg->g, "m s-2");
+        create_write_dataset(group_variables, "grad_s0", H5_FLOAT_P, dataspace_1d, bg->grad_s0, "J K-1 m-1 kg-1");
     #endif // UNITS == 0
 
 
