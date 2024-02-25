@@ -2,9 +2,13 @@
 #include "data_structures/grid_info/grid_info_2D/grid_info_struct_2D.h"
 #include "MPI_module/mpi_info_struct.h"
 #include "global_float_precision.h"
+#include "global_parameters.h"
+#include "global_constants.h"
 #include "global_boundary.h"
 #include <mpi.h>
 #include <math.h>
+
+#include <stdio.h>
 
 void calculate_damping_2D(FLOAT_P *damping_factor, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
@@ -114,27 +118,27 @@ void calculate_damping_2D(FLOAT_P *damping_factor, struct BackgroundVariables *b
                 damping_factor[i] = 1.0;
             }
         }
-        
-        // Then the soft wall for the bottom boundary
-        int i = nz_ghost;
-        while (bg->r[i]<= z0_bot)
+
+        FLOAT_P damping_bottom, damping_top;
+        FLOAT_P width = SOFT_WALL_WIDTH*R_SUN;
+        // Going trough domain, including boundaries and calculating the damping factor
+        for (int i = nz_ghost+1; i < nz_full-nz_ghost; i++)
         {
-            // Calculating the weight
-            FLOAT_P w = pow((bg->r[i]-zb_bot)/(z0_bot-zb_bot),ALPHA_VERTICAL);
-            // Setting the damping factor
-            damping_factor[i] = w;
-            i++;
+            //damping_bottom = (tanh((bg->r[i] - z0_bot) / width) + 1.0) / 2.0;
+            damping_bottom = 1.0;
+            damping_top = (tanh((z0_top - bg->r[i]) / width) + 1.0) / 2.0;
+
+            damping_factor[i] = damping_bottom * damping_top;
         }
-        
-        // Soft wall for top boundary
-        i = nz_full - nz_ghost - 1;
-        while (bg->r[i]>= z0_top)
+
+        // Setting boundaries to zero if no neighbor above or below
+        if (!mpi_info->has_neighbor_below)
         {
-            // Calculating the weight
-            FLOAT_P w = pow((zb_top-bg->r[i])/(zb_top-z0_top),ALPHA_VERTICAL);
-            // Setting the damping factor
-            damping_factor[i] = w;
-            i--;
+            damping_factor[nz_ghost] = 0.0;
+        }
+        if (!mpi_info->has_neighbor_above)
+        {
+            damping_factor[nz_full-nz_ghost-1] = 0.0;
         }
     #endif // SOFT_WALL_VERTICAL
 
@@ -144,4 +148,11 @@ void calculate_damping_2D(FLOAT_P *damping_factor, struct BackgroundVariables *b
             damping_factor[i] = 1.0;
         }
     #endif // PERIODIC_BOUNDARY_VERTICAL
+
+
+    for (int i = 0; i < nz_full; i++)
+    {
+        //printf("damping_factor[%d] = %f\n", i, damping_factor[i]);
+    }
+
 }

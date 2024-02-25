@@ -7,6 +7,9 @@
 #include "boundary_2D.h"
 #include "array_utilities/array_memory_management/array_memory_management.h"
 
+#include "global_constants.h"
+#include "global_parameters.h"
+
 void apply_vertical_boundary_damping_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, FLOAT_P dt)
 {
     
@@ -19,7 +22,7 @@ void apply_vertical_boundary_damping_2D(struct ForegroundVariables2D *fg, struct
     FLOAT_P *damping_factor;
     allocate_1D_array(&damping_factor, nz_full);
     calculate_damping_2D(damping_factor, bg, grid_info, mpi_info);
-
+    
     // Damping factor for soft wall, hard wall
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
@@ -27,6 +30,8 @@ void apply_vertical_boundary_damping_2D(struct ForegroundVariables2D *fg, struct
         {      
             fg->s1[i][j] = damping_factor[i]*fg->s1[i][j];
             fg->vz[i][j] = damping_factor[i]*fg->vz[i][j];
+            //fg->vy[i][j] = damping_factor[i]*fg->vy[i][j];
+            //fg->p1[i][j] = damping_factor[i]*fg->p1[i][j];
         }
     }
 
@@ -35,20 +40,24 @@ void apply_vertical_boundary_damping_2D(struct ForegroundVariables2D *fg, struct
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[nz_full-nz_ghost-1][j] = UPPER_ENTROPY_BOUNDARY;
+            fg->s1[nz_full-nz_ghost-1][j] = 0.0;
             fg->p1[nz_full-nz_ghost-1][j] = UPPER_PRESSURE_BOUNDARY;
             fg->vz[nz_full-nz_ghost-1][j] = 0.0;
+            fg->vy[nz_full-nz_ghost-1][j] = 0.0;
         }
     }
     if (!mpi_info->has_neighbor_below)
     {
+        FLOAT_P c_p = K_B / (MU * M_U) /(1.0-1.0/GAMMA);
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[nz_ghost][j] = LOWER_ENTROPY_BOUNDARY;
+            fg->s1[nz_ghost][j] = 0.01 * c_p;
             fg->p1[nz_ghost][j] = LOWER_PRESSURE_BOUNDARY;
             fg->vz[nz_ghost][j] = 0.0;
+            //fg->vy[nz_ghost][j] = 0.0;
         }
     }
+    
 
     /*
     // Boundary restrictions on vy
