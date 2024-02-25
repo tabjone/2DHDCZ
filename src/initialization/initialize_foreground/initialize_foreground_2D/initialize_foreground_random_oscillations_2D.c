@@ -178,7 +178,7 @@ void initialize_foreground_random_oscillations_2D(struct ForegroundVariables2D *
     }
     communicate_2D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost, ny);
     communicate_2D_ghost_above_below(fg->p1, mpi_info, nz, nz_ghost, ny);
-    equation_of_state_2D(fg, bg, grid_info);  
+    equation_of_state_2D(fg, bg, grid_info, mpi_info);  
 
     deallocate_1D_array(Hp);
     deallocate_1D_array(ky);

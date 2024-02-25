@@ -59,5 +59,5 @@ void initialize_foreground_sod_shock_vertical_2D(struct ForegroundVariables2D *f
     communicate_2D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost, ny);
 
     first_law_of_thermodynamics_2D(fg, bg, grid_info);
-    equation_of_state_2D(fg, bg, grid_info);
+    equation_of_state_2D(fg, bg, grid_info, mpi_info);
 }

@@ -9,6 +9,8 @@
 #include "global_constants.h"
 #include <math.h>
 
+#include "solver/boundary/boundary_1D/boundary_1D.h"
+
 FLOAT_P gaussian_1D(FLOAT_P x, FLOAT_P x0, FLOAT_P sigma_x, FLOAT_P A)
 {
     return A * exp(-(x - x0) * (x - x0) / (2 * sigma_x * sigma_x));
@@ -39,10 +41,11 @@ void initialize_foreground_entropy_perturbations_1D(struct ForegroundVariables1D
     // Spesific heat at constant pressure
     FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
 
-    FLOAT_P amplitude = 0.1 * c_p;
-    FLOAT_P sigma_z = 0.1*dz*NZ;
+    FLOAT_P amplitude = 0.01 * c_p;
+    FLOAT_P sigma_z = IC_ENTROPY_SIGMA_Z*dz*NZ;
 
     FLOAT_P centre_z[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_Z;
+    FLOAT_P amplitude_direction[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_AMPLITUDE_DIRECTION;
 
     for (int i = 0; i < IC_N_ENTROPY_PERTURBATION; i++)
     {
@@ -57,7 +60,7 @@ void initialize_foreground_entropy_perturbations_1D(struct ForegroundVariables1D
         for (int n = 0; n < IC_N_ENTROPY_PERTURBATION; n++)
         {
             // Entropy perturbation
-            fg->s1[i] += gaussian_1D((i-nz_ghost)*dz+z_offset, centre_z[n], sigma_z, amplitude);
+            fg->s1[i] += gaussian_1D((i-nz_ghost)*dz+z_offset, centre_z[n], sigma_z, amplitude*amplitude_direction[n]);
         }
 
         // Calculating p1 from first law of thermodynamics
@@ -66,6 +69,8 @@ void initialize_foreground_entropy_perturbations_1D(struct ForegroundVariables1D
 
     communicate_1D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost);
     communicate_1D_ghost_above_below(fg->p1, mpi_info, nz, nz_ghost);
+
+    apply_vertical_boundary_damping_1D(fg, bg, grid_info, mpi_info, 0.0);
 
     equation_of_state_1D(fg, bg, grid_info); // Getting rho1 from equation of state
 }

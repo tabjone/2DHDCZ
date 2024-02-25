@@ -9,6 +9,8 @@
 #include "global_constants.h"
 #include <math.h>
 
+#include "solver/boundary/boundary_2D/boundary_2D.h"
+
 FLOAT_P gaussian_2D(FLOAT_P x, FLOAT_P y, FLOAT_P x0, FLOAT_P y0, FLOAT_P sigma_x, FLOAT_P sigma_y, FLOAT_P A) 
 {
     return A * exp(-(x - x0) * (x - x0) / (2 * sigma_x * sigma_x) 
@@ -42,30 +44,37 @@ void initialize_foreground_entropy_perturbations_2D(struct ForegroundVariables2D
     // Spesific heat at constant pressure
     FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
 
-    FLOAT_P amplitude = 0.1 * c_p;
+    FLOAT_P amplitude = 0.01 * c_p;
     FLOAT_P sigma_z = 0.1*dz*NZ;
     FLOAT_P sigma_y = 0.1*dy*NY;
 
     FLOAT_P centre_z[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_Z;
     FLOAT_P centre_y[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_CENTRE_Y;
 
+    FLOAT_P amplitude_direction[IC_N_ENTROPY_PERTURBATION] = IC_ENTROPY_AMPLITUDE_DIRECTION;
+
     for (int i = 0; i < IC_N_ENTROPY_PERTURBATION; i++)
     {
-        centre_z[i] *= dz * NZ;
+        centre_z[i] *= R_SUN;
         centre_y[i] *= dy * NY;
     }
 
     initialize_foreground_zeros_2D(fg, grid_info); // Sets everything to zero so boundary and ghost cells are automatically zero
 
     // Inside the grid
+
+    FLOAT_P z, y;
+
     for (int i = nz_ghost; i < nz_full-nz_ghost; i++)
     {
+        z = bg->r[i];
         for (int j = 0; j < ny; j++)
         {
+            y = j*dy;
             for (int n = 0; n < IC_N_ENTROPY_PERTURBATION; n++)
             {
                 // Entropy perturbation
-                fg->s1[i][j] += gaussian_2D((i-nz_ghost)*dz+z_offset, j*dy, centre_z[n], centre_y[n], sigma_z, sigma_y, amplitude);
+                fg->s1[i][j] += gaussian_2D(z, y, centre_z[n], centre_y[n], sigma_z, sigma_y, amplitude*amplitude_direction[n]);
             }
 
             // Calculating p1 from first law of thermodynamics
@@ -76,5 +85,7 @@ void initialize_foreground_entropy_perturbations_2D(struct ForegroundVariables2D
     communicate_2D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost, ny);
     communicate_2D_ghost_above_below(fg->p1, mpi_info, nz, nz_ghost, ny);
 
-    equation_of_state_2D(fg, bg, grid_info); // Getting rho1 from equation of state
+    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, 0.0);
+
+    equation_of_state_2D(fg, bg, grid_info, mpi_info); // Getting rho1 from equation of state
 }

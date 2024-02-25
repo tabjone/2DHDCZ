@@ -39,7 +39,7 @@ void initialize_foreground_oscillation_modes_1D(struct ForegroundVariables1D *fg
         sum_modes = 0.0;
         for (int k = 0; k < IC_OSCILLATION_MODES_N_NUM; k++)
         { 
-            sum_modes += sin(2.0 * M_PI * oscillation_modes_n[k] * z/Lz);
+            sum_modes += sin(2.0 * M_PI * oscillation_modes_n[k] * (z-z0)/Lz);
         }
         fg->s1[i] = 1.0e1 * sum_modes;
         // Calculating p1 from first law of thermodynamics
