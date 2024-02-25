@@ -44,6 +44,8 @@ void initialize_precalculated_data_2D(struct PrecalculatedVariables2D *pv, struc
     
     pv->one_over_8dydydz = 1.0/(8.0*dy*dy*dz);
     pv->one_over_8dydzdz = 1.0/(8.0*dy*dz*dz);
+    pv->one_over_2dydydy = 1.0/(2.0*dy*dy*dy);
+    pv->one_over_2dzdzdz = 1.0/(2.0*dz*dz*dz);
     pv->one_over_2dy = 1.0/(2.0*dy);
     pv->one_over_2dz = 1.0/(2.0*dz);
     pv->one_over_dydy = 1.0/(dy*dy);

@@ -18,6 +18,8 @@ struct PrecalculatedVariables2D
     FLOAT_P two_VIS_COEFF;
     FLOAT_P one_over_8dydydz;
     FLOAT_P one_over_8dydzdz;
+    FLOAT_P one_over_2dydydy;
+    FLOAT_P one_over_2dzdzdz;
     FLOAT_P one_over_2dy;
     FLOAT_P one_over_2dz;
     FLOAT_P one_over_dydy;
