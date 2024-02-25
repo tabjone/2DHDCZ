@@ -141,12 +141,12 @@ void save_simulation_info(struct MpiInfo *mpi_info)
         // Adding constants
         create_write_dataset(group_constants, "ETA", H5_FLOAT_P, dataspace_constants, &eta, "magnetic diffusivity [cm2 s-1]");
         create_write_dataset(group_constants, "MU", H5_FLOAT_P, dataspace_constants, &mu, "mean molecular weight");
-        create_write_dataset(group_constants, "K_B", H5_FLOAT_P, dataspace_constants, &k_b, "boltzmann constant [cm2 g s-2 K-1]");
-        create_write_dataset(group_constants, "M_U", H5_FLOAT_P, dataspace_constants, &m_u, "atomic mass constant [g]");
-        create_write_dataset(group_constants, "R_SUN", H5_FLOAT_P, dataspace_constants, &r_sun, "solar radius [cm]");
-        create_write_dataset(group_constants, "M_SUN", H5_FLOAT_P, dataspace_constants, &m_sun, "solar mass [g]");
-        create_write_dataset(group_constants, "VISCOSITY_COEFF", H5_FLOAT_P, dataspace_constants, &viscosity_coeff, "viscosity coefficient [P] (Poise)");
-        create_write_dataset(group_constants, "G", H5_FLOAT_P, dataspace_constants, &G_, "gravitational constant [cm3 g-1 s-2]");
+        create_write_dataset(group_constants, "K_B", H5_FLOAT_P, dataspace_constants, &k_b, "erg K-1");
+        create_write_dataset(group_constants, "M_U", H5_FLOAT_P, dataspace_constants, &m_u, "g");
+        create_write_dataset(group_constants, "R_SUN", H5_FLOAT_P, dataspace_constants, &r_sun, "cm");
+        create_write_dataset(group_constants, "M_SUN", H5_FLOAT_P, dataspace_constants, &m_sun, "g");
+        create_write_dataset(group_constants, "VISCOSITY_COEFF", H5_FLOAT_P, dataspace_constants, &viscosity_coeff, "P");
+        create_write_dataset(group_constants, "G", H5_FLOAT_P, dataspace_constants, &G_, "cm3 g-1 s-2");
 
         status = H5Sclose(dataspace_constants);
         if (status < 0) {
