@@ -1,8 +1,6 @@
 #include "global_float_precision.h"
 #include "global_parameters.h"
-
-static inline int periodic_boundary(int i, int limit) {
-    return (i + limit-1) % (limit-1);}
+#include "periodic_boundary.h"
 
 FLOAT_P upwind_first_derivative_y_3D(FLOAT_P ***array, FLOAT_P ***velocity, int i, int j, int k, int ny, FLOAT_P one_over_dy, FLOAT_P one_over_2dy)
 {

@@ -33,7 +33,7 @@ void equation_of_state_2D(struct ForegroundVariables2D *fg, struct BackgroundVar
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->rho1[i][j] = (-1.0/GAMMA * fg->p1[i][j]/bg->p0[i] - fg->s1[i][j]/c_p) * bg->rho0[i];
+            fg->rho1[i][j] = (1.0/GAMMA * fg->p1[i][j]/bg->p0[i] - fg->s1[i][j]/c_p) * bg->rho0[i];
         }
     }
 }

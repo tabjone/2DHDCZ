@@ -16,28 +16,6 @@ int main_run(int argc, char *argv[])
     struct MpiInfo *mpi_info;
     initialize_mpi_info_struct(&mpi_info);
 
-    
-    MPI_Comm_size(MPI_COMM_WORLD, &mpi_info->size);
-    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_info->rank);
-
-    // Initialize MPI
-    #if MPI_ON == 1
-        // Check if there are neighbors above and below
-        mpi_info->has_neighbor_below = true;
-        mpi_info->has_neighbor_above = true;
-        if (mpi_info->rank == 0)
-        {
-            mpi_info->has_neighbor_below = false;
-        }
-        if (mpi_info->rank == mpi_info->size - 1)
-        {
-            mpi_info->has_neighbor_above = false;
-        }
-    #else
-        mpi_info->has_neighbor_below = false;
-        mpi_info->has_neighbor_above = false;
-    #endif // MPI_ON
-
     char dir_name[100];
     struct stat st = {0}; // Initialize the stat structure
 

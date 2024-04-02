@@ -18,4 +18,6 @@ void allocate_precalculate_data_struct_2D(struct PrecalculatedVariables2D **pv, 
     allocate_1D_array(&(*pv)->VIS_COEFF_over_rho0, nz_full);
     allocate_1D_array(&(*pv)->VIS_COEFF_over_T0_rho0, nz_full);
     allocate_1D_array(&(*pv)->THERM_COEFF_over_T0_rho0, nz_full);
+    allocate_1D_array(&(*pv)->damping_factor, nz_full);
+    allocate_1D_array(&(*pv)->vz_horizontal_average, nz_full);
 }

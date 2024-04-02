@@ -5,6 +5,9 @@
 
 struct PrecalculatedVariables2D
 {
+    FLOAT_P *damping_factor;
+    FLOAT_P *vz_horizontal_average;
+
     FLOAT_P *one_over_rho0;
     FLOAT_P *grad_T0;
     FLOAT_P *grad_g;
@@ -14,8 +17,8 @@ struct PrecalculatedVariables2D
     FLOAT_P *VIS_COEFF_over_rho0;
     FLOAT_P *VIS_COEFF_over_T0_rho0;
     FLOAT_P *THERM_COEFF_over_T0_rho0;
-
     FLOAT_P two_VIS_COEFF;
+    
     FLOAT_P one_over_8dydydz;
     FLOAT_P one_over_8dydzdz;
     FLOAT_P one_over_2dydydy;

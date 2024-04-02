@@ -56,12 +56,16 @@ FLOAT_P rk1_1D(struct BackgroundVariables *bg, struct ForegroundVariables1D *fg_
     }
 
     // Solving algebraic equations.
-    first_law_of_thermodynamics_1D(fg, bg, grid_info);
-    equation_of_state_1D(fg, bg, grid_info);
+    first_law_of_thermodynamics_1D(fg, bg, grid_info); // T1
+    equation_of_state_1D(fg, bg, grid_info); // rho1
     
     // Solving elliptic equation
     solve_elliptic_equation_1D(bg, fg_prev, fg, grid_info, mpi_info, precalc); // Getting p1
     update_vertical_boundary_pressure_1D(fg, grid_info, mpi_info);
+
+    // Solving algebraic equations.
+    //first_law_of_thermodynamics_1D(fg, bg, grid_info);
+    //equation_of_state_1D(fg, bg, grid_info);
     
     return dt;
 }

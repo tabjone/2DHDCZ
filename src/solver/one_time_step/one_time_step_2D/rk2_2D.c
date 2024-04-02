@@ -32,7 +32,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     int ny = grid_info->ny;
 
     // Calculating dt
-    FLOAT_P dt = get_dt_2D(fg_prev, grid_info, dt_last, first_timestep);
+    FLOAT_P dt = get_dt_2D(fg_prev, bg, grid_info, dt_last, first_timestep);
 
     
     FLOAT_P reduced_dt;
@@ -77,7 +77,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, dt);
+    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
 
     // Need these for T1 and rho1
@@ -91,11 +91,11 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
 
     // Updating mid calculation variables
     first_law_of_thermodynamics_2D(fg, bg, grid_info);
-    equation_of_state_2D(fg, bg, grid_info);
+    equation_of_state_2D(fg, bg, grid_info, mpi_info);
 
     // Calculating p1
     solve_elliptic_equation_2D(bg, fg, fg, grid_info, mpi_info, precalc); // Getting p1
-    update_vertical_boundary_pressure_2D(fg, grid_info, mpi_info);
+    update_vertical_boundary_pressure_2D(fg, bg, grid_info, mpi_info);
 
     // Calculating k2
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
@@ -120,17 +120,17 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, dt);
+    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
 
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
 
     // Solving algebraic equations
     first_law_of_thermodynamics_2D(fg, bg, grid_info);
-    equation_of_state_2D(fg, bg, grid_info);
+    equation_of_state_2D(fg, bg, grid_info, mpi_info);
 
     // Calculating p1
     solve_elliptic_equation_2D(bg, fg, fg, grid_info, mpi_info, precalc);
-    update_vertical_boundary_pressure_2D(fg, grid_info, mpi_info);
+    update_vertical_boundary_pressure_2D(fg, bg, grid_info, mpi_info);
 
     // Deallocating memory
     deallocate_2D_array(k1_s1);

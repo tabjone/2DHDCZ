@@ -36,19 +36,19 @@ void read_solar_s_data(const char* filename, FLOAT_P* r_over_R, FLOAT_P* rho0, F
 
     /* Read datasets. */
     dataset_id = H5Dopen2(file_id, "/r_over_R", H5P_DEFAULT);
-    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, r_over_R);
+    status = H5Dread(dataset_id, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, r_over_R);
     H5Dclose(dataset_id);
 
     dataset_id = H5Dopen2(file_id, "/rho", H5P_DEFAULT);
-    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, rho0);
+    status = H5Dread(dataset_id, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, rho0);
     H5Dclose(dataset_id);
 
     dataset_id = H5Dopen2(file_id, "/p", H5P_DEFAULT);
-    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, p0);
+    status = H5Dread(dataset_id, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, p0);
     H5Dclose(dataset_id);
 
     dataset_id = H5Dopen2(file_id, "/T", H5P_DEFAULT);
-    status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, T0);
+    status = H5Dread(dataset_id, H5_FLOAT_P, H5S_ALL, H5S_ALL, H5P_DEFAULT, T0);
     H5Dclose(dataset_id);
 
     /* Close the file. */

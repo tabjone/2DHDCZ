@@ -59,15 +59,22 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
 
     // Advective term
     #if ADVECTION_ON == 1
-        rhs -= vy[i][j]*dvz_dy + vz[i][j]*dvz_dz;
+        #if COORDINATES == 0
+            rhs -= vy[i][j]*dvz_dy + vz[i][j]*dvz_dz;
+        #elif COORDINATES == 1
+            rhs -= vz[i][j] * dvz_dz + vy[i][j]/bg->r[i] * dvz_dy;
+        #endif // COORDINATES
     #endif // ADVECTION_ON
 
     #if VISCOSITY_ON == 1
-
-        FLOAT_P dd_vz_dy = central_second_derivative_y_2D(vz, i, j, grid_info->ny, precalc->one_over_dydy);
+        FLOAT_P dd_vz_ddz = central_second_derivative_z_2D(vz, i, j, precalc->one_over_dzdz);
+        FLOAT_P dd_vz_ddy = central_second_derivative_y_2D(vz, i, j, grid_info->ny, precalc->one_over_dydy);
         FLOAT_P dd_vy_dydz = central_second_derivative_yz_2D(vy, i, j, grid_info->ny, precalc->one_over_4dydz);
 
-        rhs += precalc->VIS_COEFF_over_rho0[i]*(dd_vz_dy + dd_vy_dydz);
+        rhs += precalc->VIS_COEFF_over_rho0[i]*
+        (
+            4.0/3.0*dd_vz_ddz + 1.0/3.0*dd_vy_dydz + dd_vz_ddy
+        );
     #endif // VISCOSITY_ON
 
     return rhs;

@@ -8,10 +8,10 @@
 #endif // M_PI
 
 
-#define Lz (FLOAT_P)1.0e8
-#define Ly (FLOAT_P)1.0e8
-#define nz 100
-#define ny 100
+#define Lz (FLOAT_P)1.0e1
+#define Ly (FLOAT_P)1.0e1
+#define nz 500
+#define ny 500
 #define epsilon (FLOAT_P)1.0e-2
 
 int test_central_first_derivative_y_2D() 
@@ -43,7 +43,7 @@ int test_central_first_derivative_y_2D()
             y = j * dy;
             expected_value = 2.0*M_PI/Ly*sin(4.0*M_PI*z/Lz)*cos(2*M_PI*y/Ly);
             computed_value = central_first_derivative_y_2D(f, i, j, ny, one_over_2dy);
-            if (fabs(expected_value - computed_value) > epsilon)
+            if (fabs(expected_value - computed_value)/fabs(expected_value) > epsilon)
             {
                 deallocate_2D_array(f);
                 return 1;
@@ -84,7 +84,7 @@ int test_central_first_derivative_z_2D()
             y = j * dy;
             expected_value = 4.0*M_PI/Lz*cos(4.0*M_PI*z/Lz)*sin(2*M_PI*y/Lz);
             computed_value = central_first_derivative_z_2D(f, i, j, one_over_2dz);
-            if (fabs(expected_value - computed_value) > epsilon)
+            if (fabs(expected_value - computed_value)/fabs(expected_value) > epsilon)
             {
                 printf("i: %d, j: %d\n", i, j);
                 printf("expected_value: %f, computed_value: %f\n", expected_value, computed_value);
@@ -127,8 +127,9 @@ int test_central_second_derivative_y_2D()
             y = j * dy;
             expected_value = -4.0*M_PI*M_PI/Ly/Ly*sin(4.0*M_PI*z/Lz)*sin(2.0*M_PI*y/Ly);
             computed_value = central_second_derivative_y_2D(f, i, j, ny, one_over_dydy);
-            if (fabs(expected_value - computed_value) > epsilon)
+            if (fabs(expected_value - computed_value)/fabs(expected_value) > epsilon)
             {
+                printf("i: %d, j: %d\n", i, j);
                 deallocate_2D_array(f);
                 return 1;
             }            
@@ -168,7 +169,7 @@ int test_central_second_derivative_z_2D()
             y = j * dy;
             expected_value = -16.0*M_PI*M_PI/Lz/Lz*sin(4.0*M_PI*z/Lz)*sin(2.0*M_PI*y/Ly);
             computed_value = central_second_derivative_z_2D(f, i, j, one_over_dzdz);
-            if (fabs(expected_value - computed_value) > epsilon)
+            if (fabs(expected_value - computed_value)/fabs(expected_value) > epsilon)
             {
                 deallocate_2D_array(f);
                 return 1;
@@ -209,7 +210,7 @@ int test_central_second_derivative_yz_2D()
             y = j * dy;
             expected_value = 8.0*M_PI*M_PI/Lz/Ly*cos(4.0*M_PI*z/Lz)*cos(2.0*M_PI*y/Ly);
             computed_value = central_second_derivative_yz_2D(f, i, j, ny, one_over_4dydz);
-            if (fabs(expected_value - computed_value) > epsilon)
+            if (fabs(expected_value - computed_value)/fabs(expected_value) > epsilon)
             {
                 deallocate_2D_array(f);
                 return 1;
@@ -250,7 +251,7 @@ int test_central_third_derivative_yyz_2D()
             y = j * dy;
             expected_value = -16.0*M_PI*M_PI*M_PI/Ly/Ly/Lz*cos(4.0*M_PI*z/Lz)*sin(2.0*M_PI*y/Ly);
             computed_value = central_third_derivative_yyz_2D(f, i, j, ny, one_over_8dydydz);
-            if (fabs(expected_value - computed_value) > epsilon)
+            if (fabs(expected_value - computed_value)/fabs(expected_value) > epsilon)
             {
                 deallocate_2D_array(f);
                 return 1;
@@ -291,7 +292,7 @@ int test_central_third_derivative_yzz_2D()
             y = j * dy;
             expected_value = -32.0*M_PI*M_PI*M_PI/Lz/Lz/Ly*sin(4.0*M_PI*z/Lz)*cos(2.0*M_PI*y/Ly);
             computed_value = central_third_derivative_yzz_2D(f, i, j, ny, one_over_8dydzdz);
-            if (fabs(expected_value - computed_value) > epsilon)
+            if (fabs(expected_value - computed_value)/fabs(expected_value) > epsilon)
             {
                 deallocate_2D_array(f);
                 return 1;
@@ -337,7 +338,7 @@ int test_upwind_first_derivative_y_2D()
             expected_value = 2.0*M_PI/Ly*sin(4.0*M_PI*z/Lz)*cos(2*M_PI*y/Ly);
             computed_value_positive = upwind_first_derivative_y_2D(f, velocity_positive, i, j, ny, one_over_dy, one_over_2dy);
             computed_value_negative = upwind_first_derivative_y_2D(f, velocity_negative, i, j, ny, one_over_dy, one_over_2dy);
-            if (fabs(expected_value - computed_value_positive) > epsilon || fabs(expected_value - computed_value_negative) > epsilon)
+            if (fabs(expected_value - computed_value_positive)/fabs(expected_value) > epsilon || fabs(expected_value - computed_value_negative)/fabs(expected_value) > epsilon)
             {
                 deallocate_2D_array(f);
                 deallocate_2D_array(velocity_positive);
@@ -388,7 +389,7 @@ int test_upwind_first_derivative_z_2D()
             expected_value = 4.0*M_PI/Lz*cos(4.0*M_PI*z/Lz)*sin(2*M_PI*y/Ly);
             computed_value_positive = upwind_first_derivative_z_2D(f, velocity_positive, i, j, one_over_dz, one_over_2dz);
             computed_value_negative = upwind_first_derivative_z_2D(f, velocity_negative, i, j, one_over_dz, one_over_2dz);
-            if (fabs(expected_value - computed_value_positive) > epsilon || fabs(expected_value - computed_value_negative) > epsilon)
+            if (fabs(expected_value - computed_value_positive)/fabs(expected_value) > epsilon || fabs(expected_value - computed_value_negative)/fabs(expected_value) > epsilon)
             {
                 deallocate_2D_array(f);
                 deallocate_2D_array(velocity_positive);
@@ -408,41 +409,41 @@ int test_upwind_first_derivative_z_2D()
 int test_derivatives_2D()
 {
     if(test_central_first_derivative_y_2D()){
-        printf("FAIL: Central first derivative in y-direction.\n");}
+        printf("FAIL: test_central_first_derivative_y_2D.\n");}
     else{
-        printf("PASS: Central first derivative in y-direction.\n");}
+        printf("PASS: test_central_first_derivative_y_2D.\n");}
     if(test_central_first_derivative_z_2D()){
-        printf("FAIL: Central first derivative in z-direction.\n");}
+        printf("FAIL: test_central_first_derivative_z_2D.\n");}
     else{
-        printf("PASS: Central first derivative in z-direction.\n");}
+        printf("PASS: test_central_first_derivative_z_2D.\n");}
     
     if(test_central_second_derivative_y_2D()){
-        printf("FAIL: Central second derivative in y-direction.\n");}
+        printf("FAIL: test_central_second_derivative_y_2D.\n");}
     else{
-        printf("PASS: Central second derivative in y-direction.\n");}
+        printf("PASS: test_central_second_derivative_y_2D.\n");}
     if(test_central_second_derivative_z_2D()){
-        printf("FAIL: Central second derivative in z-direction.\n");}
+        printf("FAIL: test_central_second_derivative_z_2D.\n");}
     else{
-        printf("PASS: Central second derivative in z-direction.\n");}
+        printf("PASS: test_central_second_derivative_z_2D.\n");}
     if(test_central_second_derivative_yz_2D()){
-        printf("FAIL: Central second derivative in yz-direction.\n");}
+        printf("FAIL: test_central_second_derivative_yz_2D.\n");}
     else{
-        printf("PASS: Central second derivative in yz-direction.\n");}
+        printf("PASS: test_central_second_derivative_yz_2D.\n");}
     if(test_central_third_derivative_yyz_2D()){
-        printf("FAIL: Central third derivative in yyz-direction.\n");}
+        printf("FAIL: test_central_third_derivative_yyz_2D.\n");}
     else{
-        printf("PASS: Central third derivative in yyz-direction.\n");}
+        printf("PASS: test_central_third_derivative_yyz_2D.\n");}
     if(test_central_third_derivative_yzz_2D()){
-        printf("FAIL: Central third derivative in yzz-direction.\n");}
+        printf("FAIL: test_central_third_derivative_yzz_2D.\n");}
     else{
-        printf("PASS: Central third derivative in yzz-direction.\n");}
+        printf("PASS: test_central_third_derivative_yzz_2D.\n");}
     if(test_upwind_first_derivative_y_2D()){
-        printf("FAIL: Upwind first derivative in y-direction.\n");}
+        printf("FAIL: test_upwind_first_derivative_y_2D.\n");}
     else{
-        printf("PASS: Upwind first derivative in y-direction.\n");}
+        printf("PASS: test_upwind_first_derivative_y_2D.\n");}
     if(test_upwind_first_derivative_z_2D()){
-        printf("FAIL: Upwind first derivative in z-direction.\n");}
+        printf("FAIL: test_upwind_first_derivative_z_2D.\n");}
     else{
-        printf("PASS: Upwind first derivative in z-direction.\n");}
+        printf("PASS: test_upwind_first_derivative_z_2D.\n");}
     return 0;
 }

@@ -31,6 +31,9 @@ void test_iterative_solver_2D()
     allocate_2D_array(&numerical_solution, nz+4, ny);
     allocate_2D_array(&initial_guess, nz+4, ny);
 
+    FLOAT_P *r;
+    allocate_1D_array(&r, nz+4);
+
     FLOAT_P dz = 1.0 / (nz - 1);
     FLOAT_P dy = 1.0 / (ny - 1);
 
@@ -56,7 +59,7 @@ void test_iterative_solver_2D()
         }    
     }
 
-    iterative_solver_2D(rhs, numerical_solution, initial_guess, nz, 2, ny, dz, dy, mpi_info);
+    iterative_solver_2D(rhs, numerical_solution, initial_guess, r, nz, 2, ny, dz, dy, mpi_info);
 
     FLOAT_P abs_difference;
 
@@ -67,7 +70,7 @@ void test_iterative_solver_2D()
         for (int j = 0; j < ny; j++)
         {
             abs_difference = fabs(analytical_solution[i][j] - numerical_solution[i][j]);
-            printf("%e, ", numerical_solution[i][j]);
+            printf("%e, ", abs_difference);
         }
         printf("], \n");
     }
@@ -75,6 +78,7 @@ void test_iterative_solver_2D()
 
 
     free(mpi_info);
+    deallocate_1D_array(r);
     deallocate_2D_array(rhs);
     deallocate_2D_array(analytical_solution);
     deallocate_2D_array(numerical_solution);

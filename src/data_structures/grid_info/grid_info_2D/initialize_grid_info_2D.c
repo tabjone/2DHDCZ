@@ -8,7 +8,11 @@ void initialize_grid_info_2D(struct GridInfo2D *grid_info, struct MpiInfo *mpi_i
 {
     // Calculating the size of the grid
     FLOAT_P L_z = (R_END - R_START)*R_SUN;
-    FLOAT_P L_y = Y_SIZE*R_SUN;
+    #if COORDINATES == 0
+        FLOAT_P L_y = Y_SIZE*R_SUN;
+    #elif COORDINATES == 1
+        FLOAT_P L_y = Y_SIZE;
+    #endif
 
     // Calculating the size of the grid cells
     FLOAT_P dy = L_y/(NY - 1);

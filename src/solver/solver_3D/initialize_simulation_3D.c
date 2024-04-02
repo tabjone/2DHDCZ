@@ -6,9 +6,6 @@
 #include "io_operations/io_operations.h"
 #include "initialization/initialize_foreground/initialize_foreground_3D/initialize_foreground_3D.h"
 
-
-#include <stdio.h>
-
 void initialize_simulation_3D(struct BackgroundVariables **bg, struct ForegroundVariables3D **fg, struct ForegroundVariables3D **fg_previous, struct GridInfo3D **grid_info, struct PrecalculatedVariables3D **precalc, struct MpiInfo *mpi_info, int *save_nr, FLOAT_P *t, FLOAT_P *first_t)
 {
     *save_nr = 0;

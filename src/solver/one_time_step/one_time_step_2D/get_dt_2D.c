@@ -4,9 +4,10 @@
 #include <stdbool.h>
 #include "data_structures/foreground_data/foreground_data_2D/foreground_variables_struct_2D.h"
 #include "data_structures/grid_info/grid_info_2D/grid_info_struct_2D.h"
+#include "data_structures/background_data/background_variables_struct.h"
 #include "global_parameters.h"
 
-FLOAT_P get_dt_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, FLOAT_P dt_last, bool first_timestep)
+FLOAT_P get_dt_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, FLOAT_P dt_last, bool first_timestep)
 {
     /*
     Calulates the timestep by the CLF condition and the stability condition.
@@ -54,7 +55,7 @@ FLOAT_P get_dt_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info
     #elif TIME_ORDER == 3 && UPWIND_ORDER == 1
         C_max = 1.25;
     #elif TIME_ORDER == 3 && UPWIND_ORDER == 2
-        C_max = 0.5;
+        C_max = 0.6;
     #endif // TIME_ORDER, UPWIND_ORDER
     
     // CFL condition
@@ -81,7 +82,17 @@ FLOAT_P get_dt_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info
         }
     }
 
-    dt = CFL_CUT * C_max / (max_vy/dy + max_vz/dz);    
+    // Find min of all r
+    FLOAT_P my_min_r = bg->r[nz_ghost];
+    FLOAT_P min_r;
+    MPI_Allreduce(&my_min_r, &min_r, 1, MPI_FLOAT_P, MPI_MIN, MPI_COMM_WORLD);
+    my_min_r = min_r;
+
+    #if COORDINATES == 0
+        dt = CFL_CUT * C_max / (max_vy/dy + max_vz/dz);   
+    #elif COORDINATES == 1
+        dt = CFL_CUT * C_max / (max_vy/(dy*my_min_r) + max_vz/dz);
+    #endif // COORDINATES
     
     // If this is the first timestep, we set dt to 0.1
     if (first_timestep && dt > 0.1 && MAX_DT > 0.1)

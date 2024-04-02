@@ -32,7 +32,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     int nz_full = grid_info->nz_full;
 
     // Calculating dt
-    FLOAT_P dt = get_dt_2D(fg_prev, grid_info, dt_last, first_timestep);
+    FLOAT_P dt = get_dt_2D(fg_prev, bg, grid_info, dt_last, first_timestep);
 
     FLOAT_P reduced_dt;
     // Picking smallest dt from all processes
@@ -79,7 +79,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, dt);
+    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
 
     // Updating ghost cells
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
@@ -95,11 +95,11 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
 
     // Updating mid-calculation variables rho1 and T1
     first_law_of_thermodynamics_2D(fg, bg, grid_info);
-    equation_of_state_2D(fg, bg, grid_info);
+    equation_of_state_2D(fg, bg, grid_info, mpi_info);
     
     // Calculating pressure
     solve_elliptic_equation_2D(bg, fg_prev, fg, grid_info, mpi_info, precalc);
-    update_vertical_boundary_pressure_2D(fg, grid_info, mpi_info);
+    update_vertical_boundary_pressure_2D(fg, bg, grid_info, mpi_info);
     
     // Calculating k2 inside the grid and on boundaries
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
@@ -123,18 +123,18 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, dt);
+    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
     
     // Updating ghost cells
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
     
     // Updating mid-calculation variables rho1, T1
     first_law_of_thermodynamics_2D(fg, bg, grid_info);
-    equation_of_state_2D(fg, bg, grid_info);
+    equation_of_state_2D(fg, bg, grid_info, mpi_info);
 
     // Calculating pressure
     solve_elliptic_equation_2D(bg, fg, fg, grid_info, mpi_info, precalc);
-    update_vertical_boundary_pressure_2D(fg, grid_info, mpi_info);
+    update_vertical_boundary_pressure_2D(fg, bg, grid_info, mpi_info);
     
 
     // Calculating k3 inside the grid and on boundary
@@ -159,16 +159,16 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, dt);
+    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
 
     // Solving algebraic equations
     first_law_of_thermodynamics_2D(fg, bg, grid_info);
-    equation_of_state_2D(fg, bg, grid_info);
+    equation_of_state_2D(fg, bg, grid_info, mpi_info);
 
     // Solving elliptic equation
     solve_elliptic_equation_2D(bg, fg, fg, grid_info, mpi_info, precalc); // Getting p1
-    update_vertical_boundary_pressure_2D(fg, grid_info, mpi_info);
+    update_vertical_boundary_pressure_2D(fg, bg, grid_info, mpi_info);
 
     // Deallocating memory
     deallocate_2D_array(k1_s1);

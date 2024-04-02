@@ -46,23 +46,33 @@ FLOAT_P rhs_ds1_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
     FLOAT_P ds1_dz = upwind_first_derivative_z_2D(s1, vz, i, j, precalc->one_over_dz, precalc->one_over_2dz);
 
     #if ADVECTION_ON == 1
-        rhs -= vy[i][j]*ds1_dy + vz[i][j]*(ds1_dz + grad_s0[i]);
+        #if COORDINATES == 0
+            rhs -= vy[i][j]*ds1_dy + vz[i][j]*(ds1_dz + grad_s0[i]);
+        #elif COORDINATES == 1
+            rhs -= vz[i][j] * (ds1_dz + grad_s0[i]) + vy[i][j]/bg->r[i] * ds1_dy;
+        #endif // COORDINATES
     #endif // ADVECTION_ON
 
     #if VISCOSITY_ON == 1
         FLOAT_P dvy_dz = central_first_derivative_z_2D(vy, i, j, precalc->one_over_2dz);
         FLOAT_P dvz_dy = central_first_derivative_y_2D(vz, i, j, grid_info->ny, precalc->one_over_2dy);
+        FLOAT_P dvy_dy = central_first_derivative_y_2D(vy, i, j, grid_info->ny, precalc->one_over_2dy);
+        FLOAT_P dvz_dz = central_first_derivative_z_2D(vz, i, j, precalc->one_over_2dz);
         
-        rhs += precalc->VIS_COEFF_over_T0_rho0[i] * (dvy_dz + dvz_dy)*(dvy_dz + dvz_dy);
+        rhs += precalc->VIS_COEFF_over_T0_rho0[i] * 
+            (
+                (4.0/3.0*dvz_dz - 1.0/3.0*dvy_dy)*dvz_dz + 
+                (4.0/3.0*dvy_dy - 1.0/3.0*dvz_dz)*dvy_dy + 
+                (dvz_dy + dvy_dz)*(dvz_dy + dvy_dz)
+            );
+        
     #endif // VISCOSITY_ON
 
-    #if THERMAL_DIFFUSIVITY_ON == 1
-        FLOAT_P *grad_T0 = precalc->grad_T0;
-        
+    #if THERMAL_DIFFUSIVITY_ON == 1        
         FLOAT_P dd_s1_ddy = central_second_derivative_y_2D(s1, i, j, grid_info->ny, precalc->one_over_dydy);
         FLOAT_P dd_s1_ddz = central_second_derivative_z_2D(s1, i, j, precalc->one_over_dzdz);
 
-        rhs += precalc->THERM_COEFF_over_T0_rho0[i] * (grad_T0[i]*(ds1_dy+ds1_dz) + bg->T0[i]*(dd_s1_ddy + dd_s1_ddz));
+        rhs += precalc->THERM_COEFF_over_T0_rho0[i] * (dd_s1_ddy + dd_s1_ddz);
     #endif // THERMAL_DIFFUSIVITY_ON
     
     return rhs;

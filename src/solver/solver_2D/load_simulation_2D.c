@@ -21,12 +21,13 @@ void load_simulation_2D(struct BackgroundVariables **bg, struct ForegroundVariab
 
     // Initializing background
     solar_s_initialization(*bg, mpi_info, (*grid_info)->nz_full, (*grid_info)->nz_ghost, (*grid_info)->dz, (*grid_info)->z0);
+    initialize_precalculated_data_2D(*precalc, *bg, *grid_info, mpi_info);
 
     // Loading foreground
     char file_path_foreground[150];
     snprintf(file_path_foreground, sizeof(file_path_foreground), "%s%s/snap%d_%d.h5", SAVE_DIR, RUN_NAME, LOAD_SNAP_NUMBER, mpi_info->rank);
     *t = load_foreground_2D(*fg_previous, *grid_info, file_path_foreground);
-    initialize_precalculated_data_2D(*precalc, *bg, *grid_info);
+    
     
     *first_t = *t;
 

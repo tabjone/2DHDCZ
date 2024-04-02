@@ -7,8 +7,7 @@
 #include "array_utilities/array_copy/array_copy.h"
 #include <math.h>
 
-static inline int periodic_boundary(int i, int limit) {
-    return (i + limit-1) % (limit-1);}
+#include "periodic_boundary.h"
 
 void jacobi_2D(FLOAT_P **rhs, FLOAT_P **current_solution, FLOAT_P **previous_solution, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiInfo *mpi_info)
 {

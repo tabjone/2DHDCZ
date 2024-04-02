@@ -70,15 +70,28 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
 
     #if GRAVITY_ON == 1
     {
-        rhs -= g[i]*drho1_dz + rho1[i][j]*grad_g[i];
+        #if COORDINATES == 0
+            rhs -= g[i]*drho1_dz + rho1[i][j]*grad_g[i];
+        #elif COORDINATES == 1
+            rhs -= g[i]*rho1[i][j]/bg->r[i] + g[i]*drho1_dz + rho1[i][j]*grad_g[i];
+        #endif // COORDINATES
     }
     #endif // GRAVITY_ON
 
     #if ADVECTION_ON == 1
     {
-        rhs -= rho0[i] * ( vy[i][j]*dd_vy_ddy + vz[i][j]*dd_vz_ddz + dvy_dy_sqrd + dvz_dz_sqrd
-                          +2*dvz_dy*dvy_dz + vy[i][j]*dd_vz_dydz + vz[i][j]*dd_vy_dydz )
-               +grad_rho0[i] * (vy[i][j]*dvz_dy + vz[i][j]*dvz_dz);
+        #if COORDINATES == 0
+            rhs -= rho0[i] * ( vy[i][j]*dd_vy_ddy + vz[i][j]*dd_vz_ddz + dvy_dy_sqrd + dvz_dz_sqrd
+                              +2*dvz_dy*dvy_dz + vy[i][j]*dd_vz_dydz + vz[i][j]*dd_vy_dydz )
+                +grad_rho0[i] * (vy[i][j]*dvz_dy + vz[i][j]*dvz_dz);
+        #elif COORDINATES == 1
+            FLOAT_P A = vz[i][j]*dvz_dz + vy[i][j]/bg->r[i]*dvz_dy;
+            FLOAT_P dA_dr = dvz_dz_sqrd + vz[i][j]*dd_vz_ddz + vy[i][j]/bg->r[i]*dd_vz_dydz + 1.0/bg->r[i]*dvz_dy*dvy_dz - vy[i][j]/(bg->r[i]*bg->r[i])*dvz_dy;
+            FLOAT_P dB_dtheta = vz[i][j]*dd_vy_dydz + dvz_dy*dvy_dz + 1.0/bg->r[i]*dvy_dy_sqrd + vy[i][j]/bg->r[i]*dd_vy_ddy - vy[i][j]/(bg->r[i]*bg->r[i])*dvy_dy;
+
+            rhs -= A * grad_rho0[i] + A*rho0[i]/bg->r[i] + rho0[i] * dA_dr
+                + rho0[i]/bg->r[i] * dB_dtheta;
+        #endif // COORDINATES
     }
     #endif // ADVECTION_ON
 
@@ -90,7 +103,7 @@ FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVari
         FLOAT_P ddd_vy_dydzdz = central_third_derivative_yzz_2D(vy, i, j, grid_info->ny, precalc->one_over_8dydzdz);
 
 
-        rhs += 4.0/3.0*VISCOSITY_COEFF*(ddd_vy_dydzdz + ddd_vz_dydydz + ddd_vz_dzdzdz + ddd_vy_dydydy);
+        rhs += 2.0/3.0*precalc->two_VIS_COEFF*(ddd_vy_dydzdz + ddd_vz_dydydz + ddd_vz_dzdzdz + ddd_vy_dydydy);
     #endif // VISCOSITY_ON
     
     return rhs;

@@ -7,6 +7,7 @@
 #include "array_utilities/array_memory_management/array_memory_management.h"
 #include "global_constants.h"
 #include "global_initialization.h"
+#include "mpi.h"
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif // M_PI
@@ -34,6 +35,7 @@ void solar_s_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_
     // Getting initial values from solar_s
     FLOAT_P p0_initial, T0_initial, rho0_initial, m_initial;
     get_initial_values_from_solar_s(&p0_initial, &T0_initial, &rho0_initial, &m_initial, r_integration[nz_full-1]);
+    //printf("%Lf %Lf %Lf %Lf\n", p0_initial, T0_initial, rho0_initial, m_initial);
 
 
     #if UNITS == 1
@@ -127,21 +129,41 @@ void solar_s_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_
         }
     #endif // CONSTANT_BACKGROUND
 
-    // Setting the background variables
-    int l = 0;
-    while (bg->r[0] > r_integration[l])
+    // Sum of all processes nz should be the same as NZ
+    // My bg->r[nz_ghost] should be the same as nz_1+nz_2+...+nz_rank
+    // Ex: NZ=15 divided by 3 processes, nz_1=5, nz_2=5, nz_3=5
+    // Process 0: bg->r[nz_ghost] = r_integration[nz_ghost]
+    // Process 1: bg->r[nz_ghost] = r_integration[nz_ghost+nz_1]
+    // Process 2: bg->r[nz_ghost] = r_integration[nz_ghost+nz_1+nz_2]
+
+    int sum_nz_below;
+    int my_nz = my_nz_full- 2*nz_ghost;
+
+    if (!mpi_info->has_neighbor_below)
     {
-        l++;
+        sum_nz_below = 0;
     }
+
+    // Perform the exclusive scan to sum up nz from all processes below the current one
+    MPI_Exscan(&my_nz, &sum_nz_below, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 
     for (int i = 0; i < my_nz_full; i++)
     {
-        bg->r[i] = r_integration[l+i];
-        bg->p0[i] = p0[l+i];
-        bg->T0[i] = T0[l+i];
-        bg->rho0[i] = rho0[l+i];
-        bg->grad_s0[i] = grad_s0[l+i];
-        bg->g[i] = g[l+i];
+        //bg->r[i] = r_integration[i+sum_nz_below];
+        bg->p0[i] = p0[i+sum_nz_below];
+        bg->T0[i] = T0[i+sum_nz_below];
+        bg->rho0[i] = rho0[i+sum_nz_below];
+        bg->grad_s0[i] = grad_s0[i+sum_nz_below];
+        bg->g[i] = g[i+sum_nz_below];
+    }
+
+    // Checking that bg->r[i] has the same value as r_integration[i+sum_nz_below]
+    for (int i = 0; i < my_nz_full; i++)
+    {
+        if (fabs(bg->r[i] - r_integration[i+sum_nz_below]) > 1.0)
+        {
+            printf("bg->r[%d] = %f, r_integration[%d] = %f\n", i, bg->r[i], i+sum_nz_below, r_integration[i+sum_nz_below]);
+        }
     }
 
     // Deallocating integration arrays

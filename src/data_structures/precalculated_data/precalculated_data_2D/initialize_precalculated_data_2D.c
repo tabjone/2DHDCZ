@@ -3,12 +3,16 @@
 #include "precalculated_data_struct_2D.h"
 #include "global_float_precision.h"
 #include "global_constants.h"
+#include "solver/boundary/boundary_2D/boundary_2D.h"
+#include "MPI_module/mpi_info_struct.h"
 
-void initialize_precalculated_data_2D(struct PrecalculatedVariables2D *pv, struct BackgroundVariables *bg, struct GridInfo2D *grid_info)
+void initialize_precalculated_data_2D(struct PrecalculatedVariables2D *pv, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     int nz_full = grid_info->nz_full;
     FLOAT_P dz = grid_info->dz;
     FLOAT_P dy = grid_info->dy;
+
+    calculate_damping_2D(pv->damping_factor, bg, grid_info, mpi_info);
 
     // Pre-calculate 1/rho0 and eta/(4*pi*rho0*T0), and one_over_rho0_T0_const
     for (int i = 0; i < nz_full; i++)

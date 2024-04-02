@@ -1,15 +1,20 @@
 #include "solver/one_time_step/one_time_step_2D/one_time_step_2D.h"
 #include "data_structures/data_structures.h"
-#include "global_parameters.h"
 #include "functions_2D.h"
 #include "global_float_precision.h"
 #include "io_operations/io_operations.h"
+#include <stdlib.h>
+
+#include "global_constants.h"
+#include "global_parameters.h"
+#include "global_boundary.h"
+#include <math.h>
 
 int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
 {
-    /*
-    This is a GOD function. It should be simplified and split into smaller functions.
-    */
+    // Initialize random number generator
+    srand(0);
+
     FLOAT_P dt, dt_last, t_since_save;
 
     int save_nr;
@@ -25,27 +30,24 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         initialize_simulation_2D(&bg, &fg, &fg_previous, &grid_info, &precalc, mpi_info, &save_nr, &t, &first_t);
         
     #elif LOAD == 1
-        load_simulation_2D();
-        
+        load_simulation_2D(&bg, &fg, &fg_previous, &grid_info, &precalc, mpi_info, &save_nr, &t, &first_t);
     #endif // LOAD
 
     t_since_save = 0.0;
     dt_last = 0.0;
+
     while (t < T)
     {
         dt = one_time_step_2D(bg, fg_previous, fg, grid_info, mpi_info, precalc, dt_last, first_t == t);
-        t += dt;
-        //break;
-        
-        
+        t += dt; 
 
         if (mpi_info->rank == 0)
-            printf("t = %.2f, dt=%.2f\n", t, dt);
+            printf("t = %.3f, dt=%.3f\n", t, dt);
         
         t_since_save += dt;
         dt_last = dt;
         
-        if (dt_last < 0.1)
+        if (dt_last < 0.005)
         {
             break;
         }

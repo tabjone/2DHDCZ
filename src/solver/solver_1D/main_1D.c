@@ -35,9 +35,6 @@ int main_1D(int argc, char *argv[], struct MpiInfo *mpi_info)
     {
         dt = one_time_step_1D(bg, fg_previous, fg, grid_info, mpi_info, precalc, dt_last, first_t == t);
         t += dt;
-        //break;
-        
-        
 
         if (mpi_info->rank == 0)
             printf("t = %.2f, dt=%.2f\n", t, dt);

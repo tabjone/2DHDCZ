@@ -5,7 +5,7 @@
 #include "MPI_module/MPI_module.h"
 #include "iterative_solver_2D.h"
 
-void iterative_solver_2D(FLOAT_P **rhs, FLOAT_P **final_solution, FLOAT_P **initial_guess, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiInfo *mpi_info)
+void iterative_solver_2D(FLOAT_P **rhs, FLOAT_P **final_solution, FLOAT_P **initial_guess, FLOAT_P *r, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiInfo *mpi_info)
 {
     /*
     Solves the Poisson equation using an iterative method (Jacobi, Gauss-Seidel)
@@ -74,7 +74,11 @@ void iterative_solver_2D(FLOAT_P **rhs, FLOAT_P **final_solution, FLOAT_P **init
     #endif // VERTICAL_BOUNDARY_TYPE
 
     #if ITERATIVE_SOLVER_TYPE == 0
-        jacobi_2D(rhs, current_solution, previous_solution, nz, nz_ghost, ny, dz, dy, mpi_info);
+        #if COORDINATES == 0
+            jacobi_2D(rhs, current_solution, previous_solution, nz, nz_ghost, ny, dz, dy, mpi_info);
+        #elif COORDINATES == 1
+            jacobi_2D_spherical(rhs, current_solution, previous_solution, r, nz, nz_ghost, ny, dz, dy, mpi_info);
+        #endif // COORDINATES
     #elif ITERATIVE_SOLVER_TYPE == 1
         gauss_seidel_2D(rhs, current_solution, previous_solution, nz, nz_ghost, ny, dz, dy, mpi_info);
     #endif // ITERATIVE_SOLVER_TYPE

@@ -45,7 +45,7 @@ void solve_elliptic_equation_2D(struct BackgroundVariables *bg, struct Foregroun
         }
     }
 
-    iterative_solver_2D(rhs, fg->p1, fg_prev->p1, nz, nz_ghost, ny, dz, dy, mpi_info);
+    iterative_solver_2D(rhs, fg->p1, fg_prev->p1, bg->r, nz, nz_ghost, ny, dz, dy, mpi_info);
 
     deallocate_2D_array(rhs);
 }

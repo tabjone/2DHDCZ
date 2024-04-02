@@ -1,7 +1,5 @@
 #include "global_float_precision.h"
-
-static inline int periodic_boundary(int i, int limit) {
-    return (i + limit-1) % (limit-1);}
+#include "periodic_boundary.h"
 
 FLOAT_P central_third_derivative_xyz_3D(FLOAT_P ***array, int i, int j, int k, int nx, int ny, FLOAT_P one_over_8dxdydz)
 {

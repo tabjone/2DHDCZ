@@ -6,6 +6,7 @@
 #include "curve_fitting/interpolation/interpolation.h"
 #include <math.h>
 #include "solar_s_initialization.h"
+#include "mpi.h"
 
 void get_initial_values_from_solar_s(FLOAT_P *p0_initial, FLOAT_P *T0_initial, FLOAT_P *rho0_initial, FLOAT_P *m_initial, FLOAT_P r_integration_start)
 {

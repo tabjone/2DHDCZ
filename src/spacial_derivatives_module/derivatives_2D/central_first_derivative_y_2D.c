@@ -1,7 +1,5 @@
 #include "global_float_precision.h"
-
-static inline int periodic_boundary(int i, int limit) {
-    return (i + limit-1) % (limit-1);}
+#include "periodic_boundary.h"
 
 FLOAT_P central_first_derivative_y_2D(FLOAT_P **array, int i, int j, int ny, FLOAT_P one_over_2dy)
 {

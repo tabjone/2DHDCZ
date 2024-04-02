@@ -9,16 +9,16 @@
 
 #define ETA 0.1 // magnetic diffusivity [cm2 s-1]
 
-#define MU 0.6 // mean molecular weight
+#define MU 0.594 // mean molecular weight
 
 #if UNITS == 0
     // CGS units
-    #define K_B 1.3807e-16 // boltzmann constant [cm2 g s-2 K-1]
+    #define K_B 1.380649e-16 // boltzmann constant [erg/K]
     #define M_U 1.66053907e-24 // atomic mass constant [g]
     #define R_SUN 6.957e10 // solar radius [cm]
     #define M_SUN 1.989e33 // solar mass [g]
 
-    #define VISCOSITY_COEFF 1.0e7/5.37 // viscosity coefficient [P] (Poise) (originally 1.0e7/5.37)
+    #define VISCOSITY_COEFF (1.0e7/5.37) // viscosity coefficient [P] (Poise) (originally 1.0e7/5.37)
     #define THERMAL_DIFFUSIVITY_COEFF 1.866e6 // thermal diffusivity [...] (orginally 1.866e6)
 
     #if GRAVITY_ON == 0
@@ -31,7 +31,7 @@
 
 #else
     // SI units
-    #define K_B 1.3807e-23 // boltzmann constant [m2 kg s-2 K-1]
+    #define K_B 1.380649e-23 // boltzmann constant [J/K]
     #define M_U 1.66053907e-27 // atomic mass constant [kg]
     #define R_SUN 6.957e8 // solar radius [m]
     #define M_SUN 1.989e30 // solar mass [kg]
