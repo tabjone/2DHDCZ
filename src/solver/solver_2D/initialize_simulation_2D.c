@@ -27,7 +27,7 @@ void initialize_simulation_2D(struct BackgroundVariables **bg, struct Foreground
     allocate_background_struct(bg, (*grid_info)->nz_full);
     allocate_foreground_struct_2D(fg, *grid_info);
     allocate_foreground_struct_2D(fg_previous, *grid_info);
-    allocate_precalculate_data_struct_2D(precalc, (*grid_info)->nz_full);
+    allocate_precalculate_data_struct_2D(precalc, (*grid_info)->nz_full, (*grid_info)->ny);
 
     // Initializing background, foreground and precalculated data structs
     solar_s_initialization(*bg, mpi_info, (*grid_info)->nz_full, (*grid_info)->nz_ghost, (*grid_info)->dz, (*grid_info)->z0);
@@ -103,9 +103,6 @@ void initialize_simulation_2D(struct BackgroundVariables **bg, struct Foreground
 
     // Finding the biggest resolution if polar coordinates
     #if COORDINATES == 0
-        FLOAT_P max_resolution_dr = dz;
-        FLOAT_P max_resolution_dy = dy;
-
         if (mpi_info->rank == 0)
         {
             printf("Resolution vertical: %.3f [# of pressure scale height]\n", min_Hp/dz);

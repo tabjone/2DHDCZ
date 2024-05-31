@@ -77,7 +77,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
+    apply_vertical_boundary_damping_2D(fg, fg_prev, bg, grid_info, mpi_info, precalc, dt);
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
 
     // Need these for T1 and rho1
@@ -120,7 +120,7 @@ FLOAT_P rk2_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
+    apply_vertical_boundary_damping_2D(fg, fg_prev, bg, grid_info, mpi_info, precalc, dt);
 
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
 

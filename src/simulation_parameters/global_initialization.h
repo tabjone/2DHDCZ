@@ -2,7 +2,7 @@
 #define GLOBAL_INITIALIZATION_H__
 
 #define IC_SOD_SHOCK 0 // 0 for off, 1 for on
-#define IC_SOD_SHOCK_DIRECTION 1 // 0 for horizontal, 1 for vertical
+#define IC_SOD_SHOCK_DIRECTION 0 // 0 for horizontal, 1 for vertical
 
 #define IC_RANDOM_OSCILLATIONS 0 // 0 for off, 1 for on
 
@@ -28,12 +28,12 @@
 
 #define IC_OSCILLATION_MODES 1 // 0 for off, 1 for on
 #define IC_OSCILLATION_MODES_N_NUM 1 // the number of oscillation modes in the z-direction
-#define IC_OSCILLATION_MODES_M_NUM 1 // the number of oscillation modes in the y-direction
+#define IC_OSCILLATION_MODES_M_NUM 3 // the number of oscillation modes in the y-direction
 #define IC_OSCILLATION_MODES_L_NUM 1 // the number of oscillation modes in the x-direction
 #define IC_OSCILLATION_MODES_N {1} // the oscillation modes in the z-direction
-#define IC_OSCILLATION_MODES_M {1} // the oscillation modes in the y-direction
+#define IC_OSCILLATION_MODES_M {2, 6, 15} // the oscillation modes in the y-direction
 #define IC_OSCILLATION_MODES_L {1} // the oscillation modes in the x-direction
-#define IC_OSCILLATION_MODES_PHI_M {0.0} // the phase shift of the oscillation modes in the y-direction
+#define IC_OSCILLATION_MODES_PHI_M {0.0, 0.0} // the phase shift of the oscillation modes in the y-direction
 #define IC_OSCILLATION_MODES_PHI_L {0.0} // the phase shift of the oscillation modes in the x-direction
 
 #define IC_ZEROS 0 // 0 for off, 1 for on
@@ -44,8 +44,8 @@
 
 // Background
 #define CONSTANT_BACKGROUND 0 // 0 for non-constant background, 1 for constant background
-#define CONSTANT_BACKGROUND_DENSITY 1.0e-1 // Constant background density
-#define CONSTANT_BACKGROUND_PRESSURE 1.0e13 // Constant background pressure
+#define CONSTANT_BACKGROUND_DENSITY 1.0e-2 // Constant background density
+#define CONSTANT_BACKGROUND_PRESSURE 1.0e11 // Constant background pressure
 #define CONSTANT_BACKGROUND_TEMPERATURE 1.0e6 // Constant background temperature
 
 #endif // GLOBAL_INITIALIZATION_H__

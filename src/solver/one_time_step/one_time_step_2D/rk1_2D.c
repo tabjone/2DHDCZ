@@ -9,9 +9,6 @@
 #include "global_constants.h"
 #include "global_parameters.h"
 
-static inline int periodic_boundary(int i, int limit) {
-    return (i + limit-1) % (limit-1);}
-
 FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables2D *precalc, FLOAT_P dt_last, bool first_timestep)
 {
     /*
@@ -54,19 +51,22 @@ FLOAT_P rk1_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     #if REMOVE_AVG_VZ_X == 1
         calculate_vz_horizontal_average_2D(fg_prev, grid_info, precalc);
     #endif
+    #if REMOVE_AVG_VY_Z == 1
+        calculate_vy_vertical_average_2D(fg, grid_info, precalc);
+    #endif
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {   
         for (int j = 0; j < ny; j++)
         {
+            calculate_viscosity_thermal_diffusivity_coeffs_2D(bg, fg_prev, grid_info, precalc, i, j);
             rhs_s1 = rhs_ds1_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
             rhs_vy = rhs_dvy_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
             rhs_vz = rhs_dvz_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
-            calculate_viscosity_thermal_diffusivity_coeffs_2D(bg, fg_prev, grid_info, precalc, i, j);
-            step_entropy_velocity_2D(fg, fg_prev, grid_info, precalc, rhs_s1, rhs_vy, rhs_vz, dt, i, j);
+            step_entropy_velocity_2D(fg, fg_prev, bg, grid_info, precalc, rhs_s1, rhs_vy, rhs_vz, dt, i, j);
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
+    apply_vertical_boundary_damping_2D(fg, fg_prev, bg, grid_info, mpi_info, precalc, dt);
 
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
 

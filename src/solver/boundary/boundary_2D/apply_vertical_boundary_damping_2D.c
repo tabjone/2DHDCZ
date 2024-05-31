@@ -36,6 +36,7 @@ void apply_vertical_boundary_damping_2D(struct ForegroundVariables2D *fg, struct
     /*
     Finding the mass density of the grid and setting the top boundary to be the average of the grid.
     */
+   /*
     KahanAccumulator my_density_total = {0.0, 0.0};
     FLOAT_P density_grid;
 
@@ -94,14 +95,28 @@ void apply_vertical_boundary_damping_2D(struct ForegroundVariables2D *fg, struct
     FLOAT_P c_p = K_B / (MU * M_U) /(1.0-1.0/GAMMA);
     FLOAT_P s1_top = - rho1top / rho0top * c_p;
     FLOAT_P s1_bot = - rho1bot / rho0bot * c_p;
+    */
+    FLOAT_P c_p = K_B / (MU * M_U) /(1.0-1.0/GAMMA);
+    FLOAT_P s1_top = UPPER_ENTROPY_BOUNDARY * c_p;
+    FLOAT_P s1_bot = LOWER_ENTROPY_BOUNDARY * c_p;
 
     // Top boundary
     if (!mpi_info->has_neighbor_above)
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[nz_full-nz_ghost-1][j] += s1_top;
-            fg->vz[nz_full-nz_ghost-1][j] = 0.0; 
+            // +=
+            fg->s1[nz_full-nz_ghost-1][j] = s1_top;
+            fg->vz[nz_full-nz_ghost-1][j] = 0.0;
+            #if CORIOLIS_ON == 1
+                FLOAT_P omega, f;
+                int n = 2;
+
+                f = (OMEGA_CORE - OMEGA_EQ) * pow(bg->r[nz_full-nz_ghost-1]/R_SUN, n);
+
+                omega = OMEGA_EQ + f;
+                fg->vy[nz_full-nz_ghost-1][j] = omega * bg->r[nz_full-nz_ghost-1];
+            #endif
         }
     }
 
@@ -110,8 +125,18 @@ void apply_vertical_boundary_damping_2D(struct ForegroundVariables2D *fg, struct
     {
         for (int j = 0; j < ny; j++)
         {
-            fg->s1[nz_ghost][j] += s1_bot;
+            // +=
+            fg->s1[nz_ghost][j] = s1_bot;
             fg->vz[nz_ghost][j] = 0.0;
+            #if CORIOLIS_ON == 1
+                FLOAT_P omega, f;
+                int n = 2;
+
+                f = (OMEGA_CORE - OMEGA_EQ) * pow(bg->r[nz_ghost]/R_SUN, n);
+
+                omega = OMEGA_EQ + f;
+                fg->vy[nz_ghost][j] = omega * bg->r[nz_ghost];
+            #endif
         }
     }
 

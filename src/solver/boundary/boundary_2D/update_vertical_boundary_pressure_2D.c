@@ -39,10 +39,24 @@ void update_vertical_boundary_pressure_2D(struct ForegroundVariables2D *fg, stru
         if (!mpi_info->has_neighbor_below)
         {
             extrapolate_2D_array_symmetric_down(fg->p1, nz_ghost, ny);
+
+            int i_border = nz_ghost;
+            
+            for (int j = 0; j < ny; j++)
+            {
+                fg->p1[i_border-1][j] = fg->p1[i_border+1][j] - fg->p1[i_border][j]/bg->p0[i_border] * (bg->p0[i_border+1] - bg->p0[i_border-1]);
+            }
         }
         if (!mpi_info->has_neighbor_above)
         {
             extrapolate_2D_array_symmetric_up(fg->p1, nz_full, nz_ghost, ny);
+
+            int i_border = nz_full - nz_ghost - 1;
+            
+            for (int j = 0; j < ny; j++)
+            {
+                fg->p1[i_border+1][j] = fg->p1[i_border-1][j] + fg->p1[i_border][j]/bg->p0[i_border] * (bg->p0[i_border+1] - bg->p0[i_border-1]);
+            }
         }
     #endif // VERTICAL_BOUNDARY_TYPE
 }

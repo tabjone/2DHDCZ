@@ -15,5 +15,6 @@ void deallocate_precalculated_data_struct_2D(struct PrecalculatedVariables2D **p
     free((*pv)->THERM_COEFF_over_T0_rho0);
     free((*pv)->damping_factor);
     free((*pv)->vz_horizontal_average);
+    free((*pv)->vy_vertical_average);
     free(*pv);
 }

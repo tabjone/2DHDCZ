@@ -31,6 +31,7 @@ void solar_s_initialization(struct BackgroundVariables *bg, struct MpiInfo *mpi_
     {
         bg->r[i] = my_z0 + (i-my_nz_ghost) * dz;
     }
+    printf("process %d: my_z0=%2.f", mpi_info->rank, my_z0/R_SUN);
 
     // Getting initial values from solar_s
     FLOAT_P p0_initial, T0_initial, rho0_initial, m_initial;

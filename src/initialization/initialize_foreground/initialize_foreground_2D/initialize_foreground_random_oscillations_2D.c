@@ -124,58 +124,47 @@ void initialize_foreground_random_oscillations_2D(struct ForegroundVariables2D *
                 }
             }
             sum = sum / len_sum;
-            fg->s1[i][j] = 0.1 * sum * c_p;
-            //fg->p1[i][j] = -bg->p0[i] * fg->s1[i][j]/c_p;
+            fg->s1[i][j] = sum;
         }
     }
 
-    // Setting ghost cells
-    // Top
-    if (!mpi_info->has_neighbor_below)
+    // Find minimum and maximum value of s1
+    FLOAT_P my_s1_min, my_s1_max;
+    my_s1_min = fg->s1[nz_ghost][0];
+    my_s1_max = fg->s1[nz_ghost][0];
+
+    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
-        for (int i = 0; i < nz_ghost; i++)
+        for (int j = 0; j < ny; j++)
         {
-            for (int j = 0; j < ny; j++)
+            if (fg->s1[i][j] < my_s1_min)
             {
-                fg->s1[i][j] = 0.0;
-                fg->p1[i][j] = 0.0;
+                my_s1_min = fg->s1[i][j];
             }
-        }
-
-        // Setting first 5 cells with sigmoid thing
-        for (int i = nz_ghost; i < nz_ghost + 5; i++)
-        {
-            for (int j = 0; j < ny; j++)
+            if (fg->s1[i][j] > my_s1_max)
             {
-                fg->s1[i][j] *= 2.0 / (1.0 + exp(-1.5*(i - nz_ghost))) - 1.0;
-                fg->p1[i][j] *= 2.0 / (1.0 + exp(-1.5*(i - nz_ghost))) - 1.0;
+                my_s1_max = fg->s1[i][j];
             }
         }
     }
 
-    // Bottom
-    if (!mpi_info->has_neighbor_above)
+    FLOAT_P s1_min, s1_max;
+    MPI_Allreduce(&my_s1_min, &s1_min, 1, MPI_FLOAT_P, MPI_MIN, MPI_COMM_WORLD);
+    MPI_Allreduce(&my_s1_max, &s1_max, 1, MPI_FLOAT_P, MPI_MAX, MPI_COMM_WORLD);
+
+    // Normalizing s1
+    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
-        for (int i = nz_full - nz_ghost; i < nz_full; i++)
+        for (int j = 0; j < ny; j++)
         {
-            for (int j = 0; j < ny; j++)
-            {
-                fg->s1[i][j] = 0.0;
-                fg->p1[i][j] = 0.0;
-            }
-        }
+            fg->s1[i][j] = (fg->s1[i][j] - s1_min) / (s1_max - s1_min);
+            fg->s1[i][j] = 2.0 * fg->s1[i][j] - 1.0;
+            fg->s1[i][j] = fg->s1[i][j] * 0.005 * c_p;
 
-        // Setting last 5 cells with sigmoid thing
-        for (int i = nz_full - nz_ghost - 5; i < nz_full - nz_ghost; i++)
-        {
-            for (int j = 0; j < ny; j++)
-            {
-                fg->s1[i][j] *= -2.0 / (1.0 + exp(-1.5*(i - nz_ghost - nz))) + 1.0;
-                fg->p1[i][j] *= -2.0 / (1.0 + exp(-1.5*(i - nz_ghost - nz))) + 1.0;
-            }
+            fg->p1[i][j] = -bg->p0[i] * fg->s1[i][j]/c_p;
         }
-
     }
+
     communicate_2D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost, ny);
     communicate_2D_ghost_above_below(fg->p1, mpi_info, nz, nz_ghost, ny);
     equation_of_state_2D(fg, bg, grid_info, mpi_info);  

@@ -21,6 +21,11 @@ void save_foreground_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *gri
         The current time.
     */
 
+    if (mpi_info->rank == 0)
+    {
+        printf("Saving snapshot %d\n", snap_number);
+    }
+
     // Header strings
     const char* root_header = "This is the root header";
     const char* grid_data_header = "This is the grid data header";

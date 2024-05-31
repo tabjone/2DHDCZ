@@ -1,14 +1,15 @@
 #include "global_parameters.h"
+#include "global_constants.h"
 #include "global_float_precision.h"
 #include "data_structures/foreground_data/foreground_data_2D/foreground_variables_struct_2D.h"
 #include "data_structures/grid_info/grid_info_2D/grid_info_struct_2D.h"
 #include "data_structures/precalculated_data/precalculated_data_2D/precalculated_data_struct_2D.h"
+#include "data_structures/background_data/background_variables_struct.h"
 #include "solver/one_time_step/one_time_step_2D/one_time_step_2D.h"
+#include "math.h"
+#include "periodic_boundary.h"
 
-static inline int periodic_boundary(int i, int limit) {
-    return (i + limit-1) % (limit-1);}
-
-void step_entropy_velocity_2D(struct ForegroundVariables2D *fg, struct ForegroundVariables2D *fg_prev, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc, FLOAT_P rhs_s1, FLOAT_P rhs_vy, FLOAT_P rhs_vz, FLOAT_P dt, int i, int j)
+void step_entropy_velocity_2D(struct ForegroundVariables2D *fg, struct ForegroundVariables2D *fg_prev, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc, FLOAT_P rhs_s1, FLOAT_P rhs_vy, FLOAT_P rhs_vz, FLOAT_P dt, int i, int j)
 {
     int ny = grid_info->ny;
     int j_plus = periodic_boundary(j+1, ny);
@@ -18,8 +19,19 @@ void step_entropy_velocity_2D(struct ForegroundVariables2D *fg, struct Foregroun
     fg->vy[i][j] = dt * rhs_vy;
     fg->vz[i][j] = dt * rhs_vz;
 
+    FLOAT_P Z = (R_END - R_START) * R_SUN;
+    FLOAT_P tau_top = AVG_VZ_FACTOR_TOP;
+    FLOAT_P tau_bottom = AVG_VZ_FACTOR_BOTTOM;
+    FLOAT_P beta = -log(tau_top / tau_bottom) / Z;
+
+    FLOAT_P tau = tau_bottom * exp(-beta * (bg->r[i] - R_START * R_SUN));
+
     #if REMOVE_AVG_VZ_X == 1
-        fg->vz[i][j] -= precalc->vz_horizontal_average[i]/AVG_VZ_FACTOR * dt;
+        fg->vz[i][j] -= precalc->vz_horizontal_average[i]/tau * dt;
+    #endif
+
+    #if REMOVE_AVG_VY_Z == 1
+        fg->vy[i][j] -= precalc->vy_vertical_average[j]/100.0 * dt;
     #endif
 
     #if LAX_S1 == 1

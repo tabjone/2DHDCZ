@@ -1,10 +1,12 @@
 #include "global_float_precision.h"
 #include "global_parameters.h"
+#include "global_constants.h"
 #include "spacial_derivatives_module/derivatives_2D/derivatives_2D.h"
 #include "data_structures/background_data/background_variables_struct.h"
 #include "data_structures/foreground_data/foreground_data_2D/foreground_variables_struct_2D.h"
 #include "data_structures/grid_info/grid_info_2D/grid_info_struct_2D.h"
 #include "data_structures/precalculated_data/precalculated_data_2D/precalculated_data_struct_2D.h"
+#include <math.h>
 
 FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc, int i, int j)
 {
@@ -65,6 +67,15 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
             rhs -= vz[i][j] * dvz_dz + vy[i][j]/bg->r[i] * dvz_dy;
         #endif // COORDINATES
     #endif // ADVECTION_ON
+
+    #if CORIOLIS_ON == 1
+        FLOAT_P omega, f;
+        int n = 2;
+
+        f = (OMEGA_CORE - OMEGA_EQ) * pow(bg->r[i]/R_SUN, n);
+        omega = OMEGA_EQ + f;
+        rhs += pow(vy[i][j],2)/bg->r[i] - 2.0*omega*vy[i][j];
+    #endif // CORIOLIS_ON
 
     #if VISCOSITY_ON == 1
         FLOAT_P dd_vz_ddz = central_second_derivative_z_2D(vz, i, j, precalc->one_over_dzdz);

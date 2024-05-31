@@ -59,7 +59,7 @@ void test_iterative_solver_2D()
         }    
     }
 
-    iterative_solver_2D(rhs, numerical_solution, initial_guess, r, nz, 2, ny, dz, dy, mpi_info);
+    iterative_solver_2D(rhs, numerical_solution, initial_guess, r, nz, 2, ny, dz, dy, mpi_info, 0.0, 0.0);
 
     FLOAT_P abs_difference;
 

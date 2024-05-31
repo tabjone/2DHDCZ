@@ -19,20 +19,11 @@ formatter.set_scientific(True)
 
 R_sun = 6.957e10
 
-def resize_array(arr, target_size=300):
-    if arr.shape[0] > target_size:
-        # Calculate the zoom factor
-        zoom_factor = target_size / arr.shape[0]
-        # Apply zoom only on the first axis
-        resized_arr = zoom(arr, zoom_factor)
-        return resized_arr
-    else:
-        return arr
-
 def read_mpi_info(file_path):
     with h5py.File(file_path, 'r') as f:
         n_procs = f['/total_processes'][()]
     return n_procs
+
 
 def read_fg_mpi(snap, n_procs, folder):
     variables_list = {key: [] for key in ['T1', 'rho1', 'p1', 's1', 'vz', 'vy']}

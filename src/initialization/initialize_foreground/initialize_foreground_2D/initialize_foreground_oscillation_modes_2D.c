@@ -74,7 +74,7 @@ void initialize_foreground_oscillation_modes_2D(struct ForegroundVariables2D *fg
         for (int j = 0; j < ny; j++)
         {
             // Normalizing s1
-            fg->s1[i][j] = fg->s1[i][j] / max_s1 * 0.01 * c_p;
+            fg->s1[i][j] = fg->s1[i][j] / max_s1 * 0.001 * c_p;
             // Calculating p1 from first law of thermodynamics
             fg->p1[i][j] = -bg->p0[i] * fg->s1[i][j]/c_p;
         }

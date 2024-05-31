@@ -15,4 +15,6 @@ FLOAT_P rhs_dvz_dt_2D(struct BackgroundVariables *bg, struct ForegroundVariables
 // Elliptic equation
 FLOAT_P rhs_elliptic_eq_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc, int i, int j);
 
+void save_derivatives_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc, struct MpiInfo *mpi_info, int snap_number);
+
 #endif // RHS_FUNCTIONS_2D_H__

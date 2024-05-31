@@ -1,5 +1,8 @@
 #include <stdbool.h>
 #include "global_float_precision.h"
+#include "global_constants.h"
+#include "global_parameters.h"
+#include "global_boundary.h"
 #include "array_utilities/array_memory_management/array_memory_management.h"
 #include "iterative_solver_module/iterative_solver_2D/iterative_solver_2D.h"
 #include "data_structures/foreground_data/foreground_data_2D/foreground_variables_struct_2D.h"
@@ -44,8 +47,11 @@ void solve_elliptic_equation_2D(struct BackgroundVariables *bg, struct Foregroun
             rhs[i][j] = rhs_elliptic_eq_2D(bg, fg, grid_info, precalc, i+nz_ghost, j);
         }
     }
+    
+    FLOAT_P lower_pressure_boundary = LOWER_PRESSURE_BOUNDARY;
+    FLOAT_P upper_pressure_boundary = UPPER_PRESSURE_BOUNDARY;  
 
-    iterative_solver_2D(rhs, fg->p1, fg_prev->p1, bg->r, nz, nz_ghost, ny, dz, dy, mpi_info);
+    iterative_solver_2D(rhs, fg->p1, fg_prev->p1, bg->r, nz, nz_ghost, ny, dz, dy, mpi_info, lower_pressure_boundary, upper_pressure_boundary);
 
     deallocate_2D_array(rhs);
 }

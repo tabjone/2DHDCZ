@@ -23,7 +23,8 @@ FLOAT_P one_time_step_2D(struct BackgroundVariables *bg, struct ForegroundVariab
 void solve_elliptic_equation_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables2D *precalc);
 
 void calculate_vz_horizontal_average_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *pv);
+void calculate_vy_vertical_average_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *pv);
 void calculate_viscosity_thermal_diffusivity_coeffs_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc, int i, int j);
-void step_entropy_velocity_2D(struct ForegroundVariables2D *fg, struct ForegroundVariables2D *fg_prev, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc, FLOAT_P rhs_s1, FLOAT_P rhs_vy, FLOAT_P rhs_vz, FLOAT_P dt, int i, int j);
+void step_entropy_velocity_2D(struct ForegroundVariables2D *fg, struct ForegroundVariables2D *fg_prev, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc, FLOAT_P rhs_s1, FLOAT_P rhs_vy, FLOAT_P rhs_vz, FLOAT_P dt, int i, int j);
 
 #endif // ONE_TIME_STEP_2D_H__

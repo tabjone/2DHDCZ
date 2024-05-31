@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <mpi.h>
+#include <hdf5.h>
 #include "global_parameters.h"
 #include <stdlib.h>
 #include "functions.h"
@@ -12,6 +13,9 @@
 int main_run(int argc, char *argv[])
 {
     MPI_Init(&argc, &argv);
+    //H5open();
+    //hid_t plist_id = H5Pcreate(H5P_FILE_ACCESS);
+    //H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD, MPI_INFO_NULL);
     
     struct MpiInfo *mpi_info;
     initialize_mpi_info_struct(&mpi_info);
@@ -80,7 +84,8 @@ int main_run(int argc, char *argv[])
     
     free(mpi_info);
 
-    
+    //H5Pclose(plist_id);
+    //H5close();
     MPI_Finalize();
     
     return 0;

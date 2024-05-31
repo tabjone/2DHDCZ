@@ -25,6 +25,6 @@ def get_info(folder):
         global_params_dict = extract_group(file['global_parameters'])
 
     with h5py.File(f'{folder}snap0_0.h5') as file:
-        grid_info_dict = extract_group(file['grid_info'])    
+        grid_info_dict = extract_group(file['grid_info'])   
 
     return constants_dict, global_params_dict, grid_info_dict

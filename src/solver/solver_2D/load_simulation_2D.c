@@ -17,7 +17,7 @@ void load_simulation_2D(struct BackgroundVariables **bg, struct ForegroundVariab
     allocate_background_struct(bg, (*grid_info)->nz_full);
     allocate_foreground_struct_2D(fg, *grid_info);
     allocate_foreground_struct_2D(fg_previous, *grid_info);
-    allocate_precalculate_data_struct_2D(precalc, (*grid_info)->nz_full);
+    allocate_precalculate_data_struct_2D(precalc, (*grid_info)->nz_full, (*grid_info)->ny);
 
     // Initializing background
     solar_s_initialization(*bg, mpi_info, (*grid_info)->nz_full, (*grid_info)->nz_ghost, (*grid_info)->dz, (*grid_info)->z0);

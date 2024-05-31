@@ -3,30 +3,37 @@
 #include "grid_info_struct_2D.h"
 #include "global_constants.h"
 #include "MPI_module/mpi_info_struct.h"
+#include <math.h>
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
+#include <stdio.h>
 
 void initialize_grid_info_2D(struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
+    printf("hello from initialize_grid_info_2D\n");
     // Calculating the size of the grid
     FLOAT_P L_z = (R_END - R_START)*R_SUN;
     #if COORDINATES == 0
         FLOAT_P L_y = Y_SIZE*R_SUN;
     #elif COORDINATES == 1
-        FLOAT_P L_y = Y_SIZE;
+        FLOAT_P L_y = 2.0*M_PI*Y_SIZE;
     #endif
 
     // Calculating the size of the grid cells
-    FLOAT_P dy = L_y/(NY - 1);
+    FLOAT_P dy = L_y/(NY);
     FLOAT_P dz = L_z/(NZ - 1);
 
     // Calculating the number of ghost cells
     int nz_ghost;
-    if (UPWIND_ORDER >= CENTRAL_ORDER)
+    if (UPWIND_ORDER >= (CENTRAL_ORDER-2))
     {
         nz_ghost = UPWIND_ORDER;
     }
     else
     {
-        nz_ghost = CENTRAL_ORDER;
+        nz_ghost = CENTRAL_ORDER - 2;
     }
 
     // Number of cells to be divided among processes
@@ -56,9 +63,15 @@ void initialize_grid_info_2D(struct GridInfo2D *grid_info, struct MpiInfo *mpi_i
     z0 = R_SUN * R_START + (my_offset) * dz;
     z1 = R_SUN * R_START + (my_offset + my_nz-1) * dz;
     y0 = 0.0;
-    y1 = R_SUN * Y_SIZE;
+    #if COORDINATES == 0
+        y1 = R_SUN * Y_SIZE;
+    #elif COORDINATES == 1
+        y1 = 2.0 * M_PI * Y_SIZE;
+    #endif
 
     int nz_full = my_nz + 2*nz_ghost;
+
+    printf("Process: %d, z0=%.2f", mpi_info->rank, z0/R_SUN);
 
     grid_info->z0 = z0;
     grid_info->z1 = z1;

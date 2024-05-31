@@ -7,6 +7,9 @@ struct PrecalculatedVariables2D
 {
     FLOAT_P *damping_factor;
     FLOAT_P *vz_horizontal_average;
+    FLOAT_P *vy_vertical_average;
+
+    FLOAT_P total_mass;
 
     FLOAT_P *one_over_rho0;
     FLOAT_P *grad_T0;

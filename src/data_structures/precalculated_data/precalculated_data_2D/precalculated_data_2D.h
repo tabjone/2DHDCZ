@@ -6,7 +6,7 @@
 #include "precalculated_data_struct_2D.h"
 #include "MPI_module/mpi_info_struct.h"
 
-void allocate_precalculate_data_struct_2D(struct PrecalculatedVariables2D **pv, int nz_full);
+void allocate_precalculate_data_struct_2D(struct PrecalculatedVariables2D **pv, int nz_full, int ny);
 void deallocate_precalculated_data_struct_2D(struct PrecalculatedVariables2D **pv);
 void initialize_precalculated_data_2D(struct PrecalculatedVariables2D *pv, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
 

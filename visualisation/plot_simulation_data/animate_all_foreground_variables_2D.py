@@ -20,9 +20,15 @@ def animate_all_foreground_variables_2D(folder, save=False, save_name=None, fps=
 
     fig = plt.figure(figsize=(16, 9))  # Create a figure
     num_snaps = get_num_snaps(folder)
+    if kwargs.get('snap_range') is not None:
+        snap_range = kwargs.get('snap_range')
+        init_snap = snap_range[0]
+    else:
+        snap_range = range(0, num_snaps, save_interval)
+        init_snap = 0
 
     def init_animation():
-        plot_all_foreground_variables_2D(folder, fig, 0, **kwargs)
+        plot_all_foreground_variables_2D(folder, fig, init_snap, **kwargs)
 
     def update_animation(snap_number):
         """Update the plots for each frame."""
@@ -30,8 +36,8 @@ def animate_all_foreground_variables_2D(folder, save=False, save_name=None, fps=
             ax.clear()  # Clear previous data
         fig.clear()
         plot_all_foreground_variables_2D(folder, fig, snap_number, **kwargs)
-
-    anim = FuncAnimation(fig, update_animation, interval=anim_interval, frames=range(0,num_snaps, save_interval), init_func=init_animation)
+    
+    anim = FuncAnimation(fig, update_animation, interval=anim_interval, frames=snap_range, init_func=init_animation)
 
     if save:
         anim.save(save_name, writer='ffmpeg', fps=fps, extra_args=['-vcodec', 'libx264'])

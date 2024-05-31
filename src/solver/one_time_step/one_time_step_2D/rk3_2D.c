@@ -2,6 +2,7 @@
 #include "solver/equation_of_state/equation_of_state_2D/equation_of_state_2D.h"
 #include "solver/first_law_of_thermodynamics/first_law_of_thermodynamics_2D/first_law_of_thermodynamics_2D.h"
 #include "solver/boundary/boundary_2D/boundary_2D.h"
+#include "global_parameters.h"
 
 FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_prev, struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables2D *precalc, FLOAT_P dt_last, bool first_timestep)
 {
@@ -60,6 +61,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
+            calculate_viscosity_thermal_diffusivity_coeffs_2D(bg, fg_prev, grid_info, precalc, i, j);
             // Calculating k1 for the grid
             k1_s1[i][j] = rhs_ds1_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
             k1_vy[i][j] = rhs_dvy_dt_2D(bg, fg_prev, grid_info, precalc, i, j);
@@ -79,7 +81,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
+    apply_vertical_boundary_damping_2D(fg, fg_prev, bg, grid_info, mpi_info, precalc, dt);
 
     // Updating ghost cells
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
@@ -106,6 +108,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
+            calculate_viscosity_thermal_diffusivity_coeffs_2D(bg, fg_prev, grid_info, precalc, i, j);
             k2_s1[i][j] = rhs_ds1_dt_2D(bg, fg, grid_info, precalc, i, j);
             k2_vy[i][j] = rhs_dvy_dt_2D(bg, fg, grid_info, precalc, i, j);
             k2_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, precalc, i, j);
@@ -123,7 +126,7 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
+    apply_vertical_boundary_damping_2D(fg, fg_prev, bg, grid_info, mpi_info, precalc, dt);
     
     // Updating ghost cells
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
@@ -142,24 +145,42 @@ FLOAT_P rk3_2D(struct BackgroundVariables *bg, struct ForegroundVariables2D *fg_
     {
         for (int j = 0; j < ny; j++)
         {
+            calculate_viscosity_thermal_diffusivity_coeffs_2D(bg, fg_prev, grid_info, precalc, i, j);
             k3_s1[i][j] = rhs_ds1_dt_2D(bg, fg, grid_info, precalc, i, j);
             k3_vy[i][j] = rhs_dvy_dt_2D(bg, fg, grid_info, precalc, i, j);
             k3_vz[i][j] = rhs_dvz_dt_2D(bg, fg, grid_info, precalc, i, j);
         }
     }
 
+
+    #if REMOVE_AVG_VZ_X == 1
+        calculate_vz_horizontal_average_2D(fg_prev, grid_info, precalc);
+    #endif
+    #if REMOVE_AVG_VY_Z == 1
+        calculate_vy_vertical_average_2D(fg, grid_info, precalc);
+    #endif
+
+
+    FLOAT_P rhs_s1, rhs_vy, rhs_vz;
+
     // Updating variables
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < ny; j++)
         {
+            rhs_s1 = (k1_s1[i][j] + 4.0*k2_s1[i][j] + k3_s1[i][j]) / 6.0;
+            rhs_vy = (k1_vy[i][j] + 4.0*k2_vy[i][j] + k3_vy[i][j]) / 6.0;
+            rhs_vz = (k1_vz[i][j] + 4.0*k2_vz[i][j] + k3_vz[i][j]) / 6.0;
+            step_entropy_velocity_2D(fg, fg_prev, bg, grid_info, precalc, rhs_s1, rhs_vy, rhs_vz, dt, i, j);
+            /*
             fg->s1[i][j] = fg_prev->s1[i][j] + dt/6.0 * (k1_s1[i][j] + 4.0*k2_s1[i][j] + k3_s1[i][j]);
             fg->vy[i][j] = fg_prev->vy[i][j] + dt/6.0 * (k1_vy[i][j] + 4.0*k2_vy[i][j] + k3_vy[i][j]);
             fg->vz[i][j] = fg_prev->vz[i][j] + dt/6.0 * (k1_vz[i][j] + 4.0*k2_vz[i][j] + k3_vz[i][j]);
+            */
         }
     }
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, dt);
+    apply_vertical_boundary_damping_2D(fg, fg_prev, bg, grid_info, mpi_info, precalc, dt);
     update_vertical_boundary_entropy_velocity_2D(fg, grid_info, mpi_info);
 
     // Solving algebraic equations

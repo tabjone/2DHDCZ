@@ -1,3 +1,9 @@
+io_functions load_foreground all
+
+
+
+
+
 Function that handles boundary: It takes in an array and extrapolates either extrapolates it or sends it to ghost cells. If periodic boundary we send it it to the ghost cells at the top/bottom ect. If not periodic we just extrapolate or send to ghost cells of mpi processes.
 
 Function that applies damping ect: Takes the foreground struct and does whatever it should do on s1, vz.

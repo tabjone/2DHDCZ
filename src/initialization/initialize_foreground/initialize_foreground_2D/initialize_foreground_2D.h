@@ -16,7 +16,7 @@ void initialize_foreground_zeros_2D(struct ForegroundVariables2D *fg, struct Gri
 void initialize_foreground_sod_shock_horizontal_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
 void initialize_foreground_sod_shock_vertical_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
 
-void initialize_foreground_entropy_perturbations_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables2D *precalc);
+void initialize_foreground_entropy_perturbations_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
 
 void initialize_foreground_oscillation_modes_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info);
 

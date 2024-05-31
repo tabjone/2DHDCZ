@@ -28,38 +28,43 @@ void initialize_foreground_sod_shock_horizontal_2D(struct ForegroundVariables2D 
     int nz_ghost = grid_info->nz_ghost;
     int nz = grid_info->nz;
     int ny = grid_info->ny;
+    FLOAT_P dy = grid_info->dy;
 
-    FLOAT_P left_rho, left_p;
+    // We let 1/6 of the grid from the middle to the left be in the "up" state, 1/6 from the middle to the right be in the "up" state, and the rest in the "down" state. Meaning 2/6 = 1/3 of the domain is up and 2/3 is down
+
+    FLOAT_P rho_up, p_up, rho_down, p_down;
+
     if (mpi_info->rank == 0)
     {
         printf("Initializing Sod Shock Tube\n");
         // For now just letting the left side be one of the top values from process 1
-        left_rho = bg->rho0[nz] * 1.0e-8;
-        left_p = bg->p0[nz] * 1.0e-8;
+        rho_up = bg->rho0[nz];
+        p_up = bg->p0[nz];
+        rho_down = -rho_up;
+        p_down = -p_up;
     }
-    MPI_Bcast(&left_rho, 1, MPI_FLOAT_P, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&left_p, 1, MPI_FLOAT_P, 0, MPI_COMM_WORLD);
-
-    FLOAT_P right_rho = left_rho * 0.5;
-    FLOAT_P right_p = left_p * 0.5;
+    MPI_Bcast(&rho_up, 1, MPI_FLOAT_P, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&p_up, 1, MPI_FLOAT_P, 0, MPI_COMM_WORLD);
 
     FLOAT_P c_p = K_B / (MU * M_U) / (1.0 - 1.0/GAMMA);
 
     initialize_foreground_zeros_2D(fg, grid_info);
 
+    FLOAT_P y;
     for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
     {
         for (int j = 0; j < ny; j++)
         {
-            if (j < ny/2)
+            y = j * dy;
+            if (y > 0.33 * ny * dy && y < 0.66 * ny * dy)
             {
-                fg->p1[i][j] = left_p;
-                fg->rho1[i][j] = left_rho;
+                fg->p1[i][j] = p_up;
+                fg->rho1[i][j] = rho_up;
             }
             else
             {
-                fg->p1[i][j] = right_p;
-                fg->rho1[i][j] = right_rho;
+                fg->p1[i][j] = p_down;
+                fg->rho1[i][j] = rho_down;
             }
             // Getting T1 from equation of state
             fg->T1[i][j] = bg->T0[i] * (fg->p1[i][j]/bg->p0[i] - fg->rho1[i][j]/bg->rho0[i]);

@@ -36,4 +36,38 @@ void equation_of_state_2D(struct ForegroundVariables2D *fg, struct BackgroundVar
             fg->rho1[i][j] = (1.0/GAMMA * fg->p1[i][j]/bg->p0[i] - fg->s1[i][j]/c_p) * bg->rho0[i];
         }
     }
+
+    if (!mpi_info->has_neighbor_above)
+    {
+        FLOAT_P c, k1, k2;
+        FLOAT_P dz = grid_info->dz;
+        int nz_ghost = grid_info->nz_ghost;
+        int i_border = nz_full - nz_ghost - 1;
+
+        k1 = 1.0/bg->rho0[i_border];
+        k2 = (1.0/bg->rho0[i_border+1] - 1.0/bg->rho0[i_border-1])/(2.0*dz);
+        c = 2.0*dz * k2/k1;
+        
+        for (int j = 0; j < ny; j++)
+        {
+            fg->rho1[i_border+1][j] = fg->rho1[i_border-1][j] - c * fg->rho1[i_border][j];
+        }
+    }
+
+    if (!mpi_info->has_neighbor_below)
+    {
+        FLOAT_P c, k1, k2;
+        FLOAT_P dz = grid_info->dz;
+        int nz_ghost = grid_info->nz_ghost;
+        int i_border = nz_ghost;
+
+        k1 = 1.0/bg->rho0[i_border];
+        k2 = (1.0/bg->rho0[i_border+1] - 1.0/bg->rho0[i_border-1])/(2.0*dz);
+        c = 2.0*dz * k2/k1;
+        
+        for (int j = 0; j < ny; j++)
+        {
+            fg->rho1[i_border-1][j] = fg->rho1[i_border+1][j] + c * fg->rho1[i_border][j];
+        }
+    }
 }

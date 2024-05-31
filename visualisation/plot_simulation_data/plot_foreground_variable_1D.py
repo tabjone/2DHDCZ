@@ -54,7 +54,7 @@ def plot_foreground_variable_1D(folder, ax, snap_number, key, **kwargs):
                 foreground_variable = foreground_variable/c_p
                 ax.set_ylabel("$s_1/c_p$")
             elif key == 'vy':
-                ax.set_ylabel(f"$v_y$ [{unit}]")
+                ax.set_ylabel(f"$v_x$ [{unit}]")
             elif key == 'vz':
                 ax.set_ylabel(f"$v_z$ [{unit}]")
         else:
@@ -67,7 +67,7 @@ def plot_foreground_variable_1D(folder, ax, snap_number, key, **kwargs):
             elif key == 's1':
                 ax.set_ylabel(f"$s_1$ [{unit}]")
             elif key == 'vy':
-                ax.set_ylabel(f"$v_y$ [{unit}]")
+                ax.set_ylabel(f"$v_x$ [{unit}]")
             elif key == 'vz':
                 ax.set_ylabel(f"$v_z$ [{unit}]")
 

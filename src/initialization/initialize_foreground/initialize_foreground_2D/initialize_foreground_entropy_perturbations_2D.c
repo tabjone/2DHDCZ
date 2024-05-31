@@ -18,7 +18,7 @@ FLOAT_P gaussian_2D(FLOAT_P x, FLOAT_P y, FLOAT_P x0, FLOAT_P y0, FLOAT_P sigma_
                    -(y - y0) * (y - y0) / (2 * sigma_y * sigma_y));
 }
 
-void initialize_foreground_entropy_perturbations_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info, struct PrecalculatedVariables2D *precalc)
+void initialize_foreground_entropy_perturbations_2D(struct ForegroundVariables2D *fg, struct BackgroundVariables *bg, struct GridInfo2D *grid_info, struct MpiInfo *mpi_info)
 {
     /*
     Initializes the grid with a small entropy perturbation and setting T1=0.
@@ -85,7 +85,7 @@ void initialize_foreground_entropy_perturbations_2D(struct ForegroundVariables2D
     communicate_2D_ghost_above_below(fg->s1, mpi_info, nz, nz_ghost, ny);
     communicate_2D_ghost_above_below(fg->p1, mpi_info, nz, nz_ghost, ny);
 
-    apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, 0.0);
+    //apply_vertical_boundary_damping_2D(fg, bg, grid_info, mpi_info, precalc, 0.0);
 
     equation_of_state_2D(fg, bg, grid_info, mpi_info); // Getting rho1 from equation of state
 }

@@ -1,4 +1,5 @@
 #include "global_float_precision.h"
+#include "global_parameters.h"
 
 FLOAT_P central_first_derivative_z_2D(FLOAT_P **array, int i, int j, FLOAT_P one_over_2dz)
 {
@@ -16,5 +17,9 @@ FLOAT_P central_first_derivative_z_2D(FLOAT_P **array, int i, int j, FLOAT_P one
     one_over_2dz : FLOAT_P
         1/2dz.
     */
-    return (array[i+1][j] - array[i-1][j]) * one_over_2dz;
+    #if CENTRAL_ORDER == 2
+        return (array[i+1][j] - array[i-1][j]) * one_over_2dz;
+    #elif CENTRAL_ORDER == 4
+        return (array[i-2][j] - 8.0 * array[i-1][j] + 8.0 * array[i+1][j] - array[i+2][j]) * one_over_2dz / 6.0;
+    #endif // CENTRAL_ORDER
 }

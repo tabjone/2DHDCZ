@@ -20,13 +20,15 @@ void update_vertical_boundary_entropy_velocity_2D(struct ForegroundVariables2D *
         // If not periodic boundary extrapolate ghost cells at top and bottom
         if (!mpi_info->has_neighbor_below)
         {
-            extrapolate_2D_array_symmetric_down(fg->vy, nz_ghost, ny);
+            //extrapolate_2D_array_symmetric_down(fg->vy, nz_ghost, ny);
+            extrapolate_2D_array_constant_down(fg->vz, nz_ghost, ny);
             extrapolate_2D_array_antisymmetric_down(fg->vz, nz_ghost, ny);
             extrapolate_2D_array_symmetric_down(fg->s1, nz_ghost, ny);
         }
         if (!mpi_info->has_neighbor_above)
         {
-            extrapolate_2D_array_symmetric_up(fg->vy, nz_full, nz_ghost, ny);
+            //extrapolate_2D_array_symmetric_up(fg->vy, nz_full, nz_ghost, ny);
+            extrapolate_2D_array_constant_up(fg->vz, nz_full, nz_ghost, ny);
             extrapolate_2D_array_antisymmetric_up(fg->vz, nz_full, nz_ghost, ny);
             extrapolate_2D_array_symmetric_up(fg->s1, nz_full, nz_ghost, ny);
         }

@@ -5,7 +5,7 @@
 #include "MPI_module/MPI_module.h"
 #include "iterative_solver_2D.h"
 
-void iterative_solver_2D(FLOAT_P **rhs, FLOAT_P **final_solution, FLOAT_P **initial_guess, FLOAT_P *r, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiInfo *mpi_info)
+void iterative_solver_2D(FLOAT_P **rhs, FLOAT_P **final_solution, FLOAT_P **initial_guess, FLOAT_P *r, int nz, int nz_ghost, int ny, FLOAT_P dz, FLOAT_P dy, struct MpiInfo *mpi_info, FLOAT_P lower_pressure_boundary, FLOAT_P upper_pressure_boundary)
 {
     /*
     Solves the Poisson equation using an iterative method (Jacobi, Gauss-Seidel)
@@ -61,14 +61,14 @@ void iterative_solver_2D(FLOAT_P **rhs, FLOAT_P **final_solution, FLOAT_P **init
         {
             for (int j = 0; j < ny; j++)
             {
-                current_solution[1][j] = LOWER_PRESSURE_BOUNDARY;
+                current_solution[1][j] = lower_pressure_boundary;
             }
         }
         if (!mpi_info->has_neighbor_above) // Boundary zero
         {
             for (int j = 0; j < ny; j++)
             {
-                current_solution[nz][j] = UPPER_PRESSURE_BOUNDARY;
+                current_solution[nz][j] = upper_pressure_boundary;
             }
         }
     #endif // VERTICAL_BOUNDARY_TYPE

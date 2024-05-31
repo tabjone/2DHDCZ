@@ -11,6 +11,9 @@
 
 #define MU 0.594 // mean molecular weight
 
+#define OMEGA_EQ 2.87e-6 // equatorial angular velocity [rad/s]
+#define OMEGA_CORE 2.9e-6 // core angular velocity [rad/s]
+
 #if UNITS == 0
     // CGS units
     #define K_B 1.380649e-16 // boltzmann constant [erg/K]

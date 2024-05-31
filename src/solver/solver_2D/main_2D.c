@@ -10,6 +10,30 @@
 #include "global_boundary.h"
 #include <math.h>
 
+void calculate_total_mass_2D(struct ForegroundVariables2D *fg, struct GridInfo2D *grid_info, struct PrecalculatedVariables2D *precalc)
+{
+    FLOAT_P dz = grid_info->dz;
+    FLOAT_P dy = grid_info->dy;
+    int nz_ghost = grid_info->nz_ghost;
+    int nz_full = grid_info->nz_full;
+    int ny = grid_info->ny;
+
+    FLOAT_P my_total_mass, total_mass;
+    my_total_mass = 0.0;
+
+    for (int i = nz_ghost; i < nz_full - nz_ghost; i++)
+    {
+        for (int j = 0; j < ny; j++)
+        {
+            my_total_mass += fg->rho1[i][j] * dz * dy;
+        }
+    }
+
+    MPI_Allreduce(&my_total_mass, &total_mass, 1, MPI_FLOAT_P, MPI_SUM, MPI_COMM_WORLD);
+
+    precalc->total_mass = total_mass;
+}
+
 int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
 {
     // Initialize random number generator
@@ -33,11 +57,25 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         load_simulation_2D(&bg, &fg, &fg_previous, &grid_info, &precalc, mpi_info, &save_nr, &t, &first_t);
     #endif // LOAD
 
+    precalc->total_mass = 0.0;
+    FLOAT_P t_since_mass = 0.0;
+    FLOAT_P mass_interval = 100.0;
+
     t_since_save = 0.0;
     dt_last = 0.0;
 
     while (t < T)
-    {
+    {   
+        #if SAVE_RHS == 1
+            save_derivatives_2D(fg_previous, bg, grid_info, precalc, mpi_info, save_nr-1);
+        #endif // SAVE_RHS
+        if (t_since_mass > mass_interval)
+        {
+            calculate_total_mass_2D(fg_previous, grid_info, precalc);
+            t_since_mass = 0.0;
+        }
+
+
         dt = one_time_step_2D(bg, fg_previous, fg, grid_info, mpi_info, precalc, dt_last, first_t == t);
         t += dt; 
 
@@ -45,6 +83,7 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
             printf("t = %.3f, dt=%.3f\n", t, dt);
         
         t_since_save += dt;
+        t_since_mass += dt;
         dt_last = dt;
         
         if (dt_last < 0.005)
@@ -68,6 +107,7 @@ int main_2D(int argc, char *argv[], struct MpiInfo *mpi_info)
         tmp_ptr = fg_previous;
         fg_previous = fg;
         fg = tmp_ptr;
+        //break;
     }
 
     save_foreground_2D(fg_previous, grid_info, mpi_info, save_nr, t);
